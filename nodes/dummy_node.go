@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// Node that has a hard-coded value for its result
 type DummyNode struct {
 	Node
 }

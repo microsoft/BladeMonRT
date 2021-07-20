@@ -4,10 +4,12 @@ import (
 	"fmt"
 )
 
+// Interface for defining unit of work to be processed by event loop
 type InterfaceNode interface {
  	ProcessVirt(workflowContextResult map[string]string)
 }
  
+// Concrete type for defining unit of work to be processed by event loop
 type Node struct {
 	NodeResult string
 	Name string
