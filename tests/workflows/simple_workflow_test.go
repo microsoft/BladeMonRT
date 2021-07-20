@@ -8,13 +8,12 @@ import (
 )
 
 func TestWorkflow(t *testing.T) {
-	dummyNodeA := nodes.DummyNode{Node: nodes.Node{Name : "dummyNodeA"}}
-	dummyNodeB := nodes.DummyNode{Node: nodes.Node{Name : "dummyNodeB"}}
-	dummyNodeC := nodes.DummyNode{Node: nodes.Node{Name : "dummyNodeC"}}
-
+	var dummyNodeA nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{Name : "dummyNodeA"}}
+	var dummyNodeB nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{Name : "dummyNodeB"}}
+	var dummyNodeC nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{Name : "dummyNodeC"}}
 	nodeToResult := make(map[string]string)
 
-	workflow := workflows.SimpleWorkflow{Workflow: workflows.Workflow{}}
+	var workflow workflows.SimpleWorkflow = workflows.SimpleWorkflow{Workflow: workflows.Workflow{}}
 	workflow.AddNode(&dummyNodeA)
 	workflow.AddNode(&dummyNodeB)
 	workflow.AddNode(&dummyNodeC)

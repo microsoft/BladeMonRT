@@ -7,8 +7,9 @@ import (
 )
 
 func TestDummyNode(t *testing.T) {
-	dummyNode := nodes.DummyNode{Node: nodes.Node{Name : "dummyNode"}}
+	var dummyNode nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{Name : "dummyNode"}}
 	nodeToResult := make(map[string]string)
+
 	dummyNode.ProcessVirt(nodeToResult)
 	result, ok := nodeToResult[dummyNode.Name]
 
