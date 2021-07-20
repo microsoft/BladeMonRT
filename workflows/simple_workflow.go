@@ -4,6 +4,7 @@ import (
 	"example.com/nodes"
 )
 
+// Workflow for executing nodes sequentially
 type SimpleWorkflow struct {
 	Workflow
 }
