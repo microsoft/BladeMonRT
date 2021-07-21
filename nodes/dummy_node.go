@@ -22,5 +22,4 @@ func (dummyNode *DummyNode) ProcessVirt(predecessorNodeResults []interface{}) {
   result += "dummy-node-result"
 
   dummyNode.SaveResult(result)
-  fmt.Println(result)
 }
