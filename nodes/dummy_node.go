@@ -4,13 +4,23 @@ import (
 	"fmt"
 )
 
-// Node that has a hard-coded value for its result
+/** Node that has the concatenation of its predecessors' results and a hard-coded value for its result. */
 type DummyNode struct {
 	Node
 }
 
-func (dummyNode *DummyNode) ProcessVirt(workflowContextResult map[string]string) {
+func (dummyNode *DummyNode) ProcessVirt(predecessorNodeResults []interface{}) {
   fmt.Println("Running ProcessVirt method.")
-  dummyNode.NodeResult = "dummy-node-result"
-  dummyNode.SaveResult(workflowContextResult)
+  var result string
+
+  // Add the predecessor results.
+  for _, predecessorResult := range predecessorNodeResults {
+	  result += predecessorResult.(string) + "|"
+  }
+
+  // Add the result at the current node.
+  result += "dummy-node-result"
+
+  dummyNode.SaveResult(result)
+  fmt.Println(result)
 }

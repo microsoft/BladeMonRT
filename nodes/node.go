@@ -6,21 +6,22 @@ import (
 
 // Interface for defining unit of work to be processed by event loop
 type InterfaceNode interface {
- 	ProcessVirt(workflowContextResult map[string]string)
+ 	ProcessVirt(predecessorNodeResults []interface{})
+	GetResult() interface{}
+	SaveResult(result interface{}) 
 }
  
 // Concrete type for defining unit of work to be processed by event loop
 type Node struct {
-	NodeResult string
+	nodeResult interface{}
 	Name string
 }
 
-func (node *Node) ProcessVirt(workflowContextResult map[string]string) {
-	fmt.Println("Running processVirt method.")
+func (node *Node) SaveResult(result interface{}) {
+	fmt.Println("Running SaveResult method.")
+	node.nodeResult = result
 }
 
-func (node *Node) SaveResult(workflowContextResult map[string]string) {
-	fmt.Println("Running SaveResult method.")
-	fmt.Println(node.NodeResult)
-	workflowContextResult[node.Name] = node.NodeResult
+func (node *Node) GetResult() interface{} {
+	return node.nodeResult
 }

@@ -1,7 +1,9 @@
-module example.com/workflows
+module github.com/microsoft/BladeMonRT/workflows
 
 go 1.16
 
-replace example.com/nodes => ../nodes
+replace github.com/microsoft/BladeMonRT/nodes => ../nodes
 
-require example.com/nodes v0.0.0-00010101000000-000000000000
+require github.com/microsoft/BladeMonRT/nodes v0.0.0-00010101000000-000000000000
+
+replace github.com/microsoft/BladeMonRT/workflows => ../workflows
