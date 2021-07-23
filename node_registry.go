@@ -2,11 +2,13 @@ package main
 
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
-	"reflect"
+	// "reflect"
 	//"fmt"
 )
 
+
 /** Class for parsing workflow definitions. */
+/*
 type NodeRegistry struct {
 	nameToType map[string]reflect.Type
 }
@@ -25,14 +27,17 @@ func (nodeRegistry *NodeRegistry) registerType(typeInstance interface{}) {
 	var typeClassName string = reflect.Indirect(reflect.ValueOf(typeInstance)).Type().Name()
 	nodeRegistry.nameToType[typeClassName] = newTypeInstance
 }
+*/
 
-func (nodeRegistry *NodeRegistry) makeInstance(typeName string) nodes.InterfaceNode {
-	/*
-	var nodeType reflect.Type = nodeRegistry.nameToType[typeName]
-	var node nodes.InterfaceNode = reflect.New(nodeType).Elem().Interface().(nodes.InterfaceNode)
-	fmt.Println(node)
-	node.InitializeFields()
-	*/
+// func (nodeRegistry *NodeRegistry) makeInstance(typeName string) nodes.InterfaceNode {
+	
+	// var nodeType reflect.Type = nodeRegistry.nameToType[typeName]
+	// var node nodes.InterfaceNode = reflect.New(nodeType).Elem().Interface().(nodes.InterfaceNode)
+	// fmt.Println(node)
+	// node.InitializeFields()
+
+func makeInstance(typeName string) nodes.InterfaceNode {
+	
 	switch typeName {
 		case "DummyNode":
 			return &nodes.DummyNode{}

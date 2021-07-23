@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/workflows"
-	"fmt"
 )
 
 /** Class for parsing workflow definitions. */
 type WorkflowManager struct {
 	nameToWorkflow map[string]WorkflowDescription
-	nodeRegistry NodeRegistry
 }
 
 /** Class for the workflow description in the JSON. */
@@ -28,9 +26,9 @@ func newWorkflowManager(workflowsJson []byte) WorkflowManager {
 	var workflows map[string]map[string]WorkflowDescription
 	json.Unmarshal([]byte(workflowsJson), &workflows)
 
-	var nodeRegistry NodeRegistry = newNodeRegistrySingleton()
+	// var nodeRegistry NodeRegistry = newNodeRegistrySingleton()
 
-	return WorkflowManager{nameToWorkflow : workflows["workflows"], nodeRegistry : nodeRegistry}
+	return WorkflowManager{nameToWorkflow : workflows["workflows"]} //, nodeRegistry : nodeRegistry}
 }
 
 func (workflowManager *WorkflowManager) constructWorkflow(workflowName string) workflows.InterfaceWorkflow {
@@ -43,8 +41,7 @@ func (workflowManager *WorkflowManager) constructWorkflow(workflowName string) w
 	// Create a collection of nodes from their names.
 	var workflowNodes []nodes.InterfaceNode
 	for _, nodeDescription := range currWorkflowDescription.Nodes {
-		fmt.Println(nodeDescription.Name)
-		var node nodes.InterfaceNode = workflowManager.nodeRegistry.makeInstance(nodeDescription.Name)
+		var node nodes.InterfaceNode = makeInstance(nodeDescription.Name)
 		node.InitializeFields();
 		workflowNodes = append(workflowNodes, node)
 	}
