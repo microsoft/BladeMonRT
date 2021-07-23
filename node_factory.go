@@ -4,7 +4,9 @@ import (
 	"github.com/microsoft/BladeMonRT/nodes"
 )
 
-func makeInstance(typeName string) nodes.InterfaceNode {
+type NodeFactory struct {}
+
+func (nodeFactory *NodeFactory) constructNode(typeName string) nodes.InterfaceNode {
 	switch typeName {
 		case "DummyNode":
 			return &nodes.DummyNode{}
@@ -12,6 +14,9 @@ func makeInstance(typeName string) nodes.InterfaceNode {
 			return &nodes.DummyNodeB{}
 		case "DummyNodeC":
 			return &nodes.DummyNodeC{}
+		default:
+			panic("Node for given name not found.")
+
 	} 
 	return nil
 }

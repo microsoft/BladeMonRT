@@ -14,19 +14,17 @@ func (simpleWorkflow *SimpleWorkflow) AddNode(node nodes.InterfaceNode) {
 	simpleWorkflow.Nodes = append(simpleWorkflow.Nodes, node)
 }
 
-func (simpleWorkflow *SimpleWorkflow) RunVirt() {
-	var predecessorNodeResults []interface{}
+
+func (simpleWorkflow *SimpleWorkflow) GetNodes() []nodes.InterfaceNode {
+	return simpleWorkflow.Nodes
+}
+
+func (simpleWorkflow *SimpleWorkflow) runVirt() {
+	var predecessorNodesResults []interface{}
 	for _, node := range simpleWorkflow.Nodes {
-		node.ProcessVirt(predecessorNodeResults)
-		predecessorNodeResults = append(predecessorNodeResults, node.GetResult()) 
+		node.Process(node, predecessorNodesResults)
+		predecessorNodesResults = append(predecessorNodesResults, node.GetResult()) 
 	}
 }
 
-func (simpleWorkflow *SimpleWorkflow) GetResult() map[string]interface{} {
-	var nodeToResult map[string]interface{} = make(map[string]interface{})
-	for _, node := range simpleWorkflow.Nodes {
-		nodeToResult[node.GetName()] = node.GetResult()
-	}
-	return nodeToResult
-}
 

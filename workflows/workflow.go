@@ -7,10 +7,16 @@ import (
 /** Interface for defining execution sequence of nodes. */
 type InterfaceWorkflow interface {
 	AddNode(node nodes.InterfaceNode)
-	RunVirt()
-	GetResult()  map[string]interface{}
+	Run(interfaceWorkflow InterfaceWorkflow)
+	runVirt()
+	GetNodes() []nodes.InterfaceNode
 }
 
 /** Concrete type for defining execution sequence of nodes. */
 type Workflow struct {
+}
+
+func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow) {
+	// TODO: add logging
+	interfaceWorkflow.runVirt()
 }

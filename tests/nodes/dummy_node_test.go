@@ -9,8 +9,8 @@ import (
 func TestDummyNode(t *testing.T) {
 	var dummyNode nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{}}
 
-	var predecessorNodeResults []interface{}
-	dummyNode.ProcessVirt(predecessorNodeResults)
+	var predecessorNodesResults []interface{}
+	dummyNode.ProcessVirt(predecessorNodesResults)
 	result := dummyNode.GetResult()
 
 	assert.Equal(t, result, "dummy-node-result");

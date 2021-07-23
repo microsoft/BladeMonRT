@@ -7,7 +7,7 @@ import (
 )
 
 /** Class for parsing workflow definitions. */
-type WorkflowManager struct {
+type WorkflowFactory struct {
 	nameToWorkflow map[string]WorkflowDescription
 }
 
@@ -24,24 +24,28 @@ type NodeDescription struct {
 	Args interface{} `json:"args"`
 }
 
-func newWorkflowManager(workflowsJson []byte) WorkflowManager {
+func newWorkflowFactory(workflowsJson []byte) WorkflowFactory {
 	var workflows map[string]map[string]WorkflowDescription
 	json.Unmarshal([]byte(workflowsJson), &workflows)
 
-	return WorkflowManager{nameToWorkflow : workflows["workflows"]}
+	return WorkflowFactory{nameToWorkflow : workflows["workflows"]}
 }
 
-func (workflowManager *WorkflowManager) constructWorkflow(workflowName string) workflows.InterfaceWorkflow {
+func (WorkflowFactory *WorkflowFactory) constructWorkflow(workflowName string) workflows.InterfaceWorkflow {
 	var currWorkflowDescription WorkflowDescription
-	currWorkflowDescription = workflowManager.nameToWorkflow[workflowName]
-	if currWorkflowDescription.Type != "simple" {
-		panic("Workflow types other than simple are not implemented.") 
-	}
+	currWorkflowDescription = WorkflowFactory.nameToWorkflow[workflowName]
+    switch currWorkflowDescription.Type {	
+    	case "simple":
+		default:
+			panic("Workflow types other than simple are not implemented.") 
+		
+	} 
 
 	// Create a collection of nodes from their names.
 	var workflowNodes []nodes.InterfaceNode
+	var nodeFactory NodeFactory = NodeFactory{}
 	for _, nodeDescription := range currWorkflowDescription.Nodes {
-		var node nodes.InterfaceNode = makeInstance(nodeDescription.Name)
+		var node nodes.InterfaceNode = nodeFactory.constructNode(nodeDescription.Name)
 		node.InitializeFields();
 		workflowNodes = append(workflowNodes, node)
 	}

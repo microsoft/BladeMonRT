@@ -10,16 +10,16 @@ type DummyNode struct {
 }
 
 func (dummyNode *DummyNode) InitializeFields() {
-	dummyNode.SetName("DummyNode")
+	// No fields to initialize.
 }
 
-func (dummyNode *DummyNode) ProcessVirt(predecessorNodeResults []interface{}) {
+func (dummyNode *DummyNode) processVirt(predecessorNodesResults []interface{}) {
   fmt.Println("Running ProcessVirt method.")
   var result string
 
   // Add the predecessor results.
-  for _, predecessorResult := range predecessorNodeResults {
-	  result += predecessorResult.(string) + "|"
+  for _, predecessorNodeResult := range predecessorNodesResults {
+	  result += predecessorNodeResult.(string) + "|"
   }
 
   // Add the result at the current node.

@@ -5,19 +5,22 @@ import (
 	"log"
 	"os"
 	"github.com/microsoft/BladeMonRT/workflows"
+	"fmt"
 )
 
 type Main struct {
-    WorkflowManager *WorkflowManager
+    WorkflowFactory *WorkflowFactory
 	Logger *log.Logger
 }
 
 func main() {
 	var mainObj Main = NewMain()
 
-	var workflow workflows.InterfaceWorkflow = mainObj.WorkflowManager.constructWorkflow("dummy_workflow")
-	workflow.RunVirt()
-	mainObj.Logger.Println("The result is: ", workflow.GetResult())
+	var workflow workflows.InterfaceWorkflow = mainObj.WorkflowFactory.constructWorkflow("dummy_workflow")
+	workflow.Run(workflow)
+	for index, node := range workflow.GetNodes() {
+		mainObj.Logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult().(string)))
+	}
 }	
 
 func NewMain() Main {
@@ -30,7 +33,7 @@ func NewMain() Main {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var workflowManager WorkflowManager = newWorkflowManager(workflowsJson)
+	var WorkflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson)
 
 	file, err := os.OpenFile(logging_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
     if err != nil {
@@ -38,5 +41,5 @@ func NewMain() Main {
     }
     var logger *log.Logger = log.New(file, "Info: ", log.Ldate|log.Ltime|log.Lshortfile)
 	
-	return Main{WorkflowManager : &workflowManager, Logger : logger}
+	return Main{WorkflowFactory : &WorkflowFactory, Logger : logger}
 }

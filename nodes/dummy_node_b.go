@@ -6,9 +6,9 @@ type DummyNodeB struct {
 }
 
 func (dummyNode *DummyNodeB) InitializeFields() {
-	dummyNode.SetName("DummyNodeB")
+	// No fields to initialize.
 }
 
-func (dummyNode *DummyNodeB) ProcessVirt(predecessorNodeResults []interface{}) {
+func (dummyNode *DummyNodeB) processVirt(predecessorNodesResults []interface{}) {
   dummyNode.SaveResult("dummy-result-B")
 }

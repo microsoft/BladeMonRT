@@ -4,12 +4,13 @@ package nodes
 /** Node that has a hard-coded value for its result. */
 type DummyNodeC struct {
 	Node
+	result string
 }
 
 func (dummyNode *DummyNodeC) InitializeFields() {
-	dummyNode.SetName("DummyNodeC")
+	dummyNode.result = "dummy-result-c"
 }
 
-func (dummyNode *DummyNodeC) ProcessVirt(predecessorNodeResults []interface{}) {
-  dummyNode.SaveResult("dummy-result-c")
+func (dummyNode *DummyNodeC) processVirt(predecessorNodesResults []interface{}) {
+  dummyNode.SaveResult(dummyNode.result)
 }
