@@ -28,9 +28,7 @@ func newWorkflowManager(workflowsJson []byte) WorkflowManager {
 	var workflows map[string]map[string]WorkflowDescription
 	json.Unmarshal([]byte(workflowsJson), &workflows)
 
-	// var nodeRegistry NodeRegistry = newNodeRegistrySingleton()
-
-	return WorkflowManager{nameToWorkflow : workflows["workflows"]} //, nodeRegistry : nodeRegistry}
+	return WorkflowManager{nameToWorkflow : workflows["workflows"]}
 }
 
 func (workflowManager *WorkflowManager) constructWorkflow(workflowName string) workflows.InterfaceWorkflow {
