@@ -4,6 +4,7 @@ import (
 	"github.com/microsoft/BladeMonRT/nodes"
 )
 
+/** Utility class used to convert node names to node instances. */
 type NodeFactory struct {}
 
 func (nodeFactory *NodeFactory) constructNode(typeName string) nodes.InterfaceNode {
