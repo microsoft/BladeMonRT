@@ -8,9 +8,9 @@ import (
 )
 
 func TestWorkflow(t *testing.T) {
-	var dummyNodeA nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{Name : "dummyNodeA"}}
-	var dummyNodeB nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{Name : "dummyNodeB"}}
-	var dummyNodeC nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{Name : "dummyNodeC"}}
+	var dummyNodeA nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{}}
+	var dummyNodeB nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{}}
+	var dummyNodeC nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{}}
 
 	var workflow workflows.SimpleWorkflow = workflows.SimpleWorkflow{Workflow: workflows.Workflow{}}
 	workflow.AddNode(&dummyNodeA)

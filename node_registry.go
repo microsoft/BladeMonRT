@@ -37,7 +37,6 @@ func (nodeRegistry *NodeRegistry) registerType(typeInstance interface{}) {
 	// node.InitializeFields()
 
 func makeInstance(typeName string) nodes.InterfaceNode {
-	
 	switch typeName {
 		case "DummyNode":
 			return &nodes.DummyNode{}
