@@ -7,7 +7,7 @@ import (
 )
 
 func TestDummyNode(t *testing.T) {
-	var dummyNode nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{Name : "dummyNode"}}
+	var dummyNode nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{}}
 
 	var predecessorNodeResults []interface{}
 	dummyNode.ProcessVirt(predecessorNodeResults)
