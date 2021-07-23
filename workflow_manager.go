@@ -20,6 +20,8 @@ type WorkflowDescription struct {
 /** Class for the node description in the JSON. */
 type NodeDescription struct {
 	Name string `json:"name"`
+	Metadata interface{} `json:"metadata"`
+	Args interface{} `json:"args"`
 }
 
 func newWorkflowManager(workflowsJson []byte) WorkflowManager {
