@@ -9,6 +9,12 @@ type DummyNode struct {
 	Node
 }
 
+func (dummyNode *DummyNode) InitializeFields() {
+	dummyNode.SetName("DummyNode")
+}
+
+
+
 func (dummyNode *DummyNode) ProcessVirt(predecessorNodeResults []interface{}) {
   fmt.Println("Running ProcessVirt method.")
   var result string

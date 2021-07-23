@@ -8,6 +8,7 @@ import (
 type InterfaceWorkflow interface {
 	AddNode(node nodes.InterfaceNode)
 	RunVirt()
+	GetResult()  map[string]interface{}
 }
 
 /** Concrete type for defining execution sequence of nodes. */
