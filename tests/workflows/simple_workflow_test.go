@@ -17,7 +17,7 @@ func TestWorkflow(t *testing.T) {
 	workflow.AddNode(&dummyNodeB)
 	workflow.AddNode(&dummyNodeC)
 
-	workflow.RunVirt()
+	workflow.Run(&workflow)
 
 	// Check that the result at each node includes the predecessor results and the expected hard-coded value.
 	resultA := dummyNodeA.GetResult()
