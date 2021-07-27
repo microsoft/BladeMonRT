@@ -23,7 +23,7 @@ type InterfaceNode interface {
 	GetResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext) interface{}
 }
  
-// Concrete type for defining unit of work to be processed by event loop
+// Concrete type for defining unit of work to be processed by event loop.
 type Node struct {
 	dummyVariable interface{} // This variable makes the Node struct non-empty, to prevent GO's behavior in the allocation of zero-sized objects. 
 }

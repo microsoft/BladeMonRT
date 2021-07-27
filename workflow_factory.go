@@ -43,7 +43,7 @@ func (WorkflowFactory *WorkflowFactory) constructWorkflow(workflowName string) w
 		workflowNodes = append(workflowNodes, node)
 	}
 
-	// Add nodes to the workflow using the worfklow type
+	// Add nodes to the workflow using the workflow type.
 	switch currWorkflowDescription.Type {	
 		case "simple":
 			var workflow workflows.InterfaceWorkflow
