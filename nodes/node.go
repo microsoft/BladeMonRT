@@ -62,7 +62,6 @@ func (node *Node) getPredecessorNodes(interfaceNode InterfaceNode, workflowConte
 	return predecessorNodes
 }
 
-
 func (node *Node) getPredecessorResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{} {
 	var predecessorNodeResults []interface{}
 	var predecessorNodes []InterfaceNode = interfaceNode.getPredecessorNodes(interfaceNode, workflowContext)
