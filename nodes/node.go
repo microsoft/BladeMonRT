@@ -66,7 +66,7 @@ func (node *Node) getPredecessorNodesResults(interfaceNode InterfaceNode, workfl
 	var predecessorNodesResults []interface{}
 	var predecessorNodes []InterfaceNode = interfaceNode.getPredecessorNodes(interfaceNode, workflowContext)
 	for _, predecessorNode := range predecessorNodes {
-		predecessorNodesResults = append(predecessorNodeResults, workflowContext.nodeToResult[predecessorNode])
+		predecessorNodesResults = append(predecessorNodesResults, workflowContext.nodeToResult[predecessorNode])
 	}
 	return predecessorNodesResults
 }
