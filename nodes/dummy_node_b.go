@@ -11,5 +11,5 @@ func NewDummyNodeB() *DummyNodeB {
 }
 
 func (dummyNode *DummyNodeB) processVirt(workflowContext *WorkflowContext) {
-	dummyNode.SaveResult(dummyNode, workflowContext, "dummy-node-b-result")
+	dummyNode.saveResult(dummyNode, workflowContext, "dummy-node-b-result")
   }

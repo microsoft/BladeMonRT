@@ -24,9 +24,10 @@ func (workflowContext *WorkflowContext) GetNodes() []InterfaceNode {
 type InterfaceNode interface {
  	Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext)
 	processVirt(workflowContext *WorkflowContext)
-	SaveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{})
+	saveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{})
 	GetResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext) interface{}
-	GetPredecessorResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{}
+	getPredecessorNodes(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []InterfaceNode
+	getPredecessorResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{}
 }
  
 // Concrete type for defining unit of work to be processed by event loop.
@@ -39,7 +40,7 @@ func (node *Node) Process(interfaceNode InterfaceNode, workflowContext *Workflow
 	interfaceNode.processVirt(workflowContext)
 }
 
-func (node *Node) SaveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{}) {
+func (node *Node) saveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{}) {
 	fmt.Println("Running SaveResult method.")
 	workflowContext.nodeToResult[interfaceNode] = result
 }
@@ -49,12 +50,23 @@ func (node *Node) GetResult(interfaceNode InterfaceNode, workflowContext *Workfl
 	return workflowContext.nodeToResult[interfaceNode]
 }
 
-func (node *Node) GetPredecessorResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{} {
-	var predecessorNodeResults []interface{}
-	for _, predecessorNode := range workflowContext.GetNodes() {
-		if (interfaceNode == predecessorNode) {
+func (node *Node) getPredecessorNodes(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []InterfaceNode {
+	var predecessorNodes []InterfaceNode
+	var nodes []InterfaceNode = workflowContext.GetNodes()
+	for _, currNode := range nodes {
+		if (interfaceNode == currNode) {
 			break
 		}
+		predecessorNodes = append(predecessorNodes,  currNode)
+	}
+	return predecessorNodes
+}
+
+
+func (node *Node) getPredecessorResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{} {
+	var predecessorNodeResults []interface{}
+	var predecessorNodes []InterfaceNode = interfaceNode.getPredecessorNodes(interfaceNode, workflowContext)
+	for _, predecessorNode := range predecessorNodes {
 		predecessorNodeResults = append(predecessorNodeResults,  workflowContext.nodeToResult[predecessorNode])
 	}
 	return predecessorNodeResults
