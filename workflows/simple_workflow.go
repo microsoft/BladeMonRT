@@ -10,6 +10,10 @@ type SimpleWorkflow struct {
 	nodes []nodes.InterfaceNode
 }
 
+func NewSimpleWorkflow(workflowContext *nodes.WorkflowContext) *SimpleWorkflow{
+	return &SimpleWorkflow{Workflow: Workflow{WorkflowContext : workflowContext}}
+}
+
 func (simpleWorkflow *SimpleWorkflow) AddNode(node nodes.InterfaceNode) {
 	simpleWorkflow.nodes = append(simpleWorkflow.nodes, node)
 }

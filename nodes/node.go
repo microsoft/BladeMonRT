@@ -5,8 +5,14 @@ import (
 )
 
 type WorkflowContext struct {
-	PredecessorNodesResults []interface{}
-	NodeToResult map[InterfaceNode]interface{}
+	predecessorNodesResults []interface{}
+	nodeToResult map[InterfaceNode]interface{}
+}
+
+func NewWorkflowContext() *WorkflowContext {
+	var nodeToResult map[InterfaceNode]interface{} = make(map[InterfaceNode]interface{})
+	var workflowContext WorkflowContext = WorkflowContext{nodeToResult : nodeToResult}
+	return &workflowContext
 }
 
 // Interface for defining unit of work to be processed by event loop. Classes that implement InterfaceNode can provide their own constructor.
@@ -29,11 +35,10 @@ func (node *Node) Process(interfaceNode InterfaceNode, workflowContext *Workflow
 
 func (node *Node) SaveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{}) {
 	fmt.Println("Running SaveResult method.")
-	workflowContext.NodeToResult[interfaceNode] = result
-	workflowContext.PredecessorNodesResults = append(workflowContext.PredecessorNodesResults, result)
-	fmt.Println(workflowContext.NodeToResult)
+	workflowContext.nodeToResult[interfaceNode] = result
+	workflowContext.predecessorNodesResults = append(workflowContext.predecessorNodesResults, result)
 }
 
 func (node *Node) GetResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext) interface{} {
-	return workflowContext.NodeToResult[interfaceNode]
+	return workflowContext.nodeToResult[interfaceNode]
 }

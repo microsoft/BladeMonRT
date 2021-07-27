@@ -18,7 +18,7 @@ func (dummyNode *DummyNode) processVirt(workflowContext *WorkflowContext) {
   var result string
 
   // Add the predecessor results.
-  for _, predecessorNodeResult := range workflowContext.PredecessorNodesResults {
+  for _, predecessorNodeResult := range workflowContext.predecessorNodesResults {
 	  result += predecessorNodeResult.(string) + "|"
   }
 

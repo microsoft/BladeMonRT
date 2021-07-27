@@ -19,11 +19,10 @@ func main() {
 
 	var workflow workflows.InterfaceWorkflow = mainObj.WorkflowFactory.constructWorkflow("dummy_workflow")
 
-	var nodeToResult map[nodes.InterfaceNode]interface{} = make(map[nodes.InterfaceNode]interface{})
-	var workflowContext nodes.WorkflowContext = nodes.WorkflowContext{NodeToResult : nodeToResult}
-	workflow.Run(workflow, &workflowContext)
+	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
+	workflow.Run(workflow, workflowContext)
 	for index, node := range workflow.GetNodes() {
-		mainObj.Logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult(node, &workflowContext).(string)))
+		mainObj.Logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult(node, workflowContext).(string)))
 	}
 }	
 
