@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"github.com/microsoft/BladeMonRT/workflows"
+	"github.com/microsoft/BladeMonRT/nodes"
 	"fmt"
 )
 
@@ -17,9 +18,12 @@ func main() {
 	var mainObj Main = NewMain()
 
 	var workflow workflows.InterfaceWorkflow = mainObj.WorkflowFactory.constructWorkflow("dummy_workflow")
-	workflow.Run(workflow)
+
+	var nodeToResult map[nodes.InterfaceNode]interface{} = make(map[nodes.InterfaceNode]interface{})
+	var workflowContext nodes.WorkflowContext = nodes.WorkflowContext{NodeToResult : nodeToResult}
+	workflow.Run(workflow, &workflowContext)
 	for index, node := range workflow.GetNodes() {
-		mainObj.Logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult().(string)))
+		mainObj.Logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult(node, &workflowContext).(string)))
 	}
 }	
 

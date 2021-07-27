@@ -34,28 +34,27 @@ func newWorkflowFactory(workflowsJson []byte) WorkflowFactory {
 func (WorkflowFactory *WorkflowFactory) constructWorkflow(workflowName string) workflows.InterfaceWorkflow {
 	var currWorkflowDescription WorkflowDescription
 	currWorkflowDescription = WorkflowFactory.nameToWorkflow[workflowName]
-    switch currWorkflowDescription.Type {	
-    	case "simple":
-		default:
-			panic("Workflow types other than simple are not implemented.") 
-		
-	} 
 
 	// Create a collection of nodes from their names.
 	var workflowNodes []nodes.InterfaceNode
 	var nodeFactory NodeFactory = NodeFactory{}
 	for _, nodeDescription := range currWorkflowDescription.Nodes {
 		var node nodes.InterfaceNode = nodeFactory.constructNode(nodeDescription.Name)
-		node.InitializeFields();
 		workflowNodes = append(workflowNodes, node)
 	}
 
-	// Create a simple workflow and add nodes to the workflow.
-	var workflow workflows.InterfaceWorkflow
-	workflow = &workflows.SimpleWorkflow{}
-	for _, node := range workflowNodes {
-		workflow.AddNode(node)
+	// Add nodes to the workflow using the worfklow type
+	switch currWorkflowDescription.Type {	
+		case "simple":
+			var workflow workflows.InterfaceWorkflow
+			workflow = &workflows.SimpleWorkflow{}
+			for _, node := range workflowNodes {
+				workflow.AddNode(node)
+			}
+			return workflow
+		default:
+			panic("Workflow types other than simple are not implemented.")
 	}
 
-	return workflow
+	return nil
 }

@@ -5,10 +5,11 @@ type DummyNodeB struct {
 	Node
 }
 
-func (dummyNode *DummyNodeB) InitializeFields() {
+func NewDummyNodeB() *DummyNodeB {
 	// No fields to initialize.
+	return &DummyNodeB{}
 }
 
-func (dummyNode *DummyNodeB) processVirt(predecessorNodesResults []interface{}) {
-  dummyNode.SaveResult("dummy-result-B")
-}
+func (dummyNode *DummyNodeB) processVirt(workflowContext *WorkflowContext) {
+	dummyNode.SaveResult(dummyNode, workflowContext, "dummy-node-b-result")
+  }

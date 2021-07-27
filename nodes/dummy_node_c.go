@@ -7,10 +7,12 @@ type DummyNodeC struct {
 	result string
 }
 
-func (dummyNode *DummyNodeC) InitializeFields() {
+func NewDummyNodeC() *DummyNodeC {
+	var dummyNode DummyNodeC = DummyNodeC{}
 	dummyNode.result = "dummy-result-c"
+	return &dummyNode
 }
 
-func (dummyNode *DummyNodeC) processVirt(predecessorNodesResults []interface{}) {
-  dummyNode.SaveResult(dummyNode.result)
+func (dummyNode *DummyNodeC) processVirt(workflowContext *WorkflowContext) {
+  dummyNode.SaveResult(dummyNode, workflowContext, dummyNode.result)
 }

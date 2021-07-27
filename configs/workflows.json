@@ -4,6 +4,7 @@
             "type":"simple",
             "nodes":[
                 {"name":"DummyNode"},
+                {"name":"DummyNode"},
                 {"name":"DummyNodeB"},
                 {"name":"DummyNodeC"}
             ]

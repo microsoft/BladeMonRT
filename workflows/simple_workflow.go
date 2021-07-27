@@ -7,23 +7,21 @@ import (
 /** Workflow for executing nodes sequentially. */
 type SimpleWorkflow struct {
 	Workflow
-	Nodes []nodes.InterfaceNode
+	nodes []nodes.InterfaceNode
 }
 
 func (simpleWorkflow *SimpleWorkflow) AddNode(node nodes.InterfaceNode) {
-	simpleWorkflow.Nodes = append(simpleWorkflow.Nodes, node)
+	simpleWorkflow.nodes = append(simpleWorkflow.nodes, node)
 }
 
 
 func (simpleWorkflow *SimpleWorkflow) GetNodes() []nodes.InterfaceNode {
-	return simpleWorkflow.Nodes
+	return simpleWorkflow.nodes
 }
 
-func (simpleWorkflow *SimpleWorkflow) runVirt() {
-	var predecessorNodesResults []interface{}
-	for _, node := range simpleWorkflow.Nodes {
-		node.Process(node, predecessorNodesResults)
-		predecessorNodesResults = append(predecessorNodesResults, node.GetResult()) 
+func (simpleWorkflow *SimpleWorkflow) runVirt(workflowContext *nodes.WorkflowContext) {
+	for _, node := range simpleWorkflow.GetNodes() {
+		node.Process(node, workflowContext)
 	}
 }
 

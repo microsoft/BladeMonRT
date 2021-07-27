@@ -10,11 +10,11 @@ type NodeFactory struct {}
 func (nodeFactory *NodeFactory) constructNode(typeName string) nodes.InterfaceNode {
 	switch typeName {
 		case "DummyNode":
-			return &nodes.DummyNode{}
+			return nodes.NewDummyNode()
 		case "DummyNodeB":
-			return &nodes.DummyNodeB{}
+			return nodes.NewDummyNodeB()
 		case "DummyNodeC":
-			return &nodes.DummyNodeC{}
+			return nodes.NewDummyNodeC()
 		default:
 			panic("Node for given name not found.")
 
