@@ -57,7 +57,7 @@ func (node *Node) getPredecessorNodes(interfaceNode InterfaceNode, workflowConte
 		if (interfaceNode == currNode) {
 			break
 		}
-		predecessorNodes = append(predecessorNodes,  currNode)
+		predecessorNodes = append(predecessorNodes, currNode)
 	}
 	return predecessorNodes
 }
@@ -67,7 +67,7 @@ func (node *Node) getPredecessorResults(interfaceNode InterfaceNode, workflowCon
 	var predecessorNodeResults []interface{}
 	var predecessorNodes []InterfaceNode = interfaceNode.getPredecessorNodes(interfaceNode, workflowContext)
 	for _, predecessorNode := range predecessorNodes {
-		predecessorNodeResults = append(predecessorNodeResults,  workflowContext.nodeToResult[predecessorNode])
+		predecessorNodeResults = append(predecessorNodeResults, workflowContext.nodeToResult[predecessorNode])
 	}
 	return predecessorNodeResults
 }
