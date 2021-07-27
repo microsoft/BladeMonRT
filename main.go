@@ -18,9 +18,9 @@ func main() {
 	var mainObj Main = NewMain()
 
 	var workflow workflows.InterfaceWorkflow = mainObj.WorkflowFactory.constructWorkflow("dummy_workflow")
-	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	
-	workflow.Run(workflow, workflowContext)
+	workflow.Run(workflow)
+	var workflowContext *nodes.WorkflowContext = workflow.GetWorkflowContext()
 	for index, node := range workflow.GetNodes() {
 		mainObj.Logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult(node, workflowContext).(string)))
 	}
