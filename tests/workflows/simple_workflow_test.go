@@ -12,12 +12,12 @@ func TestWorkflow(t *testing.T) {
 	var dummyNodeB nodes.InterfaceNode = nodes.NewDummyNode()
 	var dummyNodeC nodes.InterfaceNode = nodes.NewDummyNode()
 
-	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
-	var workflow *workflows.SimpleWorkflow = workflows.NewSimpleWorkflow(workflowContext)
+	var workflow *workflows.SimpleWorkflow = workflows.NewSimpleWorkflow()
 	workflow.AddNode(dummyNodeA)
 	workflow.AddNode(dummyNodeB)
 	workflow.AddNode(dummyNodeC)
 
+	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	workflow.Run(workflow, workflowContext)
 
 	// Check that the result at each node includes the predecessor results and the expected hard-coded value.
