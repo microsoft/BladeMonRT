@@ -17,7 +17,6 @@ func (nodeFactory *NodeFactory) constructNode(typeName string) nodes.InterfaceNo
 			return nodes.NewDummyNodeC()
 		default:
 			panic("Node for given name not found.")
-
 	} 
 	return nil
 }

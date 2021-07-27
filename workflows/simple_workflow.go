@@ -18,7 +18,6 @@ func (simpleWorkflow *SimpleWorkflow) AddNode(node nodes.InterfaceNode) {
 	simpleWorkflow.nodes = append(simpleWorkflow.nodes, node)
 }
 
-
 func (simpleWorkflow *SimpleWorkflow) GetNodes() []nodes.InterfaceNode {
 	return simpleWorkflow.nodes
 }
@@ -28,5 +27,3 @@ func (simpleWorkflow *SimpleWorkflow) runVirt(workflowContext *nodes.WorkflowCon
 		node.Process(node, workflowContext)
 	}
 }
-
-
