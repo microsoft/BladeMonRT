@@ -27,7 +27,7 @@ type InterfaceNode interface {
 	saveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{})
 	GetResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext) interface{}
 	getPredecessorNodes(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []InterfaceNode
-	getPredecessorResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{}
+	getPredecessorNodesResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{}
 }
  
 // Concrete type for defining unit of work to be processed by event loop.
@@ -62,11 +62,11 @@ func (node *Node) getPredecessorNodes(interfaceNode InterfaceNode, workflowConte
 	return predecessorNodes
 }
 
-func (node *Node) getPredecessorResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{} {
-	var predecessorNodeResults []interface{}
+func (node *Node) getPredecessorNodesResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{} {
+	var predecessorNodesResults []interface{}
 	var predecessorNodes []InterfaceNode = interfaceNode.getPredecessorNodes(interfaceNode, workflowContext)
 	for _, predecessorNode := range predecessorNodes {
-		predecessorNodeResults = append(predecessorNodeResults, workflowContext.nodeToResult[predecessorNode])
+		predecessorNodesResults = append(predecessorNodeResults, workflowContext.nodeToResult[predecessorNode])
 	}
-	return predecessorNodeResults
+	return predecessorNodesResults
 }
