@@ -10,17 +10,21 @@ type WorkflowContext struct {
 	nodeToResult map[InterfaceNode]interface{}
 }
 
-func NewWorkflowContext(nodes []InterfaceNode) *WorkflowContext {
+func NewWorkflowContext() *WorkflowContext {
 	var nodeToResult map[InterfaceNode]interface{} = make(map[InterfaceNode]interface{})
-	var workflowContext WorkflowContext = WorkflowContext{nodeToResult : nodeToResult, nodes : nodes}
+	var workflowContext WorkflowContext = WorkflowContext{nodeToResult : nodeToResult}
 	return &workflowContext
+}
+
+func (workflowContext *WorkflowContext) SetNodes(nodes []InterfaceNode) {
+	workflowContext.nodes = nodes
 }
 
 func (workflowContext *WorkflowContext) GetNodes() []InterfaceNode {
 	return workflowContext.nodes
 }
 
-// Interface for defining unit of work to be processed by event loop. Classes that implement InterfaceNode can provide their own constructor.
+/** Interface for defining unit of work to be processed by event loop. Classes that implement InterfaceNode can provide their own constructor. */
 type InterfaceNode interface {
  	Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext)
 	processVirt(workflowContext *WorkflowContext)
@@ -30,7 +34,7 @@ type InterfaceNode interface {
 	getPredecessorNodesResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{}
 }
  
-// Concrete type for defining unit of work to be processed by event loop.
+/** Concrete type for defining unit of work to be processed by event loop. */
 type Node struct {
 	dummyVariable interface{} // This variable makes the Node struct non-empty, to prevent GO's behavior in the allocation of zero-sized objects. 
 }

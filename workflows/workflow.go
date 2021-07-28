@@ -7,10 +7,9 @@ import (
 /** Interface for defining execution sequence of nodes. */
 type InterfaceWorkflow interface {
 	AddNode(node nodes.InterfaceNode)
-	Run(interfaceWorkflow InterfaceWorkflow)
+	Run(interfaceWorkflow InterfaceWorkflow, workflowContext *nodes.WorkflowContext)
 	runVirt(workflowContext *nodes.WorkflowContext)
 	GetNodes() []nodes.InterfaceNode
-	GetWorkflowContext() *nodes.WorkflowContext
 }
 
 /** Concrete type for defining execution sequence of nodes. */
@@ -18,17 +17,11 @@ type Workflow struct {
 	workflowContext *nodes.WorkflowContext
 }
 
-func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow) {
+func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowContext *nodes.WorkflowContext) {
 	// TODO: add logging
 
-	// Create a workflow context using the nodes in this workflow.
-	var workflowNodes []nodes.InterfaceNode = interfaceWorkflow.GetNodes()
-	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext(workflowNodes)
-	workflow.workflowContext = workflowContext
+	// Set the nodes in the workflow context to the nodes in this workflow.
+	workflowContext.SetNodes(interfaceWorkflow.GetNodes())
 
 	interfaceWorkflow.runVirt(workflowContext)
-}
-
-func (workflow *Workflow) GetWorkflowContext() *nodes.WorkflowContext {
-	return workflow.workflowContext
 }

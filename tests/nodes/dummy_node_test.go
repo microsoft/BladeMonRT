@@ -11,7 +11,7 @@ func TestDummyNode(t *testing.T) {
 	var workflowNodes []nodes.InterfaceNode
 	workflowNodes = append(workflowNodes, &dummyNode)
 
-	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext(workflowNodes)
+	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	dummyNode.Process(&dummyNode, workflowContext)
 	result := dummyNode.GetResult(&dummyNode, workflowContext)
 
