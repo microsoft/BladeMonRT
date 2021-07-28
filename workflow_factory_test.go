@@ -37,10 +37,10 @@ func TestWorkflowFactory(t *testing.T) {
 		log.Fatal(err)
 	}
 	var workflowFactory root.WorkflowFactory = root.NewWorkflowFactory(workflowsJson, mockNodeFactory)
-	mockNodeFactory.EXPECT().ConstructNode("DummyNodeA").Return(mockNodeA)
-	mockNodeFactory.EXPECT().ConstructNode("DummyNodeA").Return(mockNodeA)
-	mockNodeFactory.EXPECT().ConstructNode("DummyNodeB").Return(mockNodeB)
-	mockNodeFactory.EXPECT().ConstructNode("DummyNodeC").Return(mockNodeC)
+	mockNodeFactory.EXPECT().ConstructNode("TestNodeA").Return(mockNodeA)
+	mockNodeFactory.EXPECT().ConstructNode("TestNodeA").Return(mockNodeA)
+	mockNodeFactory.EXPECT().ConstructNode("TestNodeB").Return(mockNodeB)
+	mockNodeFactory.EXPECT().ConstructNode("TestNodeC").Return(mockNodeC)
 
 	var workflow workflows.InterfaceWorkflow = workflowFactory.ConstructWorkflow("dummy_workflow")
 	workflow.Run(workflow)
