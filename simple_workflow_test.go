@@ -1,4 +1,4 @@
-package workflow_tests
+package root
 
 import (
 	"github.com/microsoft/BladeMonRT/nodes"

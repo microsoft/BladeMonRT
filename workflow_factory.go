@@ -1,4 +1,4 @@
-package main
+package root
 
 import (
 	"encoding/json"
@@ -9,6 +9,7 @@ import (
 /** Class for parsing workflow definitions. */
 type WorkflowFactory struct {
 	nameToWorkflow map[string]WorkflowDescription
+	nodeFactory InterfaceNodeFactory
 }
 
 /** Class for the workflow description in the JSON. */
@@ -24,22 +25,22 @@ type NodeDescription struct {
 	Args interface{} `json:"args"`
 }
 
-func newWorkflowFactory(workflowsJson []byte) WorkflowFactory {
+func NewWorkflowFactory(workflowsJson []byte, nodeFactory InterfaceNodeFactory) WorkflowFactory {
 	var workflows map[string]map[string]WorkflowDescription
 	json.Unmarshal([]byte(workflowsJson), &workflows)
 
-	return WorkflowFactory{nameToWorkflow : workflows["workflows"]}
+	return WorkflowFactory{nameToWorkflow : workflows["workflows"], nodeFactory : nodeFactory}
 }
 
-func (WorkflowFactory *WorkflowFactory) constructWorkflow(workflowName string) workflows.InterfaceWorkflow {
+func (workflowFactory *WorkflowFactory) ConstructWorkflow(workflowName string) workflows.InterfaceWorkflow {
 	var currWorkflowDescription WorkflowDescription
-	currWorkflowDescription = WorkflowFactory.nameToWorkflow[workflowName]
+	currWorkflowDescription = workflowFactory.nameToWorkflow[workflowName]
 
 	// Create a collection of nodes from their names.
 	var workflowNodes []nodes.InterfaceNode
-	var nodeFactory NodeFactory = NodeFactory{}
+	var nodeFactory InterfaceNodeFactory = workflowFactory.nodeFactory
 	for _, nodeDescription := range currWorkflowDescription.Nodes {
-		var node nodes.InterfaceNode = nodeFactory.constructNode(nodeDescription.Name)
+		var node nodes.InterfaceNode = nodeFactory.ConstructNode(nodeDescription.Name)
 		workflowNodes = append(workflowNodes, node)
 	}
 
