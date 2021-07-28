@@ -1,14 +1,14 @@
 package root
 
 import (
-	"github.com/microsoft/BladeMonRT/nodes"
+	nodes "github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT"
 	"testing"
 	gomock "github.com/golang/mock/gomock"
 	"log"
 	"io/ioutil"
-	"fmt"
+	"gotest.tools/assert"
 )
 
 func TestWorkflowFactory(t *testing.T) {
@@ -27,12 +27,11 @@ func TestWorkflowFactory(t *testing.T) {
 	mockNodeB.EXPECT().Process(gomock.Any(), gomock.Any()).AnyTimes()
 	mockNodeC.EXPECT().Process(gomock.Any(), gomock.Any()).AnyTimes()
 
-	mockNodeA.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("mock-node-a-result").AnyTimes()
-	mockNodeB.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("mock-node-b-result").AnyTimes()
-	mockNodeC.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("mock-node-c-result").AnyTimes()
+	mockNodeA.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-a-result").AnyTimes()
+	mockNodeB.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-b-result").AnyTimes()
+	mockNodeC.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-c-result").AnyTimes()
 
 	mockNodeFactory := root.NewMockInterfaceNodeFactory(ctrl)
-
 	workflowsJson, err := ioutil.ReadFile(workflow_file)
 	if err != nil {
 		log.Fatal(err)
@@ -42,17 +41,17 @@ func TestWorkflowFactory(t *testing.T) {
 	mockNodeFactory.EXPECT().ConstructNode("DummyNodeA").Return(mockNodeA)
 	mockNodeFactory.EXPECT().ConstructNode("DummyNodeB").Return(mockNodeB)
 	mockNodeFactory.EXPECT().ConstructNode("DummyNodeC").Return(mockNodeC)
-	
 
 	var workflow workflows.InterfaceWorkflow = workflowFactory.ConstructWorkflow("dummy_workflow")
 	workflow.Run(workflow)
 	
+	// Check the results of nodes in the workflow.
 	var workflowContext *nodes.WorkflowContext = workflow.GetWorkflowContext()
-	fmt.Println("hello")
-	fmt.Println(workflow.GetNodes())
-	for index, node := range workflow.GetNodes() {
-		fmt.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult(node, workflowContext).(string)))
-	}
+	var workflowNodes []nodes.InterfaceNode = workflow.GetNodes()
+	assert.Equal(t, workflowNodes[0].GetResult(workflowNodes[0], workflowContext), "node-a-result");
+	assert.Equal(t, workflowNodes[1].GetResult(workflowNodes[1], workflowContext), "node-a-result");
+	assert.Equal(t, workflowNodes[2].GetResult(workflowNodes[2], workflowContext), "node-b-result");
+	assert.Equal(t, workflowNodes[3].GetResult(workflowNodes[3], workflowContext), "node-c-result");
 }
 
 
