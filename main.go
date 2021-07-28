@@ -17,16 +17,22 @@ type Main struct {
 func main() {
 	var mainObj Main = NewMain()
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4d59bde (Cleanup mock files)
 	var workflow workflows.InterfaceWorkflow = mainObj.WorkflowFactory.constructWorkflow("dummy_workflow")
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	workflow.Run(workflow, workflowContext)
 	
+<<<<<<< HEAD
 =======
 	var workflow workflows.InterfaceWorkflow = mainObj.WorkflowFactory.ConstructWorkflow("dummy_workflow")
 	workflow.Run(workflow)
 
 	var workflowContext *nodes.WorkflowContext = workflow.GetWorkflowContext()
 >>>>>>> fbc1e3d (Add test for workflow manager.)
+=======
+>>>>>>> 4d59bde (Cleanup mock files)
 	for index, node := range workflow.GetNodes() {
 		mainObj.Logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult(node, workflowContext).(string)))
 	}
@@ -42,7 +48,7 @@ func NewMain() Main {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var WorkflowFactory WorkflowFactory = NewWorkflowFactory(workflowsJson, NodeFactory{})
+	var WorkflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 
 	file, err := os.OpenFile(logging_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
     if err != nil {

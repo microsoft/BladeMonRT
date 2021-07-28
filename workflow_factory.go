@@ -25,14 +25,14 @@ type NodeDescription struct {
 	Args interface{} `json:"args"`
 }
 
-func NewWorkflowFactory(workflowsJson []byte, nodeFactory InterfaceNodeFactory) WorkflowFactory {
+func newWorkflowFactory(workflowsJson []byte, nodeFactory InterfaceNodeFactory) WorkflowFactory {
 	var workflows map[string]map[string]WorkflowDescription
 	json.Unmarshal([]byte(workflowsJson), &workflows)
 
 	return WorkflowFactory{nameToWorkflow : workflows["workflows"], nodeFactory : nodeFactory}
 }
 
-func (workflowFactory *WorkflowFactory) ConstructWorkflow(workflowName string) workflows.InterfaceWorkflow {
+func (workflowFactory *WorkflowFactory) constructWorkflow(workflowName string) workflows.InterfaceWorkflow {
 	var currWorkflowDescription WorkflowDescription
 	currWorkflowDescription = workflowFactory.nameToWorkflow[workflowName]
 
@@ -40,7 +40,7 @@ func (workflowFactory *WorkflowFactory) ConstructWorkflow(workflowName string) w
 	var workflowNodes []nodes.InterfaceNode
 	var nodeFactory InterfaceNodeFactory = workflowFactory.nodeFactory
 	for _, nodeDescription := range currWorkflowDescription.Nodes {
-		var node nodes.InterfaceNode = nodeFactory.ConstructNode(nodeDescription.Name)
+		var node nodes.InterfaceNode = nodeFactory.constructNode(nodeDescription.Name)
 		workflowNodes = append(workflowNodes, node)
 	}
 

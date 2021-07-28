@@ -6,13 +6,13 @@ import (
 
 /** Interface used to convert node names to node instances. */
 type InterfaceNodeFactory interface {
-	ConstructNode(typeName string) nodes.InterfaceNode
+	constructNode(typeName string) nodes.InterfaceNode
 }
 
 /** Concrete utility class used to convert node names to node instances. */
 type NodeFactory struct {}
 
-func (nodeFactory NodeFactory) ConstructNode(typeName string) nodes.InterfaceNode {
+func (nodeFactory NodeFactory) constructNode(typeName string) nodes.InterfaceNode {
 	switch typeName {
 		case "DummyNode":
 			return nodes.NewDummyNode()
