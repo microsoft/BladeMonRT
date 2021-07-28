@@ -52,7 +52,3 @@ func TestWorkflowFactory(t *testing.T) {
 	assert.Equal(t, workflowNodes[2].GetResult(workflowNodes[2], workflowContext), "node-b-result");
 	assert.Equal(t, workflowNodes[3].GetResult(workflowNodes[3], workflowContext), "node-c-result");
 }
-
-
-
-

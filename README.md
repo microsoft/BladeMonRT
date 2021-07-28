@@ -33,6 +33,5 @@ Use of Microsoft trademarks or logos in modified versions of this project must n
 Any use of third-party trademarks or logos are subject to those third-party's policies.
 
 ## Run and Test
-
-To run the main use: go run 
+To run the main use: go run .
 To run all tests use: go test ./...
