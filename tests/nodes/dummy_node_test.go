@@ -7,11 +7,13 @@ import (
 )
 
 func TestDummyNode(t *testing.T) {
-	var dummyNode nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{Name : "dummyNode"}}
+	var dummyNode nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{}}
+	var workflowNodes []nodes.InterfaceNode
+	workflowNodes = append(workflowNodes, &dummyNode)
 
-	var predecessorNodeResults []interface{}
-	dummyNode.ProcessVirt(predecessorNodeResults)
-	result := dummyNode.GetResult()
+	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
+	dummyNode.Process(&dummyNode, workflowContext)
+	result := dummyNode.GetResult(&dummyNode, workflowContext)
 
 	assert.Equal(t, result, "dummy-node-result");
 }

@@ -9,17 +9,21 @@ type DummyNode struct {
 	Node
 }
 
-func (dummyNode *DummyNode) ProcessVirt(predecessorNodeResults []interface{}) {
+func NewDummyNode() *DummyNode {
+	return &DummyNode{}
+}
+
+func (dummyNode *DummyNode) processVirt(workflowContext *WorkflowContext) {
   fmt.Println("Running ProcessVirt method.")
   var result string
 
   // Add the predecessor results.
-  for _, predecessorResult := range predecessorNodeResults {
-	  result += predecessorResult.(string) + "|"
+  for _, predecessorNodeResult := range dummyNode.getPredecessorNodesResults(dummyNode, workflowContext) {
+	  result += predecessorNodeResult.(string) + "|"
   }
 
   // Add the result at the current node.
   result += "dummy-node-result"
 
-  dummyNode.SaveResult(result)
+  dummyNode.saveResult(dummyNode, workflowContext, result)
 }
