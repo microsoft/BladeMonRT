@@ -17,10 +17,10 @@ func TestWorkflow(t *testing.T) {
 	workflow.AddNode(dummyNodeB)
 	workflow.AddNode(dummyNodeC)
 
-	workflow.Run(workflow)
+	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
+	workflow.Run(workflow, workflowContext)
 
 	// Check that the result at each node includes the predecessor results and the expected hard-coded value.
-	var workflowContext *nodes.WorkflowContext = workflow.GetWorkflowContext()
 	resultA := dummyNodeA.GetResult(dummyNodeA, workflowContext)
 	assert.Equal(t, resultA, "dummy-node-result");
 	resultB := dummyNodeB.GetResult(dummyNodeB, workflowContext)
