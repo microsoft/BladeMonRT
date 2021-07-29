@@ -1,4 +1,4 @@
-package node_tests
+package dummy_node_a
 
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestDummyNode(t *testing.T) {
-	var dummyNode nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{}}
+	var dummyNode nodes.DummyNode = nodes.DummyNode{Node: nodes.Node{}, result: "dummy-node-result"}
 	var workflowNodes []nodes.InterfaceNode
 	workflowNodes = append(workflowNodes, &dummyNode)
 

@@ -1,7 +1,10 @@
-package root
+package main
 
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
+	"github.com/microsoft/BladeMonRT/nodes/dummy_node_a"
+	"github.com/microsoft/BladeMonRT/nodes/dummy_node_b"
+	"github.com/microsoft/BladeMonRT/nodes/dummy_node_c"
 )
 
 /** Interface used to convert node names to node instances. */
@@ -15,11 +18,11 @@ type NodeFactory struct {}
 func (nodeFactory NodeFactory) constructNode(typeName string) nodes.InterfaceNode {
 	switch typeName {
 		case "DummyNode":
-			return nodes.NewDummyNode()
+			return dummy_node_a.NewDummyNode()
 		case "DummyNodeB":
-			return nodes.NewDummyNodeB()
+			return dummy_node_b.NewDummyNodeB()
 		case "DummyNodeC":
-			return nodes.NewDummyNodeC()
+			return dummy_node_c.NewDummyNodeC()
 		default:
 			panic("Node for given name not found.")
 	} 

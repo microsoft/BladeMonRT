@@ -40,3 +40,6 @@ go run .
 To run all tests use:
 cd BladeMonRT
 go test ./...
+
+To run a mock use:
+mockgen -source="./nodes/nodes.go" -destination="./nodes/mock_nodes.go" -package="nodes"

@@ -1,4 +1,4 @@
-package root
+package main
 
 import (
 	nodes "github.com/microsoft/BladeMonRT/nodes"
