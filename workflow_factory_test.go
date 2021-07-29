@@ -12,7 +12,7 @@ import (
 
 func TestWorkflowFactory(t *testing.T) {
 	const (
-		workflow_file = "test_workflows.json"
+		workflow_file = "test_configs/test_workflows.json"
 	)
 
 	ctrl := gomock.NewController(t)

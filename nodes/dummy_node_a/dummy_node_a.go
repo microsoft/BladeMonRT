@@ -6,16 +6,18 @@ import (
 )
 
 /** Node that has the concatenation of its predecessors' results and a hard-coded value for its result. */
-type DummyNode struct {
+type DummyNodeA struct {
 	nodes.Node
   result string
 }
 
-func NewDummyNode() *DummyNode {
-	return &DummyNode{}
+func NewDummyNodeA() *DummyNodeA {
+  var dummyNode DummyNodeA = DummyNodeA{}
+	dummyNode.result = "dummy-node-result"
+	return &dummyNode
 }
 
-func (dummyNode *DummyNode) ProcessVirt(workflowContext *nodes.WorkflowContext) {
+func (dummyNode *DummyNodeA) ProcessVirt(workflowContext *nodes.WorkflowContext) {
   fmt.Println("Running ProcessVirt method.")
   var result string
 

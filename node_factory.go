@@ -17,8 +17,8 @@ type NodeFactory struct {}
 
 func (nodeFactory NodeFactory) constructNode(typeName string) nodes.InterfaceNode {
 	switch typeName {
-		case "DummyNode":
-			return dummy_node_a.NewDummyNode()
+		case "DummyNodeA":
+			return dummy_node_a.NewDummyNodeA()
 		case "DummyNodeB":
 			return dummy_node_b.NewDummyNodeB()
 		case "DummyNodeC":

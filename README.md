@@ -41,5 +41,6 @@ To run all tests use:
 cd BladeMonRT
 go test ./...
 
-To run a mock use:
-mockgen -source="./nodes/nodes.go" -destination="./nodes/mock_nodes.go" -package="nodes"
+To create a mock use:
+the mockgen command described here https://github.com/golang/mock
+    Example: mockgen -source="./nodes/node.go" -destination="./nodes/mock_node.go" -package="nodes"
