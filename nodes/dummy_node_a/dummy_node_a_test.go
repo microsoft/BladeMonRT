@@ -6,7 +6,7 @@ import (
 	"gotest.tools/assert"
 )
 
-func TestDummyNode(t *testing.T) {
+func TestDummyNodeA(t *testing.T) {
 	var dummyNode DummyNodeA = DummyNodeA{Node: nodes.Node{}, result: "dummy-node-result"}
 	var workflowNodes []nodes.InterfaceNode
 	workflowNodes = append(workflowNodes, &dummyNode)

@@ -22,13 +22,15 @@ func TestWorkflowFactory(t *testing.T) {
 	mockNodeB := nodes.NewMockInterfaceNode(ctrl)
 	mockNodeC := nodes.NewMockInterfaceNode(ctrl)
 
-	mockNodeA.EXPECT().Process(gomock.Any(), gomock.Any()).AnyTimes()
-	mockNodeB.EXPECT().Process(gomock.Any(), gomock.Any()).AnyTimes()
-	mockNodeC.EXPECT().Process(gomock.Any(), gomock.Any()).AnyTimes()
+	mockNodeA.EXPECT().Process(gomock.Any(), gomock.Any())
+	mockNodeA.EXPECT().Process(gomock.Any(), gomock.Any())
+	mockNodeB.EXPECT().Process(gomock.Any(), gomock.Any())
+	mockNodeC.EXPECT().Process(gomock.Any(), gomock.Any())
 
-	mockNodeA.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-a-result").AnyTimes()
-	mockNodeB.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-b-result").AnyTimes()
-	mockNodeC.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-c-result").AnyTimes()
+	mockNodeA.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-a-result")
+	mockNodeA.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-a-result")
+	mockNodeB.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-b-result")
+	mockNodeC.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-c-result")
 
 	mockNodeFactory := NewMockInterfaceNodeFactory(ctrl)
 	workflowsJson, err := ioutil.ReadFile(workflow_file)

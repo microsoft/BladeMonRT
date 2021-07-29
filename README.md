@@ -43,4 +43,6 @@ go test ./...
 
 To create a mock use:
 the mockgen command described here https://github.com/golang/mock
-    Example: mockgen -source="./nodes/node.go" -destination="./nodes/mock_node.go" -package="nodes"
+    Example: 
+    cd BladeMonRT
+    mockgen -source="./nodes/node.go" -destination="./nodes/mock_node.go" -package="nodes"
