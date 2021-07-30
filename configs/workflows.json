@@ -3,8 +3,8 @@
         "dummy_workflow": {
             "type":"simple",
             "nodes":[
-                {"name":"DummyNode"},
-                {"name":"DummyNode"},
+                {"name":"DummyNodeA"},
+                {"name":"DummyNodeA"},
                 {"name":"DummyNodeB"},
                 {"name":"DummyNodeC"}
             ]

@@ -1,18 +1,18 @@
-package workflow_tests
+package workflows
 
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
-	"github.com/microsoft/BladeMonRT/workflows"
+	"github.com/microsoft/BladeMonRT/nodes/dummy_node_a"
 	"testing"
 	"gotest.tools/assert"
 )
 
 func TestWorkflow(t *testing.T) {
-	var dummyNodeA nodes.InterfaceNode = nodes.NewDummyNode()
-	var dummyNodeB nodes.InterfaceNode = nodes.NewDummyNode()
-	var dummyNodeC nodes.InterfaceNode = nodes.NewDummyNode()
+	var dummyNodeA nodes.InterfaceNode = dummy_node_a.NewDummyNodeA()
+	var dummyNodeB nodes.InterfaceNode = dummy_node_a.NewDummyNodeA()
+	var dummyNodeC nodes.InterfaceNode = dummy_node_a.NewDummyNodeA()
 
-	var workflow *workflows.SimpleWorkflow = workflows.NewSimpleWorkflow()
+	var workflow *SimpleWorkflow = NewSimpleWorkflow()
 	workflow.AddNode(dummyNodeA)
 	workflow.AddNode(dummyNodeB)
 	workflow.AddNode(dummyNodeC)

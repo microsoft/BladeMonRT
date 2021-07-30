@@ -35,7 +35,7 @@ func NewMain() Main {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var WorkflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson)
+	var WorkflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 
 	file, err := os.OpenFile(logging_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
     if err != nil {

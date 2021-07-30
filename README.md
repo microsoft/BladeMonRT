@@ -31,3 +31,18 @@ trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
+
+## Run and Test
+To run the main use:
+cd BladeMonRT
+go run .
+
+To run all tests use:
+cd BladeMonRT
+go test ./...
+
+To create a mock use:
+the mockgen command described here https://github.com/golang/mock
+    Example: 
+    cd BladeMonRT
+    mockgen -source="./nodes/node.go" -destination="./nodes/mock_node.go" -package="nodes"
