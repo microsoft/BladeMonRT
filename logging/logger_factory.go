@@ -3,8 +3,7 @@ package logging
 import (
 	"log"
 	"os"
-
-	configs "github.com/microsoft/BladeMonRT/configs"
+	"github.com/microsoft/BladeMonRT/configs"
 )
 
 /** Utility class used to create a logger. */
