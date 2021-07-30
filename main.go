@@ -17,7 +17,6 @@ type Main struct {
 func main() {
 	var mainObj Main = NewMain()
 
-	mainObj.logger.Println("Creating dummy workflow.")
 	var workflow workflows.InterfaceWorkflow = mainObj.workflowFactory.constructWorkflow("dummy_workflow")
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	workflow.Run(workflow, workflowContext)
