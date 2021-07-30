@@ -41,8 +41,7 @@ type Node struct {
 
 func (node *Node) Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext) {
 	// TODO: Add logging.
-	//log.Fatal("Running PROCESS method.")
-	//interfaceNode.ProcessVirt(workflowContext)
+	interfaceNode.ProcessVirt(workflowContext)
 }
 
 func (node *Node) SaveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{}) {
