@@ -2,46 +2,38 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
-	"os"
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/nodes"
+	"log"
+	"github.com/microsoft/BladeMonRT/logging"
 	"fmt"
 )
 
 type Main struct {
-    WorkflowFactory *WorkflowFactory
-	Logger *log.Logger
+    workflowFactory *WorkflowFactory
+	logger *log.Logger
 }
 
 func main() {
 	var mainObj Main = NewMain()
-	var workflow workflows.InterfaceWorkflow = mainObj.WorkflowFactory.constructWorkflow("dummy_workflow")
+
+	mainObj.logger.Println("Creating dummy workflow.")
+	var workflow workflows.InterfaceWorkflow = mainObj.workflowFactory.constructWorkflow("dummy_workflow")
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	workflow.Run(workflow, workflowContext)
 	
 	for index, node := range workflow.GetNodes() {
-		mainObj.Logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult(node, workflowContext).(string)))
+		mainObj.logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult(node, workflowContext).(string)))
 	}
 }	
 
 func NewMain() Main {
-	const (
-		workflow_file = "configs/workflows.json"
-		logging_file = "log"
-	)
-
 	workflowsJson, err := ioutil.ReadFile(workflow_file)
 	if err != nil {
 		log.Fatal(err)
 	}
-	var WorkflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
-
-	file, err := os.OpenFile(logging_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-    if err != nil {
-        log.Fatal(err)
-    }
-    var logger *log.Logger = log.New(file, "Info: ", log.Ldate|log.Ltime|log.Lshortfile)
+	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
+    var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 	
-	return Main{WorkflowFactory : &WorkflowFactory, Logger : logger}
+	return Main{workflowFactory : &workflowFactory, logger : logger}
 }

@@ -2,6 +2,8 @@ package dummy_node_b
 
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
+	"github.com/microsoft/BladeMonRT/logging"
+	"log"
 )
 
 /** Interface for a node that has a hard-coded value for its result. */
@@ -15,15 +17,15 @@ type InterfaceDummyNodeB interface {
 	result() string
 }
 
-
 /** Node that has a hard-coded value for its result. */
 type DummyNodeB struct {
 	nodes.Node
 }
 
 func NewDummyNodeB() *DummyNodeB {
-	// No fields to initialize.
-	return &DummyNodeB{}
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeB")
+	var dummyNode DummyNodeB = DummyNodeB{Node : nodes.Node{Logger : logger}}
+	return &dummyNode
 }
 
 func (dummyNode *DummyNodeB) result() string {
@@ -31,5 +33,6 @@ func (dummyNode *DummyNodeB) result() string {
 }
 
 func (dummyNode *DummyNodeB) ProcessVirt(workflowContext *nodes.WorkflowContext) {
+	dummyNode.Logger.Println("Running ProcessVirt method.")
 	dummyNode.SaveResult(dummyNode, workflowContext, dummyNode.result())
 }

@@ -22,7 +22,7 @@ func (nodeFactory NodeFactory) constructNode(typeName string) nodes.InterfaceNod
 		case "DummyNodeB":
 			return dummy_node_b.NewDummyNodeB()
 		case "DummyNodeC":
-			return dummy_node_c.NewDummyNodeC()
+			return dummy_node_c.NewDummyNodeC(dummy_node_c.ResultProvider{})
 		default:
 			panic("Node for given name not found.")
 	} 

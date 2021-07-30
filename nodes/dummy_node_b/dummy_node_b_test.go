@@ -7,8 +7,9 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-func TestMockFunctionsInDummyNodeBExample (t *testing.T) {
-	// This test gives an example where we mock the result method which is in the DummyNodeB class but not in the InterfaceNode class. 
+func TestMockFunctionsInDummyNodeBExample(t *testing.T) {
+	// This test gives an example where we mock DummyNodeB. We need to specify the return value of the result method which is in 
+	// the DummyNodeB class but not in the InterfaceNode class. 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

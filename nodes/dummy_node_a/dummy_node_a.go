@@ -2,7 +2,8 @@ package dummy_node_a
 
 import (
   "github.com/microsoft/BladeMonRT/nodes"
-	"fmt"
+  "github.com/microsoft/BladeMonRT/logging"
+  "log"
 )
 
 /** Node that has the concatenation of its predecessors' results and a hard-coded value for its result. */
@@ -12,13 +13,14 @@ type DummyNodeA struct {
 }
 
 func NewDummyNodeA() *DummyNodeA {
-  var dummyNode DummyNodeA = DummyNodeA{}
-	dummyNode.result = "dummy-node-result"
+  var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeA")
+  var dummyNode DummyNodeA = DummyNodeA{Node : nodes.Node{Logger : logger}}
+  dummyNode.result = "dummy-node-result"
 	return &dummyNode
 }
 
 func (dummyNode *DummyNodeA) ProcessVirt(workflowContext *nodes.WorkflowContext) {
-  fmt.Println("Running ProcessVirt method.")
+  dummyNode.Logger.Println("Running ProcessVirt method.")
   var result string
 
   // Add the predecessor results.

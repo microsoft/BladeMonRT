@@ -15,8 +15,8 @@ func (dummyNode TestResultProvider) result() string {
 }
 
 func TestPatchFunctionsInDummyNodeCExample(t *testing.T) {
-	// This test provides an example where we patch the result function using the ResultProvider interface but the production implementation of Process
-	// and GetResult are used.
+	// This test provides an example where we patch the result function using the ResultProvider interface. The production implementation of other
+	// DummyNodeB methods like Process and GetResult are used.
 	var dummyNode *DummyNodeC = NewDummyNodeC(TestResultProvider{})
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	dummyNode.Process(dummyNode, workflowContext)
