@@ -11,12 +11,25 @@ type DummyNodeC struct {
 	result string
 }
 
-func NewDummyNodeC() *DummyNodeC {
+func NewDummyNodeC(resultProvider InterfaceResultProvider) *DummyNodeC {
 	var dummyNode DummyNodeC = DummyNodeC{}
-	dummyNode.result = "dummy-result-c"
+	dummyNode.result = resultProvider.result()
 	return &dummyNode
 }
 
 func (dummyNode *DummyNodeC) ProcessVirt(workflowContext *nodes.WorkflowContext) {
   dummyNode.SaveResult(dummyNode, workflowContext, dummyNode.result)
+}
+
+/** Interface that provides the result for the dummy node. */
+type InterfaceResultProvider interface {
+	result() string
+}
+
+/** Class that provides the result for the dummy node in production. */
+type ResultProvider struct {
+}
+
+func (dummyNode *ResultProvider) result() string {
+	return "dummy-result-c"
 }
