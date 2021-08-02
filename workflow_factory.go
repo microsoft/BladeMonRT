@@ -48,7 +48,7 @@ func (workflowFactory *WorkflowFactory) constructWorkflow(workflowName string) w
 	switch currWorkflowDescription.Type {	
 		case "simple":
 			var workflow workflows.InterfaceWorkflow
-			workflow = &workflows.SimpleWorkflow{}
+			workflow = workflows.NewSimpleWorkflow()
 			for _, node := range workflowNodes {
 				workflow.AddNode(node)
 			}

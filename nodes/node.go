@@ -1,7 +1,7 @@
 package nodes
 
 import (
-	"fmt"
+	"log"
 )
 
 /** Class that stores information about the current state of a running workflow. */
@@ -36,7 +36,7 @@ type InterfaceNode interface {
  
 /** Concrete type for defining unit of work to be processed by event loop. */
 type Node struct {
-	dummyVariable interface{} // This variable makes the Node struct non-empty, to prevent GO's behavior in the allocation of zero-sized objects. 
+	Logger *log.Logger
 }
 
 func (node *Node) Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext) {
@@ -45,12 +45,12 @@ func (node *Node) Process(interfaceNode InterfaceNode, workflowContext *Workflow
 }
 
 func (node *Node) SaveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{}) {
-	fmt.Println("Running SaveResult method.")
+	node.Logger.Println("Running SaveResult method.")
 	workflowContext.nodeToResult[interfaceNode] = result
 }
 
 func (node *Node) GetResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext) interface{} {
-	fmt.Println("Running GetResult method.")
+	node.Logger.Println("Running GetResult method.")
 	return workflowContext.nodeToResult[interfaceNode]
 }
 

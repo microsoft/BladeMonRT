@@ -2,6 +2,7 @@ package workflows
 
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
+	"log"
 )
 
 /** Interface for defining execution sequence of nodes. */
@@ -15,10 +16,11 @@ type InterfaceWorkflow interface {
 /** Concrete type for defining execution sequence of nodes. */
 type Workflow struct {
 	workflowContext *nodes.WorkflowContext
+	Logger *log.Logger
 }
 
 func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowContext *nodes.WorkflowContext) {
-	// TODO: add logging
+	workflow.Logger.Println("Running run method.")
 
 	// Set the nodes in the workflow context to the nodes in this workflow.
 	workflowContext.SetNodes(interfaceWorkflow.GetNodes())

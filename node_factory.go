@@ -13,7 +13,7 @@ type InterfaceNodeFactory interface {
 }
 
 /** Concrete utility class used to convert node names to node instances. */
-type NodeFactory struct {}
+type NodeFactory struct{}
 
 func (nodeFactory NodeFactory) constructNode(typeName string) nodes.InterfaceNode {
 	switch typeName {
@@ -25,7 +25,6 @@ func (nodeFactory NodeFactory) constructNode(typeName string) nodes.InterfaceNod
 			return dummy_node_c.NewDummyNodeC()
 		default:
 			panic("Node for given name not found.")
-	} 
+	}
 	return nil
 }
-
