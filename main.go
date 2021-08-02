@@ -34,6 +34,13 @@ func NewMain() Main {
 		log.Fatal(err)
 	}
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
+
+	schedulesJson, err := ioutil.ReadFile(configs.Schedule_file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var workflowScheduler WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
+	fmt.Println(workflowScheduler)
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 
 	return Main{workflowFactory: &workflowFactory, logger: logger}
