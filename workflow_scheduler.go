@@ -61,7 +61,7 @@ func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory)
 
 func parseEventSubscribeQueries(eventQueries [][]string) []WinEventSubscribeQuery {
 	var parsedEventQueries []WinEventSubscribeQuery
-	// Parse event queries into the 'WinEventSubscribeQuery' type.
+	// Parse each of the event queries into the 'WinEventSubscribeQuery' type.
 	for _, eventQuery := range eventQueries {
 		var parsedEventQuery = eventQuery
 		var channel string = parsedEventQuery[0]
