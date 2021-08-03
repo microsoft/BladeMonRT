@@ -7,16 +7,10 @@ import (
 	"log"
 )
 
-/** Class for parsing schedule definitions. */
+/** Class for scheduling workflows. */
 type WorkflowScheduler struct {
 	schedules []interface{}
 	logger *log.Logger
-}
-
-/** Class for a schedule with type "on_win_event". */
-type OnWinEventSchedule struct {
-	Workflow workflows.Workflow
-	WinEventSubscribeQueries [][]string `json:"win_event_subscribe_queries"`
 }
 
 /** Class for the schedule description in the JSON. */

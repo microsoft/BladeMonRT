@@ -40,8 +40,8 @@ func NewMain() Main {
 		log.Fatal(err)
 	}
 	var workflowScheduler WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
-	fmt.Println(workflowScheduler)
-	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
+	fmt.Println(workflowScheduler) // TODO: Remove print statement.
 
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 	return Main{workflowFactory: &workflowFactory, logger: logger}
 }

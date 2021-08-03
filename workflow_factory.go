@@ -33,7 +33,6 @@ func newWorkflowFactory(workflowsJson []byte, nodeFactory InterfaceNodeFactory) 
 	json.Unmarshal([]byte(workflowsJson), &workflows)
 
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowFactory")
-
 	return WorkflowFactory{nameToWorkflow : workflows["workflows"], nodeFactory : nodeFactory, logger : logger}
 }
 
