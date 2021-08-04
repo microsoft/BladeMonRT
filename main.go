@@ -29,12 +29,19 @@ func main() {
 }
 
 func NewMain() Main {
-	workflowsJson, err := ioutil.ReadFile(configs.Workflow_file)
+	workflowsJson, err := ioutil.ReadFile(configs.WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
-	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 
+	schedulesJson, err := ioutil.ReadFile(configs.SCHEDULE_FILE)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var workflowScheduler WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
+	fmt.Println(workflowScheduler) // TODO: Remove print statement.
+
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 	return Main{workflowFactory: &workflowFactory, logger: logger}
 }

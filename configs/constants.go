@@ -1,6 +1,7 @@
 package configs
 
 const (
-	Workflow_file = "configs/workflows.json"
-	Logging_file  = "log"
+	WORKFLOW_FILE = "configs/workflows.json"
+	SCHEDULE_FILE = "configs/schedule.json"
+	LOGGING_FILE  = "log"
 )

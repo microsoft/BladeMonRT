@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/workflows"
+	"github.com/microsoft/BladeMonRT/logging"
+	"log"
 )
 
 /** Class for parsing workflow definitions. */
 type WorkflowFactory struct {
 	nameToWorkflow map[string]WorkflowDescription
 	nodeFactory InterfaceNodeFactory
+	logger *log.Logger
 }
 
 /** Class for the workflow description in the JSON. */
@@ -29,10 +32,13 @@ func newWorkflowFactory(workflowsJson []byte, nodeFactory InterfaceNodeFactory) 
 	var workflows map[string]map[string]WorkflowDescription
 	json.Unmarshal([]byte(workflowsJson), &workflows)
 
-	return WorkflowFactory{nameToWorkflow : workflows["workflows"], nodeFactory : nodeFactory}
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowFactory")
+	return WorkflowFactory{nameToWorkflow : workflows["workflows"], nodeFactory : nodeFactory, logger : logger}
 }
 
 func (workflowFactory *WorkflowFactory) constructWorkflow(workflowName string) workflows.InterfaceWorkflow {
+	workflowFactory.logger.Println("Constructing workflow.")
+
 	var currWorkflowDescription WorkflowDescription
 	currWorkflowDescription = workflowFactory.nameToWorkflow[workflowName]
 
