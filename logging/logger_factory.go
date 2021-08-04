@@ -10,7 +10,7 @@ import (
 type LoggerFactory struct{}
 
 func (loggerFactory LoggerFactory) ConstructLogger(typeName string) *log.Logger {
-	file, err := os.OpenFile(configs.Logging_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile(configs.LOGGING_FILE, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}

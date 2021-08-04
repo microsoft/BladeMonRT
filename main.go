@@ -29,13 +29,13 @@ func main() {
 }
 
 func NewMain() Main {
-	workflowsJson, err := ioutil.ReadFile(configs.Workflow_file)
+	workflowsJson, err := ioutil.ReadFile(configs.WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 
-	schedulesJson, err := ioutil.ReadFile(configs.Schedule_file)
+	schedulesJson, err := ioutil.ReadFile(configs.SCHEDULE_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}

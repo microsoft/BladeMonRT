@@ -53,7 +53,7 @@ func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory)
 				var eventQueries []WinEventSubscribeQuery = parseEventSubscribeQueries(schedule.WinEventSubscribeQueries)			
 				workflowScheduler.addWinEventBasedSchedule(workflow, eventQueries) 
 			default:
-				panic("Given schedule type not supported")
+				panic("Given schedule type not supported.")
 		}
 	}
 	return WorkflowScheduler{}
