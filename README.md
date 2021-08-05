@@ -47,5 +47,5 @@ the mockgen command described here https://github.com/golang/mock
     cd BladeMonRT
     mockgen -source="./nodes/node.go" -destination="./nodes/mock_node.go" -package="nodes"
 
-Code adapted to write windows_events/event_subscription.go:
+Code adapted to write windows_events/subscriber.go:
 "github.com/LiamHaworth/windows-events"
