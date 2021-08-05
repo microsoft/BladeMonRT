@@ -22,7 +22,6 @@ func main() {
 	mainObj.logger.Println("Initialized main.")
 
 	// Setup main such that main does not exit unless there is a keyboard interrupt.
-	go forever()
 	quitChannel := make(chan os.Signal, 1)
     signal.Notify(quitChannel, syscall.SIGINT, syscall.SIGTERM) 
 	<-quitChannel
@@ -44,10 +43,4 @@ func NewMain() Main {
 
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 	return Main{workflowFactory: &workflowFactory, logger: logger}
-}
-
-func forever() {
-    for {
-        time.Sleep(time.Second)
-    }
 }

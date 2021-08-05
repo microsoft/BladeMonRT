@@ -1,6 +1,5 @@
 package windows_events
 
-import "C"
 import (
 	"github.com/microsoft/BladeMonRT/workflows"
 	"golang.org/x/sys/windows"
