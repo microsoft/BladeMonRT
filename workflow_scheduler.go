@@ -6,6 +6,7 @@ import (
 	"github.com/microsoft/BladeMonRT/logging"
 	"log"
 	winEvents "github.com/microsoft/BladeMonRT/windows_events"
+	"golang.org/x/sys/windows"
 )
 
 /** Class for scheduling workflows. */
@@ -13,6 +14,13 @@ type WorkflowScheduler struct {
 	schedules []interface{}
 	logger *log.Logger
 	subscriber winEvents.EventSubscriber
+	eventSubscriptionHandles []windows.Handle
+}
+
+/** Class that represents a query for subscribing to a windows event. */
+type WinEventSubscribeQuery struct {
+	channel string
+	query string
 }
 
 /** Class for the schedule description in the JSON. */
@@ -24,12 +32,6 @@ type ScheduleDescription struct {
 
 	// Attributes specific to events of type 'on_win_event'.
 	WinEventSubscribeQueries [][]string `json:"win_event_subscribe_queries"`
-}
-
-/** Class that represents a query for subscribing to a windows event. */
-type WinEventSubscribeQuery struct {
-	channel string
-	query string
 }
 
 func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery) {
@@ -44,8 +46,10 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 			Callback:        workflowScheduler.subscriber.SubscriptionCallback,
 			Context:         winEvents.CallbackContext{Workflow : workflow},
 		}
-		workflowScheduler.subscriber.CreateSubscription(eventSubscription)
+		var subscriptionEventHandle []windows.Handle = workflowScheduler.subscriber.CreateSubscription(eventSubscription)
+		workflowScheduler.eventSubscriptionHandles = append(workflowScheduler.eventSubscriptionHandles, subscriptionEventHandle...)
 	}
+	workflowScheduler.logger.Println("Workflow:", workflowScheduler.eventSubscriptionHandles)
 }
 
 func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) *WorkflowScheduler {

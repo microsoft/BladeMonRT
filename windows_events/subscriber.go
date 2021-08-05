@@ -52,19 +52,19 @@ func NewEventSubscriber() EventSubscriber {
 	return EventSubscriber{Logger : logger}
 }
 
-func (subscriber *EventSubscriber) CreateSubscription(evtSub *EventSubscription) {
+func (subscriber *EventSubscriber) CreateSubscription(evtSub *EventSubscription) []windows.Handle {
 	subscriber.Logger.Println("Creating subscription")
 
 	winChannel, err := windows.UTF16PtrFromString(evtSub.Channel)
 	if err != nil {
 		subscriber.Logger.Println("bad channel name: %s", err)
-		return
+		return []windows.Handle{}
 	}
 
 	winQuery, err := windows.UTF16PtrFromString(evtSub.Query)
 	if err != nil {
 		subscriber.Logger.Println("bad query string: %s", err)
-		return
+		return []windows.Handle{}
 	}
 
 	// Subscribe to the windows event using the subscription object.
@@ -81,11 +81,12 @@ func (subscriber *EventSubscriber) CreateSubscription(evtSub *EventSubscription)
 
 	if handle == 0 {
 		subscriber.Logger.Println("failed to subscribe to events: %s", err)
-		return
+		return []windows.Handle{}
 	}
 
 	// TO DO: Use windows.Handle(handle) to add the windows handle to a list of handles
 	// As is done in Python version.
+	return []windows.Handle{windows.Handle(handle)}
 }
 
 func runWorkflow(context CallbackContext) {
