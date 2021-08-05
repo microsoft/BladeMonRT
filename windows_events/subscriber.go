@@ -7,6 +7,8 @@ import (
 	"syscall"
 	"unsafe"
 	"log"
+	"github.com/microsoft/BladeMonRT/logging"
+	"github.com/microsoft/BladeMonRT/nodes"
 )
 
 const (
@@ -22,7 +24,6 @@ var (
 
 	procEvtSubscribe = modwevtapi.NewProc("EvtSubscribe")
 	procEvtRender    = modwevtapi.NewProc("EvtRender")
-	procEvtClose     = modwevtapi.NewProc("EvtClose")
 )
 
 /** Class that holds information used in the callback function. */
@@ -31,36 +32,40 @@ type CallbackContext struct {
 }
 
 /** Type for a callback that is run when an event subscribed to is triggered. */
-type EventCallback func(context CallbackContext)
+type SubscriptionCallback func(uintptr, uintptr, uintptr) uintptr
+
+/** Utility class used to create subscriptions to windows events. */
+type EventSubscriber struct {
+	Logger *log.Logger
+}
 
 
 /** Class that defines the parameters used to subscribe to a windows event. */
 type EventSubscription struct {
-	Logger *log.Logger
 	Channel         string
 	Query           string
 	SubscribeMethod int
-	Callback        EventCallback
+	Callback        SubscriptionCallback
 	Context			CallbackContext
-	winAPIHandle windows.Handle
 }
 
-func (evtSub *EventSubscription) CreateSubscription() {
-	evtSub.Logger.Println("Creating subscription")
-	if evtSub.winAPIHandle != 0 {
-		evtSub.Logger.Println("subscription already created in kernel")
-		return
-	}
+func NewEventSubscriber() EventSubscriber {
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("EventSubscriber")
+	return EventSubscriber{Logger : logger}
+}
+
+func (subscriber *EventSubscriber) CreateSubscription(evtSub *EventSubscription) {
+	subscriber.Logger.Println("Creating subscription")
 
 	winChannel, err := windows.UTF16PtrFromString(evtSub.Channel)
 	if err != nil {
-		evtSub.Logger.Println("bad channel name: %s", err)
+		subscriber.Logger.Println("bad channel name: %s", err)
 		return
 	}
 
 	winQuery, err := windows.UTF16PtrFromString(evtSub.Query)
 	if err != nil {
-		evtSub.Logger.Println("bad query string: %s", err)
+		subscriber.Logger.Println("bad query string: %s", err)
 		return
 	}
 
@@ -72,22 +77,30 @@ func (evtSub *EventSubscription) CreateSubscription() {
 		uintptr(unsafe.Pointer(winQuery)),
 		0,
 		uintptr(unsafe.Pointer(&evtSub.Context)),
-		syscall.NewCallback(evtSub.winAPICallback),
+		syscall.NewCallback(evtSub.Callback),
 		uintptr(evtSub.SubscribeMethod),
 	)
 
 	if handle == 0 {
-		evtSub.Logger.Println("failed to subscribe to events: %s", err)
+		subscriber.Logger.Println("failed to subscribe to events: %s", err)
 		return
 	}
 
-	evtSub.winAPIHandle = windows.Handle(handle)
+	// TO DO: Use windows.Handle(handle) to add the windows handle to a list of handles
+	// As is done in Python version.
 }
 
-func (evtSub *EventSubscription) winAPICallback(action, userContext, event uintptr) uintptr {
+
+func runWorkflow(context CallbackContext) {
+	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
+	var workflow workflows.InterfaceWorkflow = context.Workflow
+	workflow.Run(workflow, workflowContext)
+}
+
+func (subscriber *EventSubscriber) SubscriptionCallback(action, context, event uintptr) uintptr {
 	switch action {
 		case evtSubscribeActionError:
-			evtSub.Logger.Println("Win event subscription failed.")
+			subscriber.Logger.Println("Win event subscription failed.")
 			return 0
 
 		case evtSubscribeActionDeliver:
@@ -99,14 +112,15 @@ func (evtSub *EventSubscription) winAPICallback(action, userContext, event uintp
 			// TODO: use renderSpace to get the XML of the event and pass it to the callback
 
 			if returnCode == 0 {
-				evtSub.Logger.Println("failed to render event data: %s", err)
+				subscriber.Logger.Println("failed to render event data: %s", err)
 			} else {
-				var callbackContext CallbackContext = *(*CallbackContext)(unsafe.Pointer(userContext))
-				go evtSub.Callback(callbackContext)
+				var callbackContext CallbackContext = *(*CallbackContext)(unsafe.Pointer(context))
+				// Create a light-weight thread (goroutine) to run the workflow included in the callback context
+				go runWorkflow(callbackContext)
 			}
 
 		default:
-			evtSub.Logger.Println("encountered error during callback: unsupported action code %x", uint16(action))
-		}
+			subscriber.Logger.Println("encountered error during callback: unsupported action code %x", uint16(action))
+	}
 	return 0
 }

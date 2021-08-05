@@ -13,6 +13,7 @@ import (
 type WorkflowScheduler struct {
 	schedules []interface{}
 	logger *log.Logger
+	subscriber winEvents.EventSubscriber
 }
 
 /** Class for the schedule description in the JSON. */
@@ -47,23 +48,22 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 		workflowScheduler.logger.Println("Query:", eventQuery.query)
 		// TO DO: Subscribe to an event using the gowinlog library
 
-		var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("EventSubscription")
 		var eventSubscription *winEvents.EventSubscription = &winEvents.EventSubscription{
-			Logger : logger,
 			Channel:        eventQuery.channel,
 			Query:          eventQuery.query,
 			SubscribeMethod: winEvents.EvtSubscribeToFutureEvents,
-			Callback:        workflowCallback,
+			Callback:        workflowScheduler.subscriber.SubscriptionCallback,
 			Context:         winEvents.CallbackContext{Workflow : workflow},
 		}
 
-		eventSubscription.CreateSubscription()
+		workflowScheduler.subscriber.CreateSubscription(eventSubscription)
 	}
 }
 
 func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) WorkflowScheduler {
+	var subscriber winEvents.EventSubscriber = winEvents.NewEventSubscriber()
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{subscriber : subscriber, logger: logger}
 
 	// Parse the schedules JSON and add the schedules to the workflow scheduler.
 	var schedules map[string][]ScheduleDescription
