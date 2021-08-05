@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	EvtSubscribeToFutureEvents = 1
-	EvtSubscribeStartAtOldestRecord = 2
-	evtSubscribeActionError = 0
-	evtSubscribeActionDeliver = 1
-	evtRenderEventXML = 1
+	EVT_SUBSCRIBE_TO_FUTURE_EVENTS = 1
+	EVT_SUBSCRIBE_START_AT_OLDEST_RECORD = 2
+	EVT_SUBSCRIBE_ACTION_ERROR = 0
+	EVT_SUBSCRIBE_ACTION_DELIVER = 1
+	EVT_RENDER_EVENT_XML = 1
 )
 
 var (
@@ -97,16 +97,16 @@ func runWorkflow(context CallbackContext) {
 
 func (subscriber *EventSubscriber) SubscriptionCallback(action, context, event uintptr) uintptr {
 	switch action {
-		case evtSubscribeActionError:
+		case EVT_SUBSCRIBE_ACTION_ERROR:
 			subscriber.Logger.Println("Win event subscription failed.")
 			return 0
 
-		case evtSubscribeActionDeliver:
+		case EVT_SUBSCRIBE_ACTION_DELIVER:
 			renderSpace := make([]uint16, 4096)
 			bufferUsed := uint16(0)
 			propertyCount := uint16(0)
 
-			returnCode, _, err := procEvtRender.Call(0, event, evtRenderEventXML, 4096, uintptr(unsafe.Pointer(&renderSpace[0])), uintptr(unsafe.Pointer(&bufferUsed)), uintptr(unsafe.Pointer(&propertyCount)))
+			returnCode, _, err := procEvtRender.Call(0, event, EVT_RENDER_EVENT_XML, 4096, uintptr(unsafe.Pointer(&renderSpace[0])), uintptr(unsafe.Pointer(&bufferUsed)), uintptr(unsafe.Pointer(&propertyCount)))
 			// TODO: use renderSpace to get the XML of the event and pass it to the callback
 
 			if returnCode == 0 {

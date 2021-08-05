@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/logging"
-	"github.com/microsoft/BladeMonRT/nodes"
 	"log"
 	winEvents "github.com/microsoft/BladeMonRT/windows_events"
 )
@@ -33,12 +32,6 @@ type WinEventSubscribeQuery struct {
 	query string
 }
 
-func workflowCallback(context winEvents.CallbackContext) {
-	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
-	var workflow workflows.InterfaceWorkflow = context.Workflow
-	workflow.Run(workflow, workflowContext)
-}
-
 func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery) {
 	workflowScheduler.logger.Println("Workflow:", workflow)
 
@@ -47,7 +40,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 		var eventSubscription *winEvents.EventSubscription = &winEvents.EventSubscription{
 			Channel:        eventQuery.channel,
 			Query:          eventQuery.query,
-			SubscribeMethod: winEvents.EvtSubscribeToFutureEvents,
+			SubscribeMethod: winEvents.EVT_SUBSCRIBE_TO_FUTURE_EVENTS,
 			Callback:        workflowScheduler.subscriber.SubscriptionCallback,
 			Context:         winEvents.CallbackContext{Workflow : workflow},
 		}
