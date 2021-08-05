@@ -48,7 +48,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 	}
 }
 
-func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) WorkflowScheduler {
+func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) *WorkflowScheduler {
 	var subscriber winEvents.EventSubscriber = winEvents.NewEventSubscriber()
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{subscriber : subscriber, logger: logger}
@@ -66,7 +66,7 @@ func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory)
 				panic("Given schedule type not supported.")
 		}
 	}
-	return WorkflowScheduler{}
+	return workflowScheduler
 }
 
 func parseEventSubscribeQueries(eventQueries [][]string) []WinEventSubscribeQuery {

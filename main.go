@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"time"
+	"runtime"
 	"os"
 	"syscall"
 	"os/signal"
@@ -18,6 +18,9 @@ type Main struct {
 }
 
 func main() {
+	// Set GOMAXPROCS such that all operations execute on a single thread.
+	runtime.GOMAXPROCS(1)
+
 	var mainObj Main = NewMain()
 	mainObj.logger.Println("Initialized main.")
 
@@ -38,7 +41,7 @@ func NewMain() Main {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var workflowScheduler WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
+	var workflowScheduler *WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
 	fmt.Println(workflowScheduler) // TODO: Remove print statement.
 
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
