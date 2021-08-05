@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/logging"
+	"github.com/microsoft/BladeMonRT/nodes"
 	"log"
+	winEvents "github.com/microsoft/BladeMonRT/windows_events"
 )
 
 /** Class for scheduling workflows. */
@@ -30,12 +32,30 @@ type WinEventSubscribeQuery struct {
 	query string
 }
 
+func workflowCallback(context winEvents.CallbackContext) {
+	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
+	var workflow workflows.InterfaceWorkflow = context.Workflow
+	workflow.Run(workflow, workflowContext)
+}
+
 func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery) {
 	workflowScheduler.logger.Println("Workflow:", workflow)
 	for _, eventQuery := range eventQueries {
 		workflowScheduler.logger.Println("Channel:", eventQuery.channel)
 		workflowScheduler.logger.Println("Query:", eventQuery.query)
 		// TO DO: Subscribe to an event using the gowinlog library
+
+		var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("EventSubscription")
+		var eventSubscription *winEvents.EventSubscription = &winEvents.EventSubscription{
+			Logger : logger,
+			Channel:        eventQuery.channel,
+			Query:          eventQuery.query,
+			SubscribeMethod: winEvents.EvtSubscribeToFutureEvents,
+			Callback:        workflowCallback,
+			Context:         winEvents.CallbackContext{Workflow : workflow},
+		}
+
+		eventSubscription.CreateSubscription()
 	}
 }
 
