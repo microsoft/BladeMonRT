@@ -12,7 +12,7 @@ import (
 
 func TestWorkflowFactory(t *testing.T) {
 	const (
-		workflow_file = "test_configs/test_workflows.json"
+		WORKFLOW_FILE = "test_configs/test_workflows.json"
 	)
 
 	ctrl := gomock.NewController(t)
@@ -33,7 +33,7 @@ func TestWorkflowFactory(t *testing.T) {
 	mockNodeC.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-c-result")
 
 	mockNodeFactory := NewMockInterfaceNodeFactory(ctrl)
-	workflowsJson, err := ioutil.ReadFile(workflow_file)
+	workflowsJson, err := ioutil.ReadFile(WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
