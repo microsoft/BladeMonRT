@@ -46,7 +46,6 @@ func NewMain() Main {
 	return Main{workflowFactory: &workflowFactory, logger: logger}
 }
 
-
 func forever() {
     for {
         time.Sleep(time.Second)

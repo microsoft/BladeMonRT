@@ -39,7 +39,6 @@ type EventSubscriber struct {
 	Logger *log.Logger
 }
 
-
 /** Class that defines the parameters used to subscribe to a windows event. */
 type EventSubscription struct {
 	Channel         string
@@ -90,7 +89,6 @@ func (subscriber *EventSubscriber) CreateSubscription(evtSub *EventSubscription)
 	// As is done in Python version.
 }
 
-
 func runWorkflow(context CallbackContext) {
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	var workflow workflows.InterfaceWorkflow = context.Workflow
@@ -115,7 +113,7 @@ func (subscriber *EventSubscriber) SubscriptionCallback(action, context, event u
 				subscriber.Logger.Println("failed to render event data: %s", err)
 			} else {
 				var callbackContext CallbackContext = *(*CallbackContext)(unsafe.Pointer(context))
-				// Create a light-weight thread (goroutine) to run the workflow included in the callback context
+				// Create a light-weight thread (goroutine) to run the workflow included in the callback context.
 				go runWorkflow(callbackContext)
 			}
 

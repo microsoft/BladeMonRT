@@ -44,10 +44,6 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 
 	// Subscribe to the events that match the event queries specified.
 	for _, eventQuery := range eventQueries {
-		workflowScheduler.logger.Println("Channel:", eventQuery.channel)
-		workflowScheduler.logger.Println("Query:", eventQuery.query)
-		// TO DO: Subscribe to an event using the gowinlog library
-
 		var eventSubscription *winEvents.EventSubscription = &winEvents.EventSubscription{
 			Channel:        eventQuery.channel,
 			Query:          eventQuery.query,
@@ -55,7 +51,6 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 			Callback:        workflowScheduler.subscriber.SubscriptionCallback,
 			Context:         winEvents.CallbackContext{Workflow : workflow},
 		}
-
 		workflowScheduler.subscriber.CreateSubscription(eventSubscription)
 	}
 }
