@@ -40,6 +40,8 @@ func workflowCallback(context winEvents.CallbackContext) {
 
 func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery) {
 	workflowScheduler.logger.Println("Workflow:", workflow)
+
+	// Subscribe to the events that match the event queries specified.
 	for _, eventQuery := range eventQueries {
 		workflowScheduler.logger.Println("Channel:", eventQuery.channel)
 		workflowScheduler.logger.Println("Query:", eventQuery.query)
