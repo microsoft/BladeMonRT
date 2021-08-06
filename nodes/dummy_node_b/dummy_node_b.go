@@ -23,7 +23,7 @@ type DummyNodeB struct {
 }
 
 func NewDummyNodeB() *DummyNodeB {
-	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeB")
+	var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeB")
 	var dummyNode DummyNodeB = DummyNodeB{Node : nodes.Node{Logger : logger}}
 	return &dummyNode
 }

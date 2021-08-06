@@ -13,8 +13,8 @@
             "name": "disk_win_event_7_8_alert",
             "schedule_type": "on_win_event",
             "win_event_subscribe_queries": [
-                ["System", "*[System[Provider[@Name='disk'] and EventID=7]]"],
-                ["System", "*[System[Provider[@Name='disk'] and EventID=8]]"]
+                ["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"],
+                ["System", "*[System[Provider[@Name='disk'] and EventID=8 and EventRecordID > {condition}]]"]
             ],
             "workflow": "dummy_workflow",
             "enable": true

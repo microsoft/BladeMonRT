@@ -10,11 +10,12 @@ import (
 	"os/signal"
 	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/configs"
+	"runtime"
 )
 
 type Main struct {
 	workflowFactory *WorkflowFactory
-	logger          *log.Logger
+	logger          log.Logger
 }
 
 func main() {
@@ -23,6 +24,7 @@ func main() {
 
 	var mainObj Main = NewMain()
 	mainObj.logger.Println("Initialized main.")
+	mainObj.logger.Println("Number of threads:", runtime.GOMAXPROCS(-1))
 
 	// Setup main such that main does not exit unless there is a keyboard interrupt.
 	quitChannel := make(chan os.Signal, 1)
@@ -44,6 +46,6 @@ func NewMain() Main {
 	var workflowScheduler *WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
 	fmt.Println(workflowScheduler) // TODO: Remove print statement.
 
-	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
+	var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 	return Main{workflowFactory: &workflowFactory, logger: logger}
 }

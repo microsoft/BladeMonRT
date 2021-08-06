@@ -4,17 +4,23 @@ import (
 	"encoding/json"
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/logging"
+	"github.com/microsoft/BladeMonRT/configs"
 	"log"
 	winEvents "github.com/microsoft/BladeMonRT/windows_events"
 	"golang.org/x/sys/windows"
+	"regexp"
+	"strings"
+	"fmt"
+	"strconv"
 )
 
 /** Class for scheduling workflows. */
 type WorkflowScheduler struct {
 	schedules []interface{}
-	logger *log.Logger
+	logger log.Logger
 	subscriber winEvents.EventSubscriber
 	eventSubscriptionHandles []windows.Handle
+	queryToEventRecordIdBookmark map[string]int
 }
 
 /** Class that represents a query for subscribing to a windows event. */
@@ -34,18 +40,59 @@ type ScheduleDescription struct {
 	WinEventSubscribeQueries [][]string `json:"win_event_subscribe_queries"`
 }
 
+func (workflowScheduler *WorkflowScheduler) getEventRecordIdBookmark(query string) int {
+	if (!configs.ENABLE_BOOKMARK_FEATURE) {
+		return 0
+	}
+
+	if eventRecordIdBookmark, ok := workflowScheduler.queryToEventRecordIdBookmark[query]; ok {
+		return eventRecordIdBookmark
+	} else {
+		return 0
+	}
+}
+
+func (workflowScheduler *WorkflowScheduler) updateEventRecordIdBookmark(query string, newEventRecordId int) {
+	workflowScheduler.queryToEventRecordIdBookmark[query] = newEventRecordId
+}
+
+
 func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery) {
 	workflowScheduler.logger.Println("Workflow:", workflow)
 
 	// Subscribe to the events that match the event queries specified.
 	for _, eventQuery := range eventQueries {
+		// Decide whether to subscribe to future events or start at the oldest record.
+		var subscribeToFutureEvents bool = true
+		var queryText = eventQuery.query
+		queryIncludesCondition, err := regexp.MatchString(".*{condition}.*", eventQuery.query)
+		if (err != nil) {
+			return
+		}
+		if (queryIncludesCondition) {
+			var eventRecordIdBookmark int = workflowScheduler.getEventRecordIdBookmark(eventQuery.query)
+			if (eventRecordIdBookmark != 0) {
+				subscribeToFutureEvents = false
+			}
+			workflowScheduler.logger.Println(eventRecordIdBookmark)
+			queryText = strings.Replace(eventQuery.query, "{condition}", strconv.Itoa(eventRecordIdBookmark), -1)
+		}
+		workflowScheduler.logger.Println(fmt.Sprintf("Constructed queryText: %s; subscribeToFutureEvents: %t", queryText, subscribeToFutureEvents))
+		
+		var subscribeMethod int = winEvents.EVT_SUBSCRIBE_TO_FUTURE_EVENTS
+		if (subscribeToFutureEvents) {
+			subscribeMethod = winEvents.EVT_SUBSCRIBE_START_AT_OLDEST_RECORD
+		}
+
 		var eventSubscription *winEvents.EventSubscription = &winEvents.EventSubscription{
 			Channel:        eventQuery.channel,
-			Query:          eventQuery.query,
-			SubscribeMethod: winEvents.EVT_SUBSCRIBE_TO_FUTURE_EVENTS,
+			Query:           queryText,
+			SubscribeMethod: subscribeMethod,
 			Callback:        workflowScheduler.subscriber.SubscriptionCallback,
-			Context:         winEvents.CallbackContext{Workflow : workflow},
+			Context:         winEvents.CallbackContext{Workflow : workflow}, //, QueryToEventRecordIdBookmark : workflowScheduler.queryToEventRecordIdBookmark},
 		}
+
+		// Add the handle for the current subscription to the workflow scheduler.
 		var subscriptionEventHandle []windows.Handle = workflowScheduler.subscriber.CreateSubscription(eventSubscription)
 		workflowScheduler.eventSubscriptionHandles = append(workflowScheduler.eventSubscriptionHandles, subscriptionEventHandle...)
 	}
@@ -54,7 +101,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 
 func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) *WorkflowScheduler {
 	var subscriber winEvents.EventSubscriber = winEvents.NewEventSubscriber()
-	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
+	var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{subscriber : subscriber, logger: logger}
 
 	// Parse the schedules JSON and add the schedules to the workflow scheduler.

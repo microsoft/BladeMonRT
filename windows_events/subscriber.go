@@ -8,6 +8,8 @@ import (
 	"log"
 	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/nodes"
+	"sync"
+	"fmt"
 )
 
 const (
@@ -25,8 +27,13 @@ var (
 	procEvtRender    = modwevtapi.NewProc("EvtRender")
 )
 
+var runWorkflowLock sync.Mutex
+//var outerLock sync.Mutex
+
+
 /** Class that holds information used in the callback function. */
 type CallbackContext struct {
+	// QueryToEventRecordIdBookmark map[string]int
 	Workflow workflows.InterfaceWorkflow
 }
 
@@ -35,7 +42,7 @@ type SubscriptionCallback func(uintptr, uintptr, uintptr) uintptr
 
 /** Utility class used to create subscriptions to windows events. */
 type EventSubscriber struct {
-	Logger *log.Logger
+	Logger log.Logger
 }
 
 /** Class that defines the parameters used to subscribe to a windows event. */
@@ -48,7 +55,7 @@ type EventSubscription struct {
 }
 
 func NewEventSubscriber() EventSubscriber {
-	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("EventSubscriber")
+	var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("EventSubscriber")
 	return EventSubscriber{Logger : logger}
 }
 
@@ -90,12 +97,17 @@ func (subscriber *EventSubscriber) CreateSubscription(evtSub *EventSubscription)
 }
 
 func runWorkflow(context CallbackContext) {
+	//runWorkflowLock.Lock()
+	//defer runWorkflowLock.Unlock()
+	fmt.Println("run workflow")
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	var workflow workflows.InterfaceWorkflow = context.Workflow
 	workflow.Run(workflow, workflowContext)
 }
 
 func (subscriber *EventSubscriber) SubscriptionCallback(action, context, event uintptr) uintptr {
+	//outerLock.Lock()
+	//defer outerLock.Unlock()
 	switch action {
 		case EVT_SUBSCRIBE_ACTION_ERROR:
 			subscriber.Logger.Println("Win event subscription failed.")
@@ -108,13 +120,17 @@ func (subscriber *EventSubscriber) SubscriptionCallback(action, context, event u
 
 			returnCode, _, err := procEvtRender.Call(0, event, EVT_RENDER_EVENT_XML, 4096, uintptr(unsafe.Pointer(&renderSpace[0])), uintptr(unsafe.Pointer(&bufferUsed)), uintptr(unsafe.Pointer(&propertyCount)))
 			// TODO: use renderSpace to get the XML of the event and pass it to the callback
+			//subscriber.Logger.Println("RENDERSPCE")
+			//subscriber.Logger.Println(renderSpace)
 
 			if returnCode == 0 {
 				subscriber.Logger.Println("failed to render event data: %s", err)
 			} else {
-				var callbackContext CallbackContext = *(*CallbackContext)(unsafe.Pointer(context))
+				fmt.Println(context)
+				var callbackContext *CallbackContext = (*CallbackContext)(unsafe.Pointer(context))
 				// Create a light-weight thread (goroutine) to run the workflow included in the callback context.
-				go runWorkflow(callbackContext)
+				
+				go runWorkflow(*callbackContext)
 			}
 
 		default:
