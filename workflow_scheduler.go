@@ -5,12 +5,14 @@ import (
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/logging"
 	"log"
+	winEvents "github.com/microsoft/BladeMonRT/windows_events"
 )
 
 /** Class for scheduling workflows. */
 type WorkflowScheduler struct {
 	schedules []interface{}
 	logger *log.Logger
+	subscriber winEvents.EventSubscriber
 }
 
 /** Class for the schedule description in the JSON. */
@@ -32,16 +34,24 @@ type WinEventSubscribeQuery struct {
 
 func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery) {
 	workflowScheduler.logger.Println("Workflow:", workflow)
+
+	// Subscribe to the events that match the event queries specified.
 	for _, eventQuery := range eventQueries {
-		workflowScheduler.logger.Println("Channel:", eventQuery.channel)
-		workflowScheduler.logger.Println("Query:", eventQuery.query)
-		// TO DO: Subscribe to an event using the gowinlog library
+		var eventSubscription *winEvents.EventSubscription = &winEvents.EventSubscription{
+			Channel:        eventQuery.channel,
+			Query:          eventQuery.query,
+			SubscribeMethod: winEvents.EVT_SUBSCRIBE_TO_FUTURE_EVENTS,
+			Callback:        workflowScheduler.subscriber.SubscriptionCallback,
+			Context:         winEvents.CallbackContext{Workflow : workflow},
+		}
+		workflowScheduler.subscriber.CreateSubscription(eventSubscription)
 	}
 }
 
-func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) WorkflowScheduler {
+func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) *WorkflowScheduler {
+	var subscriber winEvents.EventSubscriber = winEvents.NewEventSubscriber()
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{subscriber : subscriber, logger: logger}
 
 	// Parse the schedules JSON and add the schedules to the workflow scheduler.
 	var schedules map[string][]ScheduleDescription
@@ -53,10 +63,10 @@ func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory)
 				var eventQueries []WinEventSubscribeQuery = parseEventSubscribeQueries(schedule.WinEventSubscribeQueries)			
 				workflowScheduler.addWinEventBasedSchedule(workflow, eventQueries) 
 			default:
-				panic("Given schedule type not supported.")
+				workflowScheduler.logger.Println("Given schedule type not supported.")
 		}
 	}
-	return WorkflowScheduler{}
+	return workflowScheduler
 }
 
 func parseEventSubscribeQueries(eventQueries [][]string) []WinEventSubscribeQuery {

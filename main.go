@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-
+	"runtime"
+	"os"
+	"syscall"
+	"os/signal"
 	"github.com/microsoft/BladeMonRT/logging"
-	"github.com/microsoft/BladeMonRT/nodes"
-	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/configs"
 )
 
@@ -17,15 +18,16 @@ type Main struct {
 }
 
 func main() {
+	// Set GOMAXPROCS such that all operations execute on a single thread.
+	runtime.GOMAXPROCS(1)
+
 	var mainObj Main = NewMain()
+	mainObj.logger.Println("Initialized main.")
 
-	var workflow workflows.InterfaceWorkflow = mainObj.workflowFactory.constructWorkflow("dummy_workflow")
-	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
-	workflow.Run(workflow, workflowContext)
-
-	for index, node := range workflow.GetNodes() {
-		mainObj.logger.Println(fmt.Sprintf("Result for node index %d=%s", index, node.GetResult(node, workflowContext).(string)))
-	}
+	// Setup main such that main does not exit unless there is a keyboard interrupt.
+	quitChannel := make(chan os.Signal, 1)
+    signal.Notify(quitChannel, syscall.SIGINT, syscall.SIGTERM) 
+	<-quitChannel
 }
 
 func NewMain() Main {
@@ -39,7 +41,7 @@ func NewMain() Main {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var workflowScheduler WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
+	var workflowScheduler *WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
 	fmt.Println(workflowScheduler) // TODO: Remove print statement.
 
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
