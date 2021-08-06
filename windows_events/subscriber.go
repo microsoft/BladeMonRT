@@ -65,7 +65,7 @@ func (eventSubscriber *EventSubscriber) SubscriptionCallback(Action wevtapi.EVT_
 
 			// Only hours and not days is available in the API.
 			if (startOfToday.Sub(timeCreated).Hours() / 24 /* hours */ > configs.MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS) {
-				fmt.Println("Event flagged as too old.")
+				eventSubscriber.logger.Println("Event flagged as too old.")
 				return uintptr(0)
 			}
 			
