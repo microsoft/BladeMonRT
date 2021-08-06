@@ -10,12 +10,11 @@ import (
 	"os/signal"
 	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/configs"
-	"runtime"
 )
 
 type Main struct {
 	workflowFactory *WorkflowFactory
-	logger          log.Logger
+	logger          *log.Logger
 }
 
 func main() {
@@ -46,6 +45,6 @@ func NewMain() Main {
 	var workflowScheduler *WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
 	fmt.Println(workflowScheduler) // TODO: Remove print statement.
 
-	var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 	return Main{workflowFactory: &workflowFactory, logger: logger}
 }

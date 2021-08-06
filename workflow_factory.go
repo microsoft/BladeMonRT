@@ -12,7 +12,7 @@ import (
 type WorkflowFactory struct {
 	nameToWorkflow map[string]WorkflowDescription
 	nodeFactory InterfaceNodeFactory
-	logger log.Logger
+	logger *log.Logger
 }
 
 /** Class for the workflow description in the JSON. */
@@ -32,7 +32,7 @@ func newWorkflowFactory(workflowsJson []byte, nodeFactory InterfaceNodeFactory) 
 	var workflows map[string]map[string]WorkflowDescription
 	json.Unmarshal([]byte(workflowsJson), &workflows)
 
-	var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowFactory")
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowFactory")
 	return WorkflowFactory{nameToWorkflow : workflows["workflows"], nodeFactory : nodeFactory, logger : logger}
 }
 

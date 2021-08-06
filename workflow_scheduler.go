@@ -12,12 +12,15 @@ import (
 	"strings"
 	"fmt"
 	"strconv"
+	win32 "github.com/0xrawsec/golang-win32/win32"
+	wevtapi "github.com/0xrawsec/golang-win32/win32/wevtapi"
+	"unsafe"
 )
 
 /** Class for scheduling workflows. */
 type WorkflowScheduler struct {
 	schedules []interface{}
-	logger log.Logger
+	logger *log.Logger
 	subscriber winEvents.EventSubscriber
 	eventSubscriptionHandles []windows.Handle
 	queryToEventRecordIdBookmark map[string]int
@@ -63,6 +66,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 	// Subscribe to the events that match the event queries specified.
 	for _, eventQuery := range eventQueries {
 		// Decide whether to subscribe to future events or start at the oldest record.
+		
 		var subscribeToFutureEvents bool = true
 		var queryText = eventQuery.query
 		queryIncludesCondition, err := regexp.MatchString(".*{condition}.*", eventQuery.query)
@@ -79,29 +83,38 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 		}
 		workflowScheduler.logger.Println(fmt.Sprintf("Constructed queryText: %s; subscribeToFutureEvents: %t", queryText, subscribeToFutureEvents))
 		
-		var subscribeMethod int = winEvents.EVT_SUBSCRIBE_TO_FUTURE_EVENTS
+		var subscribeMethod win32.DWORD = wevtapi.EvtSubscribeToFutureEvents
 		if (subscribeToFutureEvents) {
-			subscribeMethod = winEvents.EVT_SUBSCRIBE_START_AT_OLDEST_RECORD
+			subscribeMethod = wevtapi.EvtSubscribeStartAtOldestRecord
 		}
+		
+		ctx := &winEvents.CallbackContext{Workflow : workflow}
+		workflowScheduler.logger.Println(win32.NULL)
+		_, err = wevtapi.EvtSubscribe(
+		wevtapi.EVT_HANDLE(win32.NULL),
 
-		var eventSubscription *winEvents.EventSubscription = &winEvents.EventSubscription{
-			Channel:        eventQuery.channel,
-			Query:           queryText,
-			SubscribeMethod: subscribeMethod,
-			Callback:        workflowScheduler.subscriber.SubscriptionCallback,
-			Context:         winEvents.CallbackContext{Workflow : workflow}, //, QueryToEventRecordIdBookmark : workflowScheduler.queryToEventRecordIdBookmark},
+		win32.HANDLE(win32.NULL),
+		eventQuery.channel,
+		queryText,
+		wevtapi.EVT_HANDLE(win32.NULL),
+		win32.PVOID(unsafe.Pointer(ctx)),
+		workflowScheduler.subscriber.SubscriptionCallback,
+		subscribeMethod)
+
+		if err != nil {
+			workflowScheduler.logger.Println(err)
 		}
 
 		// Add the handle for the current subscription to the workflow scheduler.
-		var subscriptionEventHandle []windows.Handle = workflowScheduler.subscriber.CreateSubscription(eventSubscription)
-		workflowScheduler.eventSubscriptionHandles = append(workflowScheduler.eventSubscriptionHandles, subscriptionEventHandle...)
+		// var subscriptionEventHandle []windows.Handle = workflowScheduler.subscriber.CreateSubscription(eventSubscription)
+		//workflowScheduler.eventSubscriptionHandles = append(workflowScheduler.eventSubscriptionHandles, subscriptionEventHandle...)
 	}
 	workflowScheduler.logger.Println("Workflow:", workflowScheduler.eventSubscriptionHandles)
 }
 
 func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) *WorkflowScheduler {
 	var subscriber winEvents.EventSubscriber = winEvents.NewEventSubscriber()
-	var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{subscriber : subscriber, logger: logger}
 
 	// Parse the schedules JSON and add the schedules to the workflow scheduler.

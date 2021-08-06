@@ -13,7 +13,7 @@ type SimpleWorkflow struct {
 }
 
 func NewSimpleWorkflow() *SimpleWorkflow{
-	var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("SimpleWorkflow")
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("SimpleWorkflow")
 	return &SimpleWorkflow{Workflow: Workflow{Logger : logger}}
 }
 
