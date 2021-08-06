@@ -24,7 +24,7 @@ type ResultProvider struct {
 }
 
 func NewDummyNodeC() *DummyNodeC {
-	var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeB")
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeB")
 	var dummyNode DummyNodeC = DummyNodeC{Node: nodes.Node{Logger: logger}, resultProvider: ResultProvider{}}
 	return &dummyNode
 }

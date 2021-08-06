@@ -14,7 +14,7 @@ type DummyNodeA struct {
 }
 
 func NewDummyNodeA() *DummyNodeA {
-  var logger log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeA")
+  var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeA")
   var dummyNode DummyNodeA = DummyNodeA{Node : nodes.Node{Logger : logger}}
   dummyNode.result = "dummy-node-result"
 	return &dummyNode

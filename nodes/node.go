@@ -36,7 +36,7 @@ type InterfaceNode interface {
  
 /** Concrete type for defining unit of work to be processed by event loop. */
 type Node struct {
-	Logger log.Logger
+	Logger *log.Logger
 }
 
 func (node *Node) Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext) {
