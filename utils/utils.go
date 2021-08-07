@@ -39,5 +39,6 @@ func (utils *Utils) ParseEventXML(eventXML string) (string, int, time.Time, int)
   if (err != nil) {
 	  utils.logger.Println("Wrong format of event record ID.")
   }
+  
   return provider, eventID, timeCreated, eventRecordID
 }

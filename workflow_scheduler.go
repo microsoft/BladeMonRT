@@ -7,7 +7,6 @@ import (
 	"github.com/microsoft/BladeMonRT/configs"
 	"log"
 	winEvents "github.com/microsoft/BladeMonRT/windows_events"
-	"golang.org/x/sys/windows"
 	"regexp"
 	"strings"
 	"fmt"
@@ -22,7 +21,7 @@ type WorkflowScheduler struct {
 	schedules []interface{}
 	logger *log.Logger
 	subscriber winEvents.EventSubscriber
-	eventSubscriptionHandles []windows.Handle
+	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	queryToEventRecordIdBookmark map[string]int
 }
 
@@ -66,7 +65,6 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 	// Subscribe to the events that match the event queries specified.
 	for _, eventQuery := range eventQueries {
 		// Decide whether to subscribe to future events or start at the oldest record.
-		
 		var subscribeToFutureEvents bool = true
 		var queryText = eventQuery.query
 		queryIncludesCondition, err := regexp.MatchString(".*{condition}.*", eventQuery.query)
@@ -88,11 +86,11 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 			subscribeMethod = wevtapi.EvtSubscribeStartAtOldestRecord
 		}
 		
+		// Create a subscription for the event.
 		ctx := &winEvents.CallbackContext{Workflow : workflow}
 		workflowScheduler.logger.Println(win32.NULL)
-		_, err = wevtapi.EvtSubscribe(
+		subscriptionEventHandle, err := wevtapi.EvtSubscribe(
 		wevtapi.EVT_HANDLE(win32.NULL),
-
 		win32.HANDLE(win32.NULL),
 		eventQuery.channel,
 		queryText,
@@ -106,8 +104,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 		}
 
 		// Add the handle for the current subscription to the workflow scheduler.
-		// var subscriptionEventHandle []windows.Handle = workflowScheduler.subscriber.CreateSubscription(eventSubscription)
-		//workflowScheduler.eventSubscriptionHandles = append(workflowScheduler.eventSubscriptionHandles, subscriptionEventHandle...)
+		workflowScheduler.eventSubscriptionHandles = append(workflowScheduler.eventSubscriptionHandles, subscriptionEventHandle)
 	}
 	workflowScheduler.logger.Println("Workflow:", workflowScheduler.eventSubscriptionHandles)
 }
