@@ -4,7 +4,6 @@ import (
   "github.com/microsoft/BladeMonRT/nodes"
   "github.com/microsoft/BladeMonRT/logging"
   "log"
-  //"fmt"
 )
 
 /** Node that has the concatenation of its predecessors' results and a hard-coded value for its result. */
@@ -21,7 +20,6 @@ func NewDummyNodeA() *DummyNodeA {
 }
 
 func (dummyNode *DummyNodeA) ProcessVirt(workflowContext *nodes.WorkflowContext) {
-  //fmt.Println(dummyNode.Logger)
   dummyNode.Logger.Println("Running ProcessVirt method.")
   var result string
 
