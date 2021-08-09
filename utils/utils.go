@@ -18,8 +18,16 @@ func NewUtils() *Utils {
 	return &Utils{logger : logger}
 }
 
+/** Class that represents an event parsed from event XML. */
+type EventFromXML struct {
+  Provider string
+  EventID int
+  TimeCreated time.Time
+  EventRecordID int
+}
+
 /** Parses out the Event Provider, EventID, TimeCreated[SystemTime], eventRecordID (which is different from event ID) from event XML. */
-func (utils *Utils) ParseEventXML(eventXML string) (string, int, time.Time, int) {
+func (utils *Utils) ParseEventXML(eventXML string) EventFromXML {
   re := regexp.MustCompile(`.*Provider *Name=[\"\']([^\"]+)[\"\'].*<EventID[^>]*>([0-9]+)</EventID>.*<TimeCreated +SystemTime=[\"\']([0-9\-]*)T.*<EventRecordID>([0-9]+)</EventRecordID>.*`)
   attributes := re.FindStringSubmatch(eventXML)
   var provider string = attributes[1]
@@ -39,5 +47,5 @@ func (utils *Utils) ParseEventXML(eventXML string) (string, int, time.Time, int)
 	  utils.logger.Println("Wrong format of event record ID.")
   }
 
-  return provider, eventID, timeCreated, eventRecordID
+  return EventFromXML{Provider: provider, EventID: eventID, TimeCreated : timeCreated, EventRecordID : eventRecordID}
 }

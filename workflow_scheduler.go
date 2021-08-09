@@ -47,6 +47,7 @@ type ScheduleDescription struct {
 /** Class that holds information used in the subscription callback function. */
 type CallbackContext struct {
 	workflow workflows.InterfaceWorkflow
+	seed string
 	provider string
 	eventID int
 	timeCreated time.Time
@@ -75,23 +76,25 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 			if err != nil {
 				workflowScheduler.logger.Println("Error converting event to XML: %s", err)
 			}
-			eventXML := win32.UTF16BytesToString(UTF16EventXML)
+			var eventXML string = win32.UTF16BytesToString(UTF16EventXML)
 
-			provider, eventID, timeCreated, eventRecordID := utils.NewUtils().ParseEventXML(eventXML)
-			var nowTime Time.time = time.Now()
+			var event utils.EventFromXML = utils.NewUtils().ParseEventXML(eventXML)
+			var nowTime time.Time = time.Now()
 
 			// We use the start of today because the time defaults to 00:00 in timeCreated.
-			var startOfToday time.Time = time.Date(nowTime.Year(), nowTime.Month(), nowTime.Day(), 0, 0, 0, 0, timeCreated.Location())
+			var startOfToday time.Time = time.Date(nowTime.Year(), nowTime.Month(), nowTime.Day(), 0, 0, 0, 0, event.TimeCreated.Location())
 
 			// Only hours and not days is available in the API.
-			if (startOfToday.Sub(timeCreated).Hours() / 24 /* hours */ > configs.MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS) {
+			if (startOfToday.Sub(event.TimeCreated).Hours() / 24 /* hours */ > configs.MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS) {
 				workflowScheduler.logger.Println("Event flagged as too old.")
 				return uintptr(0)
 			}
 			
-			callbackContext.provider = provider
-			callbackContext.eventID = eventID
-			callbackContext.eventRecordID = eventRecordID
+			callbackContext.seed = eventXML
+			callbackContext.provider = event.Provider
+			callbackContext.eventID = event.EventID
+			callbackContext.eventRecordID = event.EventRecordID
+			fmt.Println(callbackContext)
 			go runWorkflow(callbackContext)
 		default:
 			workflowScheduler.logger.Println("encountered error during callback: unsupported action code %x", uint16(Action))
