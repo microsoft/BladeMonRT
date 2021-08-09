@@ -99,7 +99,6 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 	return uintptr(0)
 }
 
-
 func (workflowScheduler *WorkflowScheduler) storeCallbackContext(context *CallbackContext) string {
 	var uuidWithHyphen uuid.UUID = uuid.New()
     var uuid string = strings.Replace(uuidWithHyphen.String(), "-", "", -1)
@@ -107,7 +106,6 @@ func (workflowScheduler *WorkflowScheduler) storeCallbackContext(context *Callba
 	fmt.Println(uuid)
 	return uuid
 }
-
 
 func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery) {
 	workflowScheduler.logger.Println("Workflow:", workflow)

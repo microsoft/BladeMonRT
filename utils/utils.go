@@ -18,7 +18,7 @@ func NewUtils() *Utils {
 	return &Utils{logger : logger}
 }
 
-/** Parses out the Event Provider, EventID, TimeCreated[SystemTime], eventRecordID (which isdifferent from event ID) from some Event XML. Returns these values as an str, int, date, and int respectively. */
+/** Parses out the Event Provider, EventID, TimeCreated[SystemTime], eventRecordID (which is different from event ID) from event XML. */
 func (utils *Utils) ParseEventXML(eventXML string) (string, int, time.Time, int) {
   re := regexp.MustCompile(`.*Provider *Name=[\"\']([^\"]+)[\"\'].*<EventID[^>]*>([0-9]+)</EventID>.*<TimeCreated +SystemTime=[\"\']([0-9\-]*)T.*<EventRecordID>([0-9]+)</EventRecordID>.*`)
   attributes := re.FindStringSubmatch(eventXML)

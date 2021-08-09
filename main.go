@@ -23,7 +23,6 @@ func main() {
 
 	var mainObj Main = NewMain()
 	mainObj.logger.Println("Initialized main.")
-	mainObj.logger.Println("Number of threads:", runtime.GOMAXPROCS(-1))
 
 	// Setup main such that main does not exit unless there is a keyboard interrupt.
 	quitChannel := make(chan os.Signal, 1)
