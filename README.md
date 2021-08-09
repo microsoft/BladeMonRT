@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/BladeMonRTPipelines/BladeMonRT/_apis/build/status/microsoft.BladeMonRT?branchName=main)](https://dev.azure.com/BladeMonRTPipelines/BladeMonRT/_build/latest?definitionId=1&branchName=main)
+
 # Project
 
 > This repo has been populated by an initial template to help get you started. Please
