@@ -22,10 +22,10 @@ steps:
   inputs:
     command: pack
     packagesToPack: '.\BladeMonRT.nuspec'
-    packDestination: '.\Packs\'
+    packDestination: '$(Build.ArtifactStagingDirectory)'
 
 - task: NugetCommand@2
   inputs:
     command: push
-    packagesToPush: '.\Packs\*.nupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
     publishVstsFeed: 'BladeMonRTPipelines'
