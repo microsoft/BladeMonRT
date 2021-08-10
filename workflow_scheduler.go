@@ -70,9 +70,9 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 			// We use the start of today because the time defaults to 00:00 in event.TimeCreated.
 			var startOfToday time.Time = time.Date(nowTime.Year(), nowTime.Month(), nowTime.Day(), 0, 0, 0, 0, event.TimeCreated.Location())
 
-			// Only Hours() and not Days() is available in the API.
-			if (startOfToday.Sub(event.TimeCreated).Hours() / 24 /* hours */ > configs.MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS) {
-				workflowScheduler.logger.Println("Event flagged as too old.")
+			var age float64 = startOfToday.Sub(event.TimeCreated).Hours() / float64(24)
+			if (age > configs.MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS) {
+				workflowScheduler.logger.Println("Event flagged as too old. Age:", age)
 				return uintptr(0)
 			}
 
