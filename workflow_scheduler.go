@@ -22,7 +22,6 @@ type WorkflowScheduler struct {
 	schedules []interface{}
 	logger *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
-	queryToEventRecordIdBookmark map[string]int
 	guidToContext map[string]*CallbackContext
 }
 
@@ -46,17 +45,7 @@ type ScheduleDescription struct {
 /** Class that holds information used in the subscription callback function. */
 type CallbackContext struct {
 	workflow workflows.InterfaceWorkflow
-	seed string
-	provider string
-	eventID int
-	timeCreated time.Time
-	eventRecordID int
-}
-
-func runWorkflow(context *CallbackContext) {
-	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
-	var workflow workflows.InterfaceWorkflow = context.workflow
-	workflow.Run(workflow, workflowContext)
+	workflowContext *nodes.WorkflowContext
 }
 
 func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.EVT_SUBSCRIBE_NOTIFY_ACTION, UserContext win32.PVOID, Event wevtapi.EVT_HANDLE) uintptr {
@@ -86,13 +75,15 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 				workflowScheduler.logger.Println("Event flagged as too old.")
 				return uintptr(0)
 			}
-			callbackContext.seed = eventXML
-			callbackContext.provider = event.Provider
-			callbackContext.eventID = event.EventID
-			callbackContext.eventRecordID = event.EventRecordID
 
-			// Create a light-weight thread (goroutine) to run the workflow included in the callback context.
-			go runWorkflow(callbackContext)
+			callbackContext.workflowContext = nodes.NewWorkflowContext()
+			callbackContext.workflowContext.Seed = eventXML
+			callbackContext.workflowContext.Provider = event.Provider
+			callbackContext.workflowContext.EventID = event.EventID
+			callbackContext.workflowContext.EventRecordID = event.EventRecordID
+
+			// Create a goroutine to run the workflow included in the callback context.
+			go callbackContext.workflow.Run(callbackContext.workflow, callbackContext.workflowContext)
 		default:
 			workflowScheduler.logger.Println("encountered error during callback: unsupported action code %x", uint16(Action))
 	}
@@ -128,12 +119,12 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 		wevtapi.EvtSubscribeToFutureEvents)
 		if err != nil {
 			workflowScheduler.logger.Println(err)
+			return
 		}
 
 		// Add the handle for the current subscription to the workflow scheduler.
 		workflowScheduler.eventSubscriptionHandles = append(workflowScheduler.eventSubscriptionHandles, subscriptionEventHandle)
 	}
-	workflowScheduler.logger.Println("Workflow:", workflowScheduler.eventSubscriptionHandles)
 }
 
 func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) *WorkflowScheduler {

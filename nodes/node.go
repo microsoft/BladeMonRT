@@ -8,6 +8,10 @@ import (
 type WorkflowContext struct {
 	nodes []InterfaceNode
 	nodeToResult map[InterfaceNode]interface{}
+	Seed string
+	Provider string
+	EventID int
+	EventRecordID int
 }
 
 func NewWorkflowContext() *WorkflowContext {
