@@ -26,7 +26,7 @@ type EventFromXML struct {
   EventRecordID int
 }
 
-/** Parses out the Event Provider, EventID, TimeCreated[SystemTime], eventRecordID (which is different from event ID) from event XML. */
+/** Parses out the event `Provider`, `EventID`, TimeCreated(`SystemTime`), `EventRecordID` (which is different from event ID) from the event XML. */
 func (utils *Utils) ParseEventXML(eventXML string) EventFromXML {
   re := regexp.MustCompile(`.*Provider *Name=[\"\']([^\"]+)[\"\'].*<EventID[^>]*>([0-9]+)</EventID>.*<TimeCreated +SystemTime=[\"\']([0-9\-]*)T.*<EventRecordID>([0-9]+)</EventRecordID>.*`)
   attributes := re.FindStringSubmatch(eventXML)

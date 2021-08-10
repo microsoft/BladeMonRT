@@ -24,12 +24,13 @@ type ResultProvider struct {
 }
 
 func NewDummyNodeC() *DummyNodeC {
-	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeB")
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeC")
 	var dummyNode DummyNodeC = DummyNodeC{Node: nodes.Node{Logger: logger}, resultProvider: ResultProvider{}}
 	return &dummyNode
 }
 
 func (dummyNode *DummyNodeC) ProcessVirt(workflowContext *nodes.WorkflowContext) {
+	dummyNode.Logger.Println("Running ProcessVirt method.")
 	dummyNode.SaveResult(dummyNode, workflowContext, dummyNode.resultProvider.result())
 }
 

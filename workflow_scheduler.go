@@ -9,7 +9,6 @@ import (
 	"github.com/microsoft/BladeMonRT/configs"
 	"log"
 	"strings"
-	"fmt"
 	win32 "github.com/0xrawsec/golang-win32/win32"
 	wevtapi "github.com/0xrawsec/golang-win32/win32/wevtapi"
 	"unsafe"
@@ -55,9 +54,7 @@ type CallbackContext struct {
 }
 
 func runWorkflow(context *CallbackContext) {
-	fmt.Println("run workflow")
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
-	fmt.Println(context.workflow)
 	var workflow workflows.InterfaceWorkflow = context.workflow
 	workflow.Run(workflow, workflowContext)
 }
@@ -74,27 +71,27 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		case wevtapi.EvtSubscribeActionDeliver:
 			UTF16EventXML, err := wevtapi.EvtRenderXML(Event)
 			if err != nil {
-				workflowScheduler.logger.Println("Error converting event to XML: %s", err)
+				workflowScheduler.logger.Println("Error converting event to XML:", err)
 			}
 			var eventXML string = win32.UTF16BytesToString(UTF16EventXML)
 
 			var event utils.EventFromXML = utils.NewUtils().ParseEventXML(eventXML)
 			var nowTime time.Time = time.Now()
 
-			// We use the start of today because the time defaults to 00:00 in timeCreated.
+			// We use the start of today because the time defaults to 00:00 in event.TimeCreated.
 			var startOfToday time.Time = time.Date(nowTime.Year(), nowTime.Month(), nowTime.Day(), 0, 0, 0, 0, event.TimeCreated.Location())
 
-			// Only hours and not days is available in the API.
+			// Only Hours() and not Days() is available in the API.
 			if (startOfToday.Sub(event.TimeCreated).Hours() / 24 /* hours */ > configs.MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS) {
 				workflowScheduler.logger.Println("Event flagged as too old.")
 				return uintptr(0)
 			}
-			
 			callbackContext.seed = eventXML
 			callbackContext.provider = event.Provider
 			callbackContext.eventID = event.EventID
 			callbackContext.eventRecordID = event.EventRecordID
-			fmt.Println(callbackContext)
+
+			// Create a light-weight thread (goroutine) to run the workflow included in the callback context.
 			go runWorkflow(callbackContext)
 		default:
 			workflowScheduler.logger.Println("encountered error during callback: unsupported action code %x", uint16(Action))
@@ -106,7 +103,6 @@ func (workflowScheduler *WorkflowScheduler) storeCallbackContext(context *Callba
 	var uuidWithHyphen uuid.UUID = uuid.New()
     var uuid string = strings.Replace(uuidWithHyphen.String(), "-", "", -1)
 	workflowScheduler.guidToContext[uuid] = context
-	fmt.Println(uuid)
 	return uuid
 }
 

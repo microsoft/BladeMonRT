@@ -1,10 +1,15 @@
 {
     "workflows": {
-        "dummy_workflow": {
+        "dummy_workflow_a": {
             "type":"simple",
             "nodes":[
                 {"name":"DummyNodeA"},
-                {"name":"DummyNodeA"},
+                {"name":"DummyNodeA"}
+            ]
+        },
+        "dummy_workflow_b_c": {
+            "type":"simple",
+            "nodes":[
                 {"name":"DummyNodeB"},
                 {"name":"DummyNodeC"}
             ]
