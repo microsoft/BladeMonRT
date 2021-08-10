@@ -6,14 +6,11 @@ import (
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/logging"
-	"github.com/microsoft/BladeMonRT/configs"
 	"log"
-	"strings"
 	win32 "github.com/0xrawsec/golang-win32/win32"
 	wevtapi "github.com/0xrawsec/golang-win32/win32/wevtapi"
 	"unsafe"
 	"github.com/microsoft/BladeMonRT/utils"
-	"time"
 	"github.com/google/uuid"
 )
 
@@ -50,7 +47,7 @@ type CallbackContext struct {
 
 func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.EVT_SUBSCRIBE_NOTIFY_ACTION, UserContext win32.PVOID, Event wevtapi.EVT_HANDLE) uintptr {
 	var CStringGuid *C.char = (*C.char)(unsafe.Pointer(UserContext))
-	var guid string = C.GoStringN(CStringGuid, 32)
+	var guid string = C.GoStringN(CStringGuid, 36)
 	var callbackContext *CallbackContext = workflowScheduler.guidToContext[guid]
 
 	switch Action {
@@ -63,18 +60,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 				workflowScheduler.logger.Println("Error converting event to XML:", err)
 			}
 			var eventXML string = win32.UTF16BytesToString(UTF16EventXML)
-
 			var event utils.EventFromXML = utils.NewUtils().ParseEventXML(eventXML)
-			var nowTime time.Time = time.Now()
-
-			// We use the start of today because the time defaults to 00:00 in event.TimeCreated.
-			var startOfToday time.Time = time.Date(nowTime.Year(), nowTime.Month(), nowTime.Day(), 0, 0, 0, 0, event.TimeCreated.Location())
-
-			var age float64 = startOfToday.Sub(event.TimeCreated).Hours() / float64(24)
-			if (age > configs.MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS) {
-				workflowScheduler.logger.Println("Event flagged as too old. Age:", age)
-				return uintptr(0)
-			}
 
 			callbackContext.workflowContext = nodes.NewWorkflowContext()
 			callbackContext.workflowContext.Seed = eventXML
@@ -91,8 +77,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 }
 
 func (workflowScheduler *WorkflowScheduler) storeCallbackContext(context *CallbackContext) string {
-	var uuidWithHyphen uuid.UUID = uuid.New()
-    var uuid string = strings.Replace(uuidWithHyphen.String(), "-", "", -1)
+	var uuid string = uuid.New().String()
 	workflowScheduler.guidToContext[uuid] = context
 	return uuid
 }
