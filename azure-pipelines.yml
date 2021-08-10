@@ -17,3 +17,15 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+
+- task: NugetCommand@2
+  inputs:
+    command: pack
+    packagesToPack: '.\BladeMonRT.nuspec'
+    packDestination: '.\Packs\'
+
+- task: NugetCommand@2
+  inputs:
+    command: push
+    packagesToPush: '.\Packs\*.nupkg'
+    publishVstsFeed: 'BladeMonRTPipelines'
