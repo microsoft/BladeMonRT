@@ -17,7 +17,6 @@ import (
 
 /** Class for scheduling workflows. */
 type WorkflowScheduler struct {
-	schedules []interface{}
 	logger *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext map[string]*CallbackContext
@@ -34,7 +33,7 @@ type WinEventSubscribeQuery struct {
 type ScheduleDescription struct {
     Name string `json:"name"`
     ScheduleType string `json:"schedule_type"`
-    Workflow string `json:"workflow"`
+    WorkflowName string `json:"workflow"`
     Enable bool `json:"enable"`
 
 	// Attributes specific to events of type 'on_win_event'.
@@ -49,28 +48,26 @@ type CallbackContext struct {
 
 func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.EVT_SUBSCRIBE_NOTIFY_ACTION, UserContext win32.PVOID, Event wevtapi.EVT_HANDLE) uintptr {
 	var CStringGuid *C.char = (*C.char)(unsafe.Pointer(UserContext))
-	var guid string = C.GoStringN(CStringGuid, 36)
+	var guid string = C.GoString(CStringGuid)
 	var callbackContext *CallbackContext = workflowScheduler.guidToContext[guid]
 	workflowScheduler.logger.Println(guid)
 
 	switch Action {
 		case wevtapi.EvtSubscribeActionError:
 			workflowScheduler.logger.Println("Win event subscription failed.")
-			return 0
+			return uintptr(0)
 		case wevtapi.EvtSubscribeActionDeliver:
-			UTF16EventXML, err := wevtapi.EvtRenderXML(Event)
+			Utf16EventXml, err := wevtapi.EvtRenderXML(Event)
 			if err != nil {
 				workflowScheduler.logger.Println("Error converting event to XML:", err)
 			}
-			var eventXML string = win32.UTF16BytesToString(UTF16EventXML)
-			var event utils.EventFromXML = workflowScheduler.utils.ParseEventXML(eventXML)
+			var eventXML string = win32.UTF16BytesToString(Utf16EventXml)
+			var event utils.EtwEvent = utils.NewUtils().ParseEventXML(eventXML)
 
 			callbackContext.workflowContext = nodes.NewWorkflowContext()
 			callbackContext.workflowContext.Seed = eventXML
-			callbackContext.workflowContext.Provider = event.Provider
-			callbackContext.workflowContext.EventID = event.EventID
-			callbackContext.workflowContext.EventRecordID = event.EventRecordID
-			fmt.Println(eventXML)
+			callbackContext.workflowContext.EtwEvent = event
+
 			// Create a goroutine to run the workflow included in the callback context.
 			go callbackContext.workflow.Run(callbackContext.workflow, callbackContext.workflowContext)
 		default:
@@ -126,7 +123,7 @@ func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory)
 	for _, schedule := range schedules["schedules"] {
 		switch schedule.ScheduleType {
 			case "on_win_event":
-				var workflow workflows.InterfaceWorkflow = workflowFactory.constructWorkflow(schedule.Workflow)	
+				var workflow workflows.InterfaceWorkflow = workflowFactory.constructWorkflow(schedule.WorkflowName)	
 				var eventQueries []WinEventSubscribeQuery = parseEventSubscribeQueries(schedule.WinEventSubscribeQueries)			
 				workflowScheduler.addWinEventBasedSchedule(workflow, eventQueries) 
 			default:
