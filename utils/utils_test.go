@@ -11,7 +11,7 @@ func TestParseEventXML(t *testing.T) {
 	// Assume
     expectedProvider := "CpuSpeedMonitoring"
     expectedEventId := 999
-    expectedTimeCreated := time.Date(2021, 8, 10, 0, 0, 0, 0, time.UTC) 
+    expectedTimeCreated := time.Date(2021, 8, 10, 19, 10, 29, 0, time.UTC) 
     expectedEventRecordId := 19818
 
 	// Action
