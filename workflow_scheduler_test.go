@@ -16,8 +16,7 @@ import (
 	"time"
 	"io/ioutil"
 	"github.com/microsoft/BladeMonRT/test_configs"
-	 "github.com/stretchr/testify/assert"
-	 "fmt"
+	"gotest.tools/assert"
 )
 
 type UtilsForTest struct {
@@ -28,6 +27,7 @@ func (utilsForTest UtilsForTest) ParseEventXML(eventXML string) utils.EtwEvent {
 }
 
 func TestNewWorkflowScheduler(t *testing.T) {
+	// Assume
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -38,24 +38,23 @@ func TestNewWorkflowScheduler(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Action
 	var workflowScheduler *WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
-	var firstWorkflowNodes []nodes.InterfaceNode
-	fmt.Println(workflowScheduler.guidToContext)
-	//var secondWorkflowNodes []nodes.InterfaceNode
-	var index int = 0
-	for _, element := range workflowScheduler.guidToContext {
-		if (index == 0) {
-			firstWorkflowNodes = element.workflow.GetNodes()
-		}
-		index++
-    }
+
+	// Assert
+	// Assert that the GUID to context map has only 1 context.
+	assert.Equal(t, len(workflowScheduler.guidToContext), 1)
 	
-	assert.EqualValues(t, *(firstWorkflowNodes[0]).(*dummy_node_a.DummyNodeA), *dummy_node_a.NewDummyNodeA())
-	assert.EqualValues(t, *(firstWorkflowNodes[1]).(*dummy_node_a.DummyNodeA), *dummy_node_a.NewDummyNodeA())
-/*
-assert.EqualValues(t, *(firstWorkflowNodes[0]).(*dummy_node_b.DummyNodeB), *dummy_node_b.NewDummyNodeB())
-	assert.EqualValues(t, *(firstWorkflowNodes[1]).(*dummy_node_c.DummyNodeC), *dummy_node_c.NewDummyNodeC())
-	*/
+	// Check that the first and second nodes in the context's workflow are of type DummyNodeA by checking the value of result field in the objects.
+	var firstWorkflowNodes []nodes.InterfaceNode
+	for _, element := range workflowScheduler.guidToContext {
+		firstWorkflowNodes = element.workflow.GetNodes()
+    }
+	actualFirstNode :=  *(firstWorkflowNodes[0]).(*dummy_node_a.DummyNodeA)
+	actualSecondNode := *(firstWorkflowNodes[1]).(*dummy_node_a.DummyNodeA)
+	assert.Equal(t, actualFirstNode.Result, "dummy-node-result")
+	assert.Equal(t, actualSecondNode.Result, "dummy-node-result")
 }
 
 func TestSubscriptionCallback(t *testing.T) {
@@ -79,5 +78,5 @@ func TestSubscriptionCallback(t *testing.T) {
 
 	// Wait for 5 seconds since the current thread has to switch to the goroutine to run the workflow before Run() is called on mockWorkflow. 
 	// If we do not wait, the assertion that Run() was called on mockWorkflow will fail.
-	time.Sleep(5 * time.Second)
+	time.Sleep(5 * time.Second)	
 }

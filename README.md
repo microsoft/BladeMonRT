@@ -41,6 +41,10 @@ To run all tests use:
 cd BladeMonRT
 go test ./...
 
+To run the end-to-end test:
+rename test_end_to_end.go to test_end_to_end_test.go
+go test -run TestEndToEnd
+
 To create a mock use:
 the mockgen command described here https://github.com/golang/mock
     Example: 

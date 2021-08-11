@@ -62,7 +62,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 				workflowScheduler.logger.Println("Error converting event to XML:", err)
 			}
 			var eventXML string = win32.UTF16BytesToString(Utf16EventXml)
-			var event utils.EtwEvent = utils.NewUtils().ParseEventXML(eventXML)
+			var event utils.EtwEvent = workflowScheduler.utils.ParseEventXML(eventXML)
 
 			callbackContext.workflowContext = nodes.NewWorkflowContext()
 			callbackContext.workflowContext.Seed = eventXML
