@@ -19,6 +19,7 @@ type WorkflowScheduler struct {
 	logger *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext map[string]*CallbackContext
+	utils utils.UtilsInterface
 }
 
 /** Class that represents a query for subscribing to a windows event. */
@@ -48,6 +49,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 	var CStringGuid *C.char = (*C.char)(unsafe.Pointer(UserContext))
 	var guid string = C.GoString(CStringGuid)
 	var callbackContext *CallbackContext = workflowScheduler.guidToContext[guid]
+	workflowScheduler.logger.Println(guid)
 
 	switch Action {
 		case wevtapi.EvtSubscribeActionError:
@@ -112,7 +114,25 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 func newWorkflowScheduler() *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
+<<<<<<< HEAD
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext}
+=======
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext, utils : utils.NewUtils()}
+
+	// Parse the schedules JSON and add the schedules to the workflow scheduler.
+	var schedules map[string][]ScheduleDescription
+	json.Unmarshal([]byte(schedulesJson), &schedules)
+	for _, schedule := range schedules["schedules"] {
+		switch schedule.ScheduleType {
+			case "on_win_event":
+				var workflow workflows.InterfaceWorkflow = workflowFactory.constructWorkflow(schedule.Workflow)	
+				var eventQueries []WinEventSubscribeQuery = parseEventSubscribeQueries(schedule.WinEventSubscribeQueries)			
+				workflowScheduler.addWinEventBasedSchedule(workflow, eventQueries) 
+			default:
+				workflowScheduler.logger.Println("Given schedule type not supported.")
+		}
+	}
+>>>>>>> 30543bc (add tests)
 	return workflowScheduler
 }
 

@@ -10,6 +10,18 @@ import (
   "fmt"
 )
 
+/** Class that represents an event parsed from event XML. */
+type EventFromXML struct {
+  Provider string
+  EventID int
+  TimeCreated time.Time
+  EventRecordID int
+}
+
+type UtilsInterface interface {
+  ParseEventXML(eventXML string) EventFromXML
+}
+
 /** Class that contains utilities used in BladeMonRT classes. */
 type Utils struct {
 	logger *log.Logger
