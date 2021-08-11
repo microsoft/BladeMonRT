@@ -19,7 +19,7 @@ type EventFromXML struct {
 }
 
 type UtilsInterface interface {
-  ParseEventXML(eventXML string) EventFromXML
+  ParseEventXML(eventXML string) EtwEvent
 }
 
 /** Class that contains utilities used in BladeMonRT classes. */
