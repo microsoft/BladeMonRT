@@ -23,8 +23,13 @@ import (
 type UtilsForTest struct {
 }
 
+<<<<<<< Updated upstream
 func (utilsForTest UtilsForTest) ParseEventXML(eventXML string) utils.EventFromXML {
 	return utils.EventFromXML{}
+=======
+func (utilsForTest UtilsForTest) ParseEventXML(eventXML string) utils.EtwEvent {
+	return utils.EtwEvent{}
+>>>>>>> Stashed changes
 }
 
 func TestNewWorkflowScheduler(t *testing.T) {
