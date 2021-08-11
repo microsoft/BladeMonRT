@@ -18,22 +18,19 @@ steps:
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
 
-- task: VSBuild@1
-  displayName: 'Pack using msbuild'
-  inputs:
-    packagesToPack: '.\BladeMonRT.nuspec'
-    platform: 'Any CPU'
-    configuration: Release
-    msbuildargs: '-t:pack'
-
-# - task: NugetCommand@2
-#   inputs:
-#     command: pack
-#     packagesToPack: '.$(Build.ArtifactStagingDirectory)/BladeMonRT.nuspec'
-#     packDestination: '$(Build.ArtifactStagingDirectory)'
-
 - task: NugetCommand@2
   inputs:
+    command: pack
+    displayName: 'Nuget pack'
+    packagesToPack: '**/*.nuspec'
+    packDestination: '$(Build.ArtifactStagingDirectory)'
+
+- task: NuGetAuthenticate@0
+  displayName: 'NuGet Authenticate'
+- task: NugetCommand@2
+  displayName: 'Nuget push'  
+  inputs:
     command: push
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-    publishVstsFeed: 'BladeMonRTPipelines'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    vstsFeed: 'BladeMonRT/BladeMonRT'
+    publishVstsFeed: 'BladeMonRT'
