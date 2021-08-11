@@ -12,6 +12,7 @@ import (
 	"unsafe"
 	"github.com/microsoft/BladeMonRT/utils"
 	"github.com/google/uuid"
+	"fmt"
 )
 
 /** Class for scheduling workflows. */
@@ -20,6 +21,7 @@ type WorkflowScheduler struct {
 	logger *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext map[string]*CallbackContext
+	utils utils.UtilsInterface
 }
 
 /** Class that represents a query for subscribing to a windows event. */
@@ -49,6 +51,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 	var CStringGuid *C.char = (*C.char)(unsafe.Pointer(UserContext))
 	var guid string = C.GoStringN(CStringGuid, 36)
 	var callbackContext *CallbackContext = workflowScheduler.guidToContext[guid]
+	workflowScheduler.logger.Println(guid)
 
 	switch Action {
 		case wevtapi.EvtSubscribeActionError:
@@ -60,18 +63,18 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 				workflowScheduler.logger.Println("Error converting event to XML:", err)
 			}
 			var eventXML string = win32.UTF16BytesToString(UTF16EventXML)
-			var event utils.EventFromXML = utils.NewUtils().ParseEventXML(eventXML)
+			var event utils.EventFromXML = workflowScheduler.utils.ParseEventXML(eventXML)
 
 			callbackContext.workflowContext = nodes.NewWorkflowContext()
 			callbackContext.workflowContext.Seed = eventXML
 			callbackContext.workflowContext.Provider = event.Provider
 			callbackContext.workflowContext.EventID = event.EventID
 			callbackContext.workflowContext.EventRecordID = event.EventRecordID
-
+			fmt.Println(eventXML)
 			// Create a goroutine to run the workflow included in the callback context.
 			go callbackContext.workflow.Run(callbackContext.workflow, callbackContext.workflowContext)
 		default:
-			workflowScheduler.logger.Println("encountered error during callback: unsupported action code %x", uint16(Action))
+			workflowScheduler.logger.Println(fmt.Sprintf("encountered error during callback: unsupported action code %x", uint16(Action)))
 	}
 	return uintptr(0)
 }
@@ -115,7 +118,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext, utils : utils.NewUtils()}
 
 	// Parse the schedules JSON and add the schedules to the workflow scheduler.
 	var schedules map[string][]ScheduleDescription

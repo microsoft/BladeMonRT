@@ -1,0 +1,23 @@
+{
+    "schedules": [
+        {
+            "name": "cpu_speed_monitoring",
+            "schedule_type": "on_win_event",
+            "win_event_subscribe_queries": [
+                ["Application", "*[System[Provider[@Name='CpuSpeedMonitoring']]]"]
+            ],
+            "workflow": "dummy_workflow_a",
+            "enable": true
+        },
+        {
+            "name": "disk_win_event_7_8_alert",
+            "schedule_type": "on_win_event",
+            "win_event_subscribe_queries": [
+                ["System", "*[System[Provider[@Name='disk'] and EventID=7]]"],
+                ["System", "*[System[Provider[@Name='disk'] and EventID=8]]"]
+            ],
+            "workflow": "dummy_workflow_b_c",
+            "enable": true
+        }    
+    ]
+}

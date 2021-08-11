@@ -8,6 +8,18 @@ import (
   "github.com/microsoft/BladeMonRT/logging"
 )
 
+/** Class that represents an event parsed from event XML. */
+type EventFromXML struct {
+  Provider string
+  EventID int
+  TimeCreated time.Time
+  EventRecordID int
+}
+
+type UtilsInterface interface {
+  ParseEventXML(eventXML string) EventFromXML
+}
+
 /** Class that contains utilities used in BladeMonRT classes. */
 type Utils struct {
 	logger *log.Logger
@@ -18,16 +30,8 @@ func NewUtils() *Utils {
 	return &Utils{logger : logger}
 }
 
-/** Class that represents an event parsed from event XML. */
-type EventFromXML struct {
-  Provider string
-  EventID int
-  TimeCreated time.Time
-  EventRecordID int
-}
-
 /** Parses out the event `Provider`, `EventID`, TimeCreated(`SystemTime`), `EventRecordID` (which is different from event ID) from the event XML. */
-func (utils *Utils) ParseEventXML(eventXML string) EventFromXML {
+func (utils Utils) ParseEventXML(eventXML string) EventFromXML {
   re := regexp.MustCompile(`.*Provider *Name=[\"\']([^\"]+)[\"\'].*<EventID[^>]*>([0-9]+)</EventID>.*<TimeCreated +SystemTime=[\"\']([0-9\-]*)T.*<EventRecordID>([0-9]+)</EventRecordID>.*`)
   attributes := re.FindStringSubmatch(eventXML)
   var provider string = attributes[1]

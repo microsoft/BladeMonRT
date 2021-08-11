@@ -6,6 +6,7 @@ import (
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/logging"
 	"log"
+	"fmt"
 )
 
 /** Class for parsing workflow definitions. */
@@ -60,6 +61,7 @@ func (workflowFactory *WorkflowFactory) constructWorkflow(workflowName string) w
 			}
 			return workflow
 		default:
+			fmt.Println(currWorkflowDescription.Type)
 			panic("Workflow types other than simple are not implemented.")
 	}
 
