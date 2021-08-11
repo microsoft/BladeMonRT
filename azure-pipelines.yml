@@ -33,4 +33,8 @@ steps:
     command: push
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
     vstsFeed: 'BladeMonRT/BladeMonRTPipelines'
+<<<<<<< HEAD
     publishVstsFeed: 'BladeMonRTPipelines'
+=======
+    publishVstsFeed: 'BladeMonRTPipelines'
+>>>>>>> 3f4e113 (Setting up nuget pipeline (#9))
