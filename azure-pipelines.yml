@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'windows-2019'
 
 steps:
 - script: echo Hello, world!
@@ -17,3 +17,20 @@ steps:
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+
+- task: NugetCommand@2
+  inputs:
+    command: pack
+    displayName: 'Nuget pack'
+    packagesToPack: '**/*.nuspec'
+    packDestination: '$(Build.ArtifactStagingDirectory)'
+
+- task: NuGetAuthenticate@0
+  displayName: 'NuGet Authenticate'
+- task: NugetCommand@2
+  displayName: 'Nuget push'  
+  inputs:
+    command: push
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    vstsFeed: 'BladeMonRT/BladeMonRTPipelines'
+    publishVstsFeed: 'BladeMonRTPipelines'

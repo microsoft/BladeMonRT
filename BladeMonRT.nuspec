@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>BladeMonRT.test</id>
+    <version>1.0.0</version>
+    <authors>varunkrishna</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <description>BladeMonRT Go</description>
+    <releaseNotes>Event handler for BladeMonRT in Go</releaseNotes>
+    <tags>BladeMonRT</tags>
+  </metadata>
+</package>
