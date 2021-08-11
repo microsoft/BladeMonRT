@@ -32,5 +32,5 @@ steps:
   inputs:
     command: push
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-    vstsFeed: 'BladeMonRT/BladeMonRT'
+    vstsFeed: 'BladeMonRT/BladeMonRTPipelines'
     publishVstsFeed: 'BladeMonRT'
