@@ -6,6 +6,9 @@ import (
 	"runtime"
 	"github.com/microsoft/BladeMonRT/test_configs"
 	"testing"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 /** Instructions on how to run this test are in the README. */
@@ -25,4 +28,9 @@ func TestEndToEnd(t *testing.T) {
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 	mainObj.setupWorkflows(schedulesJson, workflowFactory)
 	mainObj.logger.Println("Initialized main for test.")
+
+	// Setup test such that test does not exit unless there is a keyboard interrupt.
+	quitChannel := make(chan os.Signal, 1)
+    signal.Notify(quitChannel, syscall.SIGINT, syscall.SIGTERM) 
+	<-quitChannel
 }
