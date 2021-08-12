@@ -10,7 +10,7 @@ pool:
   vmImage: 'windows-2019'
 
 steps:
-- task: UseGitVersion@5
+- task: UseGitVersion@1
   displayName: 'GitVersion'
   inputs:
     versionSpec: '5.x'
