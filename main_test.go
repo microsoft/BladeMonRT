@@ -30,7 +30,7 @@ func TestSetupWorkflowScheduler(t *testing.T) {
 
 	// Assert
 	// Assert that the GUID to context map has only 1 context.
-	var workflowScheduler *WorkflowScheduler = mainObj.WorkflowSchedule
+	var workflowScheduler *WorkflowScheduler = mainObj.WorkflowScheduler
 	assert.Equal(t, len(workflowScheduler.guidToContext), 1)
 	
 	// Check that the first and second nodes in the context's workflow are of type DummyNodeA by checking the value of result field in the objects.
