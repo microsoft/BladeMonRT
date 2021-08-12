@@ -6,7 +6,6 @@ import (
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/logging"
 	"log"
-	"fmt"
 )
 
 /** Class for parsing workflow definitions. */
