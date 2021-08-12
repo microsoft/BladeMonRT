@@ -26,7 +26,7 @@ func (utilsForTest UtilsForTest) ParseEventXML(eventXML string) utils.EtwEvent {
 	return utils.EtwEvent{}
 }
 
-func TestNewWorkflowScheduler(t *testing.T) {
+func TestSetupWorkflowScheduler(t *testing.T) {
 	// Assume
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
 	if err != nil {
@@ -39,8 +39,11 @@ func TestNewWorkflowScheduler(t *testing.T) {
 		log.Fatal(err)
 	}
 
+	var mainObj *Main = newMain()
+	mainObj.setupWorkflows(schedulesJson, workflowFactory)
+
 	// Action
-	var workflowScheduler *WorkflowScheduler = newWorkflowScheduler(schedulesJson, workflowFactory)
+	var workflowScheduler *WorkflowScheduler = mainObj.WorkflowScheduler
 
 	// Assert
 	// Assert that the GUID to context map has only 1 context.
