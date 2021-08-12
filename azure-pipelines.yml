@@ -10,13 +10,18 @@ pool:
   vmImage: 'windows-2019'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: GitVersioning@5
+  displayName: 'GitVersion'
+  inputs:
+    versionSpec: '5.x'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: UpdateVersion@3
+  displayName: 'Update version in .nuspec'
+  inputs:
+    targetType: 'inline'
+    script: sed -i "s/1.0.0/$GITVERSIONNUMBER/g" BladeMonRT.nuspec
+  env:
+    GITVERSIONNUMBER: $(GitVersion.SemVer)
 
 - task: NugetCommand@2
   inputs:
@@ -27,6 +32,7 @@ steps:
 
 - task: NuGetAuthenticate@0
   displayName: 'NuGet Authenticate'
+  
 - task: NugetCommand@2
   displayName: 'Nuget push'  
   inputs:
