@@ -6,7 +6,7 @@
             "win_event_subscribe_queries": [
                 ["Application", "*[System[Provider[@Name='CpuSpeedMonitoring']]]"]
             ],
-            "workflow": "dummy_workflow",
+            "workflow": "dummy_workflow_a",
             "enable": true
         },
         {
@@ -16,7 +16,7 @@
                 ["System", "*[System[Provider[@Name='disk'] and EventID=7]]"],
                 ["System", "*[System[Provider[@Name='disk'] and EventID=8]]"]
             ],
-            "workflow": "dummy_workflow",
+            "workflow": "dummy_workflow_b_c",
             "enable": true
         }    
     ]
