@@ -114,9 +114,6 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 func newWorkflowScheduler() *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-<<<<<<< HEAD
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext}
-=======
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext, utils : utils.NewUtils()}
 
 	// Parse the schedules JSON and add the schedules to the workflow scheduler.
@@ -132,7 +129,7 @@ func newWorkflowScheduler() *WorkflowScheduler {
 				workflowScheduler.logger.Println("Given schedule type not supported.")
 		}
 	}
->>>>>>> 30543bc (add tests)
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext, utils: utils.NewUtils()}
 	return workflowScheduler
 }
 
