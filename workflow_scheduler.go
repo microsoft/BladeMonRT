@@ -2,7 +2,6 @@ package main
 
 import (
 	"C"
-	"encoding/json"
 	"github.com/microsoft/BladeMonRT/workflows"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/logging"
@@ -109,24 +108,10 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 	}
 }
 
-func newWorkflowScheduler(schedulesJson []byte, workflowFactory WorkflowFactory) *WorkflowScheduler {
+func newWorkflowScheduler() *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext}
-
-	// Parse the schedules JSON and add the schedules to the workflow scheduler.
-	var schedules map[string][]ScheduleDescription
-	json.Unmarshal([]byte(schedulesJson), &schedules)
-	for _, schedule := range schedules["schedules"] {
-		switch schedule.ScheduleType {
-			case "on_win_event":
-				var workflow workflows.InterfaceWorkflow = workflowFactory.constructWorkflow(schedule.WorkflowName)	
-				var eventQueries []WinEventSubscribeQuery = parseEventSubscribeQueries(schedule.WinEventSubscribeQueries)			
-				workflowScheduler.addWinEventBasedSchedule(workflow, eventQueries) 
-			default:
-				workflowScheduler.logger.Println("Given schedule type not supported.")
-		}
-	}
 	return workflowScheduler
 }
 
