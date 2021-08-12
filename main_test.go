@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_a"
-	//"github.com/microsoft/BladeMonRT/nodes/dummy_node_b"
 	"testing"
 	"log"
 	"io/ioutil"
@@ -25,14 +24,13 @@ func TestSetupWorkflowScheduler(t *testing.T) {
 		log.Fatal(err)
 	}
 
+	// Action
 	var mainObj *Main = newMain()
 	mainObj.setupWorkflows(schedulesJson, workflowFactory)
 
-	// Action
-	var workflowScheduler *WorkflowScheduler = mainObj.WorkflowScheduler
-
 	// Assert
 	// Assert that the GUID to context map has only 1 context.
+	var workflowScheduler *WorkflowScheduler = mainObj.WorkflowSchedule
 	assert.Equal(t, len(workflowScheduler.guidToContext), 1)
 	
 	// Check that the first and second nodes in the context's workflow are of type DummyNodeA by checking the value of result field in the objects.

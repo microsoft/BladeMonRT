@@ -49,7 +49,6 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 	var CStringGuid *C.char = (*C.char)(unsafe.Pointer(UserContext))
 	var guid string = C.GoString(CStringGuid)
 	var callbackContext *CallbackContext = workflowScheduler.guidToContext[guid]
-	workflowScheduler.logger.Println(guid)
 
 	switch Action {
 		case wevtapi.EvtSubscribeActionError:

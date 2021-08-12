@@ -61,7 +61,6 @@ func (workflowFactory *WorkflowFactory) constructWorkflow(workflowName string) w
 			}
 			return workflow
 		default:
-			fmt.Println(currWorkflowDescription.Type)
 			panic("Workflow types other than simple are not implemented.")
 	}
 
