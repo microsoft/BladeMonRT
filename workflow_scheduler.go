@@ -11,6 +11,7 @@ import (
 	"unsafe"
 	"github.com/microsoft/BladeMonRT/utils"
 	"github.com/google/uuid"
+	"fmt"
 )
 
 /** Class for scheduling workflows. */
@@ -67,7 +68,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 			// Create a goroutine to run the workflow included in the callback context.
 			go callbackContext.workflow.Run(callbackContext.workflow, callbackContext.workflowContext)
 		default:
-			workflowScheduler.logger.Println("encountered error during callback: unsupported action code %x", uint16(Action))
+			workflowScheduler.logger.Println(fmt.Sprintf("encountered error during callback: unsupported action code %x", uint16(Action)))
 	}
 	return uintptr(0)
 }
