@@ -15,7 +15,7 @@ func TestParseEventXML(t *testing.T) {
     expectedEventRecordId := 19818
 
 	// Action
-    event := NewUtils().ParseEventXML(test_configs.ArbitraryEvtXml)
+    event := NewUtils().ParseEventXML(test_configs.ARBITRARY_EVT_XML)
 
 	// Assert
     assert.Equal(t, event.Provider, expectedProvider)
