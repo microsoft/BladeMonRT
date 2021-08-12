@@ -24,6 +24,7 @@ func TestEndToEnd(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	
 	var mainObj *Main = newMain()
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 	mainObj.setupWorkflows(schedulesJson, workflowFactory)

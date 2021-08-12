@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"os/signal"
 	"github.com/microsoft/BladeMonRT/logging"
-	"github.com/microsoft/BladeMonRT/test_configs"
+	"github.com/microsoft/BladeMonRT/configs"
 	"encoding/json"
 	"github.com/microsoft/BladeMonRT/workflows"
 )
@@ -22,13 +22,13 @@ func main() {
 	// Set GOMAXPROCS such that all operations execute on a single thread.
 	runtime.GOMAXPROCS(1)
 
-	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
+	workflowsJson, err := ioutil.ReadFile(configs.WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 
-	schedulesJson, err := ioutil.ReadFile(test_configs.TEST_SCHEDULE_FILE)
+	schedulesJson, err := ioutil.ReadFile(configs.SCHEDULE_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
