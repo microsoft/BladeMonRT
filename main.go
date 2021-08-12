@@ -33,7 +33,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var mainObj *Main = NewMain()
+	var mainObj *Main = newMain()
 	mainObj.setupWorkflows(schedulesJson,workflowFactory)
 	mainObj.logger.Println("Initialized main.")
 
@@ -43,7 +43,7 @@ func main() {
 	<-quitChannel
 }
 
-func NewMain() *Main{
+func newMain() *Main{
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 	return &Main{workflowScheduler: newWorkflowScheduler(), logger: logger}
 }
