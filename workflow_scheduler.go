@@ -14,6 +14,11 @@ import (
 	"fmt"
 )
 
+/** Interface for scheduling workflows. */
+type WorkflowSchedulerInterface interface {
+	addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery)
+}
+
 /** Class for scheduling workflows. */
 type WorkflowScheduler struct {
 	logger *log.Logger

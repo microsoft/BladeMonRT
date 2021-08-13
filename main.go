@@ -15,7 +15,7 @@ import (
 
 type Main struct {
 	logger          *log.Logger
-	WorkflowScheduler	*WorkflowScheduler
+	WorkflowScheduler	WorkflowSchedulerInterface
 }
 
 func main() {
@@ -59,7 +59,7 @@ func (main *Main) setupWorkflows(schedulesJson []byte, workflowFactory WorkflowF
 				var eventQueries []WinEventSubscribeQuery = parseEventSubscribeQueries(schedule.WinEventSubscribeQueries)			
 				main.WorkflowScheduler.addWinEventBasedSchedule(workflow, eventQueries) 
 			default:
-				main.WorkflowScheduler.logger.Println("Given schedule type not supported.")
+				main.logger.Println("Given schedule type not supported.")
 		}
 	}
 }

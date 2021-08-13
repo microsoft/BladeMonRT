@@ -1,16 +1,15 @@
 package main
 
 import (
-	"github.com/microsoft/BladeMonRT/nodes"
-	"github.com/microsoft/BladeMonRT/nodes/dummy_node_a"
 	"testing"
 	"log"
 	"io/ioutil"
 	"github.com/microsoft/BladeMonRT/test_configs"
-	"gotest.tools/assert"
+	"github.com/microsoft/BladeMonRT/logging"
+	gomock "github.com/golang/mock/gomock"
 )
 
-func TestSetupWorkflowScheduler(t *testing.T) {
+func TestMain(t *testing.T) {
 	// Assume
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
 	if err != nil {
@@ -19,28 +18,30 @@ func TestSetupWorkflowScheduler(t *testing.T) {
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 
 	// Create the schedules JSON from a file with a single schedule.
-	schedulesJson, err := ioutil.ReadFile(test_configs.TEST_SINGLE_SCHEDULE_FILE)
+	schedulesJson, err := ioutil.ReadFile(test_configs.TEST_SCHEDULE_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Action
-	var mainObj *Main = newMain()
-	mainObj.setupWorkflows(schedulesJson, workflowFactory)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockWorkflowScheduler := NewMockWorkflowSchedulerInterface(ctrl)
 
 	// Assert
-	// Assert that the GUID to context map has only 1 context.
-	var workflowScheduler *WorkflowScheduler = mainObj.WorkflowScheduler
-	assert.Equal(t, len(workflowScheduler.guidToContext), 1)
+	// Set up assertion
+	var cpuMonitoringExpectedEventQuery WinEventSubscribeQuery = WinEventSubscribeQuery{channel: "Application", query: "*[System[Provider[@Name='CpuSpeedMonitoring']]]"}
+	cpuMonitoringExpectedEventQueries := []WinEventSubscribeQuery{cpuMonitoringExpectedEventQuery}
+	mockWorkflowScheduler.EXPECT().addWinEventBasedSchedule(gomock.Any(), cpuMonitoringExpectedEventQueries)
+	var disk7ExpectedEventQuery WinEventSubscribeQuery = WinEventSubscribeQuery{channel: "System", query: "*[System[Provider[@Name='disk'] and EventID=7]]"}
+	var disk8ExpectedEventQuery WinEventSubscribeQuery = WinEventSubscribeQuery{channel: "System", query: "*[System[Provider[@Name='disk'] and EventID=8]]"}
+	diskScheduleExpectedEventQueries := []WinEventSubscribeQuery{disk7ExpectedEventQuery, disk8ExpectedEventQuery}
+	mockWorkflowScheduler.EXPECT().addWinEventBasedSchedule(gomock.Any(), diskScheduleExpectedEventQueries)
+
+
+	// Assume
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
+	var mainObj *Main = &Main{WorkflowScheduler: mockWorkflowScheduler, logger: logger}
 	
-	// Check that the first and second nodes in the context's workflow are of type DummyNodeA by checking the value of result field in the objects.
-	var firstWorkflowNodes []nodes.InterfaceNode
-	for _, element := range workflowScheduler.guidToContext {
-		firstWorkflowNodes = element.workflow.GetNodes()
-		break
-    }
-	actualFirstNode :=  *(firstWorkflowNodes[0]).(*dummy_node_a.DummyNodeA)
-	actualSecondNode := *(firstWorkflowNodes[1]).(*dummy_node_a.DummyNodeA)
-	assert.Equal(t, actualFirstNode.Result, "dummy-node-result")
-	assert.Equal(t, actualSecondNode.Result, "dummy-node-result")
+	// Action
+	mainObj.setupWorkflows(schedulesJson, workflowFactory)
 }
