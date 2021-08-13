@@ -28,7 +28,7 @@ func TestMain(t *testing.T) {
 	mockWorkflowScheduler := NewMockWorkflowSchedulerInterface(ctrl)
 
 	// Assert
-	// Set up assertion
+	// Set up assertion.
 	var cpuMonitoringExpectedEventQuery WinEventSubscribeQuery = WinEventSubscribeQuery{channel: "Application", query: "*[System[Provider[@Name='CpuSpeedMonitoring']]]"}
 	cpuMonitoringExpectedEventQueries := []WinEventSubscribeQuery{cpuMonitoringExpectedEventQuery}
 	mockWorkflowScheduler.EXPECT().addWinEventBasedSchedule(gomock.Any(), cpuMonitoringExpectedEventQueries)
@@ -36,7 +36,6 @@ func TestMain(t *testing.T) {
 	var disk8ExpectedEventQuery WinEventSubscribeQuery = WinEventSubscribeQuery{channel: "System", query: "*[System[Provider[@Name='disk'] and EventID=8]]"}
 	diskScheduleExpectedEventQueries := []WinEventSubscribeQuery{disk7ExpectedEventQuery, disk8ExpectedEventQuery}
 	mockWorkflowScheduler.EXPECT().addWinEventBasedSchedule(gomock.Any(), diskScheduleExpectedEventQueries)
-
 
 	// Assume
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
