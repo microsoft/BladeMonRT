@@ -30,8 +30,8 @@ func TestMain(t *testing.T) {
 	// Assert
 	// Set up assertion.
 	var cpuMonitoringExpectedEventQuery WinEventSubscribeQuery = WinEventSubscribeQuery{channel: "Application", query: "*[System[Provider[@Name='CpuSpeedMonitoring']]]"}
-	cpuMonitoringExpectedEventQueries := []WinEventSubscribeQuery{cpuMonitoringExpectedEventQuery}
-	mockWorkflowScheduler.EXPECT().addWinEventBasedSchedule(gomock.Any(), cpuMonitoringExpectedEventQueries)
+	cpuMonitoringScheduleExpectedEventQueries := []WinEventSubscribeQuery{cpuMonitoringExpectedEventQuery}
+	mockWorkflowScheduler.EXPECT().addWinEventBasedSchedule(gomock.Any(), cpuMonitoringScheduleExpectedEventQueries)
 	var disk7ExpectedEventQuery WinEventSubscribeQuery = WinEventSubscribeQuery{channel: "System", query: "*[System[Provider[@Name='disk'] and EventID=7]]"}
 	var disk8ExpectedEventQuery WinEventSubscribeQuery = WinEventSubscribeQuery{channel: "System", query: "*[System[Provider[@Name='disk'] and EventID=8]]"}
 	diskScheduleExpectedEventQueries := []WinEventSubscribeQuery{disk7ExpectedEventQuery, disk8ExpectedEventQuery}
