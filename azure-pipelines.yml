@@ -15,7 +15,7 @@ steps:
   inputs:
     versionSpec: '5.x'
 
-- task: UseGitVersion@5
+- task: GitVersion@5
   displayName: 'GitVersion'
 
 - task: Bash@3
