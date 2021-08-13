@@ -28,6 +28,9 @@ func (simpleWorkflow *SimpleWorkflow) GetNodes() []nodes.InterfaceNode {
 func (simpleWorkflow *SimpleWorkflow) runVirt(workflowContext *nodes.WorkflowContext) {
 	simpleWorkflow.Logger.Println("Running runVirt method.")
 	for _, node := range simpleWorkflow.GetNodes() {
-		node.Process(node, workflowContext)
+		var err error = node.Process(node, workflowContext)
+		if (err != nil) {
+			break
+		}
 	}
 }

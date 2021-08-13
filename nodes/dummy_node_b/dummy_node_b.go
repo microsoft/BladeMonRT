@@ -32,7 +32,7 @@ func (dummyNode *DummyNodeB) result() string {
 	return "dummy-node-b-result"
 }
 
-func (dummyNode *DummyNodeB) ProcessVirt(workflowContext *nodes.WorkflowContext) {
+func (dummyNode *DummyNodeB) ProcessVirt(workflowContext *nodes.WorkflowContext) error {
 	dummyNode.Logger.Println("Running ProcessVirt method.")
 	dummyNode.SaveResult(dummyNode, workflowContext, dummyNode.result())
 }
