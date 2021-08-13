@@ -12,6 +12,8 @@ pool:
 steps:
 - task: UseGitVersion@5
   displayName: 'GitVersion'
+  inputs:
+    versionSpec: '5.x.x'
 
 - task: Bash@3
   displayName: 'Update version in .nuspec'
