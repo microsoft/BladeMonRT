@@ -32,4 +32,6 @@ func (dummyNode *DummyNodeA) ProcessVirt(workflowContext *nodes.WorkflowContext)
   result += dummyNode.result
 
   dummyNode.SaveResult(dummyNode, workflowContext, result)
+  
+  return nil
 }

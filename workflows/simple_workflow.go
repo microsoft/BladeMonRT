@@ -30,6 +30,7 @@ func (simpleWorkflow *SimpleWorkflow) runVirt(workflowContext *nodes.WorkflowCon
 	for _, node := range simpleWorkflow.GetNodes() {
 		var err error = node.Process(node, workflowContext)
 		if (err != nil) {
+			simpleWorkflow.Logger.Println("Aborting the workflow.")
 			break
 		}
 	}
