@@ -2,12 +2,15 @@ package nodes
 
 import (
 	"log"
+	"github.com/microsoft/BladeMonRT/utils"
 )
 
 /** Class that stores information about the current state of a running workflow. */
 type WorkflowContext struct {
 	nodes []InterfaceNode
 	nodeToResult map[InterfaceNode]interface{}
+	Seed string
+	EtwEvent utils.EtwEvent
 }
 
 func NewWorkflowContext() *WorkflowContext {
