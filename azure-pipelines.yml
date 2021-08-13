@@ -10,10 +10,11 @@ pool:
   vmImage: 'windows-2019'
 
 steps:
-- task: GitVersion@5
+- task: UseGitVersion@5
   displayName: 'GitVersion'
   inputs:
     versionSpec: '5.x'
+  enabled: true
 
 - task: Bash@3
   displayName: 'Update version in .nuspec'
