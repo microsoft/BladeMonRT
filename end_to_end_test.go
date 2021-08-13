@@ -13,6 +13,11 @@ import (
 
 /** Instructions on how to run this test are in the README. */
 func TestEndToEnd(t *testing.T) {
+	// Skip the test if tests are run in short mode since this test will run until a keyboard interrupt is used.
+	if testing.Short() {
+        t.Skip("Skipping test in short mode.")
+    }
+
 	runtime.GOMAXPROCS(1)
 
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
