@@ -10,18 +10,18 @@ pool:
   vmImage: 'windows-2019'
 
 steps:
-- task: UseGitVersion@1
-  displayName: 'GitVersion'
-  inputs:
-    versionSpec: '5.x'
+# - task: UseGitVersion@5
+#   displayName: 'GitVersion'
+#   inputs:
+#     versionSpec: '5.x'
 
-- task: Bash@3
-  displayName: 'Update version in .nuspec'
-  inputs:
-    targetType: 'inline'
-    script: sed -i "s/1.0.0/$GITVERSIONNUMBER/g" BladeMonRT.nuspec
-  env:
-    GITVERSIONNUMBER: $(GitVersion.SemVer)
+# - task: Bash@3
+#   displayName: 'Update version in .nuspec'
+#   inputs:
+#     targetType: 'inline'
+#     script: sed -i "s/1.0.0/$GITVERSIONNUMBER/g" BladeMonRT.nuspec
+#   env:
+#     GITVERSIONNUMBER: $(GitVersion.SemVer)
 
 - task: NugetCommand@2
   inputs:
