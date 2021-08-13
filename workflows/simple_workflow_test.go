@@ -32,6 +32,7 @@ func TestWorkflow(t *testing.T) {
 }
 
 func TestAbortWorkflowOnError(t *testing.T) {
+	// Check that the workflow with node A, B, and C is aborted when node B fails.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -46,9 +47,10 @@ func TestAbortWorkflowOnError(t *testing.T) {
 	workflow.AddNode(mockNodeC)
 
 	// Assert
-	// Set up assertion
-	mockNodeA.EXPECT().Process(gomock.Any(), gomock.Any()).Return(errors.New("Unable to execute process function."))
-	// Expect process is not called on mockNodeB and mockNodeC.
+	// Set up assertions
+	mockNodeA.EXPECT().Process(gomock.Any(), gomock.Any()).Return(nil)
+	mockNodeB.EXPECT().Process(gomock.Any(), gomock.Any()).Return(errors.New("Unable to execute process function."))
+	// Assert that process is not called on mockNodeC by omitting EXPECT statements for mockNodeC.
 
 	// Action
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
