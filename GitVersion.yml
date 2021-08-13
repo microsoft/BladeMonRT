@@ -1,5 +1,9 @@
 mode: Mainline
-branches: {}
+next-version: 1.0.0
+branches:
+  feature:
+    tag: alpha
+  main:
+    tag: ''
 ignore:
   sha: []
-merge-message-formats: {}
