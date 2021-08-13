@@ -9,8 +9,5 @@
     <description>BladeMonRT Go</description>
     <releaseNotes>Event handler for BladeMonRT in Go</releaseNotes>
     <tags>BladeMonRT</tags>
-    <dependencies>
-      <dependency id="GitVersion.Tool" version="5.6.1" />
-    </dependencies>
   </metadata>
 </package>
