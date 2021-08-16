@@ -33,7 +33,7 @@ func TestWorkflow(t *testing.T) {
 }
 
 func TestAbortWorkflowOnError(t *testing.T) {
-	// Check that the workflow with node A, B, and C is aborted when node B fails.
+	// Check that the workflow with node A, B, and C is aborted when processing node B returns an error.
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
