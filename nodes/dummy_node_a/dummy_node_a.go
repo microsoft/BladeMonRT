@@ -9,13 +9,13 @@ import (
 /** Node that has the concatenation of its predecessors' results and a hard-coded value for its result. */
 type DummyNodeA struct {
 	nodes.Node
-  Result string
+  result string
 }
 
 func NewDummyNodeA() *DummyNodeA {
   var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeA")
   var dummyNode DummyNodeA = DummyNodeA{Node : nodes.Node{Logger : logger}}
-  dummyNode.Result = "dummy-node-result"
+  dummyNode.result = "dummy-node-result"
 	return &dummyNode
 }
 
@@ -29,7 +29,7 @@ func (dummyNode *DummyNodeA) ProcessVirt(workflowContext *nodes.WorkflowContext)
   }
 
   // Add the result at the current nodes.
-  result += dummyNode.Result
+  result += dummyNode.result
 
   dummyNode.SaveResult(dummyNode, workflowContext, result)
 }

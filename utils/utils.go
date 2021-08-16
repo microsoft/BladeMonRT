@@ -10,10 +10,6 @@ import (
   "fmt"
 )
 
-type UtilsInterface interface {
-  ParseEventXML(eventXML string) EtwEvent
-}
-
 /** Class that contains utilities used in BladeMonRT classes. */
 type Utils struct {
 	logger *log.Logger

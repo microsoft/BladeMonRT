@@ -37,15 +37,9 @@ To run the main use:
 cd BladeMonRT
 go run .
 
-To run all tests except the end-to-end test use:
+To run all tests use:
 cd BladeMonRT
-go test ./... -short
-
-To run the end-to-end test:
-go test -run TestEndToEnd
-* The end-to-end test runs BRT until a keyboard interrupt.
-* You will have to manually raise ETW events in a separate terminal.
-
+go test ./...
 
 To create a mock use:
 the mockgen command described here https://github.com/golang/mock

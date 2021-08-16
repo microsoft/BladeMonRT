@@ -14,17 +14,11 @@ import (
 	"fmt"
 )
 
-/** Interface for scheduling workflows. */
-type WorkflowSchedulerInterface interface {
-	addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery)
-}
-
 /** Class for scheduling workflows. */
 type WorkflowScheduler struct {
 	logger *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext map[string]*CallbackContext
-	utils utils.UtilsInterface
 }
 
 /** Class that represents a query for subscribing to a windows event. */
@@ -65,7 +59,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 				workflowScheduler.logger.Println("Error converting event to XML:", err)
 			}
 			var eventXML string = win32.UTF16BytesToString(Utf16EventXml)
-			var event utils.EtwEvent = workflowScheduler.utils.ParseEventXML(eventXML)
+			var event utils.EtwEvent = utils.NewUtils().ParseEventXML(eventXML)
 
 			callbackContext.workflowContext = nodes.NewWorkflowContext()
 			callbackContext.workflowContext.Seed = eventXML
@@ -118,7 +112,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 func newWorkflowScheduler() *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext, utils: utils.NewUtils()}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext}
 	return workflowScheduler
 }
 

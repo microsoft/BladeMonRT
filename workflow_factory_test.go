@@ -8,10 +8,13 @@ import (
 	"log"
 	"io/ioutil"
 	"gotest.tools/assert"
-	"github.com/microsoft/BladeMonRT/test_configs"
 )
 
 func TestWorkflowFactory(t *testing.T) {
+	const (
+		WORKFLOW_FILE = "test_configs/test_workflows.json"
+	)
+
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -30,7 +33,7 @@ func TestWorkflowFactory(t *testing.T) {
 	mockNodeC.EXPECT().GetResult(gomock.Any(), gomock.Any()).Return("node-c-result")
 
 	mockNodeFactory := NewMockInterfaceNodeFactory(ctrl)
-	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
+	workflowsJson, err := ioutil.ReadFile(WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}

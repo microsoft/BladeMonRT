@@ -15,7 +15,7 @@ import (
 
 type Main struct {
 	logger          *log.Logger
-	WorkflowScheduler	WorkflowSchedulerInterface
+	workflowScheduler	*WorkflowScheduler
 }
 
 func main() {
@@ -45,7 +45,7 @@ func main() {
 
 func newMain() *Main{
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
-	return &Main{WorkflowScheduler: newWorkflowScheduler(), logger: logger}
+	return &Main{workflowScheduler: newWorkflowScheduler(), logger: logger}
 }
 
 func (main *Main) setupWorkflows(schedulesJson []byte, workflowFactory WorkflowFactory) {
@@ -57,9 +57,9 @@ func (main *Main) setupWorkflows(schedulesJson []byte, workflowFactory WorkflowF
 			case "on_win_event":
 				var workflow workflows.InterfaceWorkflow = workflowFactory.constructWorkflow(schedule.WorkflowName)	
 				var eventQueries []WinEventSubscribeQuery = parseEventSubscribeQueries(schedule.WinEventSubscribeQueries)			
-				main.WorkflowScheduler.addWinEventBasedSchedule(workflow, eventQueries) 
+				main.workflowScheduler.addWinEventBasedSchedule(workflow, eventQueries) 
 			default:
-				main.logger.Println("Given schedule type not supported.")
+				main.workflowScheduler.logger.Println("Given schedule type not supported.")
 		}
 	}
 }
