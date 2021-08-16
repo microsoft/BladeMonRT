@@ -3,6 +3,7 @@ package workflows
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_a"
+	"github.com/microsoft/BladeMonRT/nodes/dummy_node_with_panic"
 	"testing"
 	"gotest.tools/assert"
 	"errors"
@@ -56,3 +57,30 @@ func TestAbortWorkflowOnError(t *testing.T) {
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	workflow.Run(workflow, workflowContext)
 }
+
+
+func TestAbortWorkflowOnPanic(t *testing.T) {
+	// Check that the workflow with node A, B, and C is aborted when node B panics when it is processed.
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Assume
+	mockNodeA := nodes.NewMockInterfaceNode(ctrl)
+	nodeB := dummy_node_with_panic.NewDummyNodeWithPanic()
+	mockNodeC := nodes.NewMockInterfaceNode(ctrl)
+
+	var workflow *SimpleWorkflow = NewSimpleWorkflow()
+	workflow.AddNode(mockNodeA)
+	workflow.AddNode(nodeB)
+	workflow.AddNode(mockNodeC)
+
+	// Assert
+	// Set up assertions
+	mockNodeA.EXPECT().Process(gomock.Any(), gomock.Any()).Return(nil)
+	// Assert that process is not called on mockNodeC by omitting EXPECT statements for mockNodeC.
+
+	// Action
+	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
+	workflow.Run(workflow, workflowContext)
+}
+
