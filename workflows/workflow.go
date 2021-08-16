@@ -3,6 +3,7 @@ package workflows
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
 	"log"
+	"errors"
 )
 
 /** Interface for defining execution sequence of nodes. */
@@ -26,4 +27,17 @@ func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowConte
 	workflowContext.SetNodes(interfaceWorkflow.GetNodes())
 
 	interfaceWorkflow.runVirt(workflowContext)
+}
+
+/** Processes a single node. Classes that implement InterfaceWorkflow should call this to process a node instead of node.process. */
+func (workflow *Workflow) processNode(node nodes.InterfaceNode, workflowContext *nodes.WorkflowContext) (err error) {
+	// Recover from panic during the processing of a node.
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.New("Panic during execution of processNode function.") 
+		}
+	}()
+	// Return error returned by the processing of a node to the caller function.
+	err = node.Process(node, workflowContext)
+	return err
 }

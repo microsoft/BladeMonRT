@@ -5,7 +5,6 @@ import (
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/logging"
 	"fmt"
-	"errors"
 )
 
 /** Workflow for executing nodes sequentially. */
@@ -36,16 +35,4 @@ func (simpleWorkflow *SimpleWorkflow) runVirt(workflowContext *nodes.WorkflowCon
 			break
 		}
 	}
-}
-
-func (simpleWorkflow *SimpleWorkflow) processNode(node nodes.InterfaceNode, workflowContext *nodes.WorkflowContext) (processNodeError error) {
-	// Recover from panic during the processing of a node.
-	defer func() {
-		if r := recover(); r != nil {
-			processNodeError = errors.New("Panic during execution of processNode function.") 
-		}
-	}()
-	// Return error returned by the processing of a node to the caller function.
-	processNodeError = node.Process(node, workflowContext)
-	return processNodeError
 }
