@@ -35,6 +35,5 @@ func (dummyNode *DummyNodeB) result() string {
 func (dummyNode *DummyNodeB) ProcessVirt(workflowContext *nodes.WorkflowContext) error {
 	dummyNode.Logger.Println("Running ProcessVirt method.")
 	dummyNode.SaveResult(dummyNode, workflowContext, dummyNode.result())
-
 	return nil
 }
