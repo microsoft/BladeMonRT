@@ -83,4 +83,3 @@ func TestAbortWorkflowOnPanic(t *testing.T) {
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	workflow.Run(workflow, workflowContext)
 }
-

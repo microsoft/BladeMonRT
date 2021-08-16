@@ -35,7 +35,7 @@ func (workflow *Workflow) processNode(node nodes.InterfaceNode, workflowContext 
 	// Recover from panic during the processing of a node.
 	defer func() {
 		if r := recover(); r != nil {
-			err = errors.New(fmt.Sprintf("Panic: %s", r)) 
+			err = errors.New(fmt.Sprintf("panic: %s", r)) 
 		}
 	}()
 	// Return error returned by the processing of a node to the caller function.
