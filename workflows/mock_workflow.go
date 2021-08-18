@@ -73,9 +73,11 @@ func (mr *MockInterfaceWorkflowMockRecorder) Run(interfaceWorkflow, workflowCont
 }
 
 // runVirt mocks base method.
-func (m *MockInterfaceWorkflow) runVirt(workflowContext *nodes.WorkflowContext) {
+func (m *MockInterfaceWorkflow) runVirt(workflowContext *nodes.WorkflowContext) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "runVirt", workflowContext)
+	ret := m.ctrl.Call(m, "runVirt", workflowContext)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // runVirt indicates an expected call of runVirt.

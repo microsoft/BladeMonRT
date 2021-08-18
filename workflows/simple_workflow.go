@@ -26,13 +26,14 @@ func (simpleWorkflow *SimpleWorkflow) GetNodes() []nodes.InterfaceNode {
 	return simpleWorkflow.nodes
 }
 
-func (simpleWorkflow *SimpleWorkflow) runVirt(workflowContext *nodes.WorkflowContext) {
+func (simpleWorkflow *SimpleWorkflow) runVirt(workflowContext *nodes.WorkflowContext) error {
 	simpleWorkflow.Logger.Println("Running runVirt method.")
 	for _, node := range simpleWorkflow.GetNodes() {
 		var err error = simpleWorkflow.processNode(node, workflowContext)
 		if (err != nil) {
-			simpleWorkflow.Logger.Println(fmt.Sprintf("Aborting the workflow due to error: %s", err))
-			break
+			simpleWorkflow.Logger.Println(fmt.Sprintf("Workflow aborted."))
+			return err
 		}
 	}
+	return nil
 }
