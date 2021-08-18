@@ -55,5 +55,6 @@ the mockgen command described here https://github.com/golang/mock
     cd BladeMonRT
     mockgen -source="./nodes/node.go" -destination="./nodes/mock_node.go" -package="nodes"
 
-To format GO files run:
+To format all GO files run:
+cd BladeMonRT
 gofmt -l -s -w .
