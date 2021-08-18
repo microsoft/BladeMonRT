@@ -1,9 +1,9 @@
 package logging
 
 import (
+	"github.com/microsoft/BladeMonRT/configs"
 	"log"
 	"os"
-	"github.com/microsoft/BladeMonRT/configs"
 )
 
 /** Utility class used to create a logger. */

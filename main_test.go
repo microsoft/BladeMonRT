@@ -1,12 +1,12 @@
 package main
 
 import (
-	"testing"
-	"log"
-	"io/ioutil"
-	"github.com/microsoft/BladeMonRT/test_configs"
-	"github.com/microsoft/BladeMonRT/logging"
 	gomock "github.com/golang/mock/gomock"
+	"github.com/microsoft/BladeMonRT/logging"
+	"github.com/microsoft/BladeMonRT/test_configs"
+	"io/ioutil"
+	"log"
+	"testing"
 )
 
 func TestMain(t *testing.T) {
@@ -40,7 +40,7 @@ func TestMain(t *testing.T) {
 	// Assume
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
 	var mainObj *Main = &Main{WorkflowScheduler: mockWorkflowScheduler, logger: logger}
-	
+
 	// Action
 	mainObj.setupWorkflows(schedulesJson, workflowFactory)
 }

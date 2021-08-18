@@ -14,7 +14,7 @@ type DummyNodeWithPanic struct {
 
 func NewDummyNodeWithPanic() *DummyNodeWithPanic {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeWithPanic")
-	var dummyNode DummyNodeWithPanic = DummyNodeWithPanic{Node : nodes.Node{Logger : logger}}
+	var dummyNode DummyNodeWithPanic = DummyNodeWithPanic{Node: nodes.Node{Logger: logger}}
 	return &dummyNode
 }
 
