@@ -2,30 +2,30 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/workflows"
-	"github.com/microsoft/BladeMonRT/logging"
 	"log"
 )
 
 /** Class for parsing workflow definitions. */
 type WorkflowFactory struct {
 	nameToWorkflow map[string]WorkflowDescription
-	nodeFactory InterfaceNodeFactory
-	logger *log.Logger
+	nodeFactory    InterfaceNodeFactory
+	logger         *log.Logger
 }
 
 /** Class for the workflow description in the JSON. */
 type WorkflowDescription struct {
-	Type string `json:"type"`
+	Type  string            `json:"type"`
 	Nodes []NodeDescription `json:"nodes"`
 }
 
 /** Class for the node description in the JSON. */
 type NodeDescription struct {
-	Name string `json:"name"`
+	Name     string      `json:"name"`
 	Metadata interface{} `json:"metadata"`
-	Args interface{} `json:"args"`
+	Args     interface{} `json:"args"`
 }
 
 func newWorkflowFactory(workflowsJson []byte, nodeFactory InterfaceNodeFactory) WorkflowFactory {
@@ -33,7 +33,7 @@ func newWorkflowFactory(workflowsJson []byte, nodeFactory InterfaceNodeFactory) 
 	json.Unmarshal([]byte(workflowsJson), &workflows)
 
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowFactory")
-	return WorkflowFactory{nameToWorkflow : workflows["workflows"], nodeFactory : nodeFactory, logger : logger}
+	return WorkflowFactory{nameToWorkflow: workflows["workflows"], nodeFactory: nodeFactory, logger: logger}
 }
 
 func (workflowFactory *WorkflowFactory) constructWorkflow(workflowName string) workflows.InterfaceWorkflow {
@@ -51,16 +51,16 @@ func (workflowFactory *WorkflowFactory) constructWorkflow(workflowName string) w
 	}
 
 	// Add nodes to the workflow using the workflow type.
-	switch currWorkflowDescription.Type {	
-		case "simple":
-			var workflow workflows.InterfaceWorkflow
-			workflow = workflows.NewSimpleWorkflow()
-			for _, node := range workflowNodes {
-				workflow.AddNode(node)
-			}
-			return workflow
-		default:
-			panic("Workflow types other than simple are not implemented.")
+	switch currWorkflowDescription.Type {
+	case "simple":
+		var workflow workflows.InterfaceWorkflow
+		workflow = workflows.NewSimpleWorkflow()
+		for _, node := range workflowNodes {
+			workflow.AddNode(node)
+		}
+		return workflow
+	default:
+		panic("Workflow types other than simple are not implemented.")
 	}
 
 	return nil

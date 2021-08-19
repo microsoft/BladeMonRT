@@ -2,8 +2,8 @@ package dummy_node_a
 
 import (
 	"github.com/microsoft/BladeMonRT/nodes"
-	"testing"
 	"gotest.tools/assert"
+	"testing"
 )
 
 func TestDummyNodeA(t *testing.T) {
@@ -12,5 +12,5 @@ func TestDummyNodeA(t *testing.T) {
 	dummyNode.Process(dummyNode, workflowContext)
 	result := dummyNode.GetResult(dummyNode, workflowContext)
 
-	assert.Equal(t, result, "dummy-node-result");
+	assert.Equal(t, result, "dummy-node-result")
 }

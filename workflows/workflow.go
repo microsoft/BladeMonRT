@@ -1,10 +1,10 @@
 package workflows
 
 import (
-	"github.com/microsoft/BladeMonRT/nodes"
-	"log"
 	"errors"
 	"fmt"
+	"github.com/microsoft/BladeMonRT/nodes"
+	"log"
 )
 
 /** Interface for defining execution sequence of nodes. */
@@ -18,7 +18,7 @@ type InterfaceWorkflow interface {
 /** Concrete type for defining execution sequence of nodes. */
 type Workflow struct {
 	workflowContext *nodes.WorkflowContext
-	Logger *log.Logger
+	Logger          *log.Logger
 }
 
 func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowContext *nodes.WorkflowContext) {
@@ -29,7 +29,7 @@ func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowConte
 
 	var err error = interfaceWorkflow.runVirt(workflowContext)
 	// Handle errors thrown when running the workflow.
-	if (err != nil) {
+	if err != nil {
 		workflow.Logger.Println(fmt.Sprintf("Workflow error: %s", err))
 	}
 }
@@ -39,7 +39,7 @@ func (workflow *Workflow) processNode(node nodes.InterfaceNode, workflowContext 
 	// Recover from panic during the processing of a node.
 	defer func() {
 		if r := recover(); r != nil {
-			err = errors.New(fmt.Sprintf("panic: %s", r)) 
+			err = errors.New(fmt.Sprintf("panic: %s", r))
 		}
 	}()
 	// Return error returned by the processing of a node to the caller function.
