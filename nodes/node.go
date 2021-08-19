@@ -5,6 +5,9 @@ import (
 	"github.com/microsoft/BladeMonRT/utils"
 )
 
+// InterfaceNode mock generation.
+//go:generate mockgen -source=./node.go -destination=./mock_node.go -package=nodes
+
 /** Class that stores information about the current state of a running workflow. */
 type WorkflowContext struct {
 	nodes []InterfaceNode
