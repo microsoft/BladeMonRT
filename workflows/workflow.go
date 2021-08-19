@@ -7,6 +7,9 @@ import (
 	"fmt"
 )
 
+// InterfaceWorkflow mock generation.
+//go:generate mockgen -source=./workflow.go -destination=./mock_workflow.go -package=workflows
+
 /** Interface for defining execution sequence of nodes. */
 type InterfaceWorkflow interface {
 	AddNode(node nodes.InterfaceNode)

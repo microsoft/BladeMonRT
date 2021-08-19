@@ -7,6 +7,9 @@ import (
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_c"
 )
 
+// InterfaceNodeFactory mock generation.
+//go:generate mockgen -source=./node_factory.go -destination=./mock_node_factory.go -package=main
+
 /** Interface used to convert node names to node instances. */
 type InterfaceNodeFactory interface {
 	constructNode(typeName string) nodes.InterfaceNode
@@ -17,14 +20,14 @@ type NodeFactory struct{}
 
 func (nodeFactory NodeFactory) constructNode(typeName string) nodes.InterfaceNode {
 	switch typeName {
-		case "DummyNodeA":
-			return dummy_node_a.NewDummyNodeA()
-		case "DummyNodeB":
-			return dummy_node_b.NewDummyNodeB()
-		case "DummyNodeC":
-			return dummy_node_c.NewDummyNodeC()
-		default:
-			panic("Node for given name not found.")
+	case "DummyNodeA":
+		return dummy_node_a.NewDummyNodeA()
+	case "DummyNodeB":
+		return dummy_node_b.NewDummyNodeB()
+	case "DummyNodeC":
+		return dummy_node_c.NewDummyNodeC()
+	default:
+		panic("Node for given name not found.")
 	}
 	return nil
 }

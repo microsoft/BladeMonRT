@@ -1,10 +1,13 @@
 package dummy_node_b
 
 import (
-	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/logging"
+	"github.com/microsoft/BladeMonRT/nodes"
 	"log"
 )
+
+// InterfaceDummyNodeB mock generation.
+//go:generate mockgen -source=./dummy_node_b.go -destination=./mock_dummy_node_b.go -package=dummy_node_b
 
 /** Interface for a node that has a hard-coded value for its result. */
 type InterfaceDummyNodeB interface {
@@ -24,7 +27,7 @@ type DummyNodeB struct {
 
 func NewDummyNodeB() *DummyNodeB {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeB")
-	var dummyNode DummyNodeB = DummyNodeB{Node : nodes.Node{Logger : logger}}
+	var dummyNode DummyNodeB = DummyNodeB{Node: nodes.Node{Logger: logger}}
 	return &dummyNode
 }
 
