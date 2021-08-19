@@ -15,13 +15,13 @@ steps:
   inputs:
     versionSpec: '5.x.x'
 
-- task: Bash@3
-  displayName: 'Update version in .nuspec'
-  inputs:
-    targetType: 'inline'
-    script: sed -i "s/1.0.0/$GITVERSIONNUMBER/g" BladeMonRT.nuspec
-  env:
-    GITVERSIONNUMBER: $(GitVersion.SemVer)
+# - task: Bash@3
+#   displayName: 'Update version in .nuspec'
+#   inputs:
+#     targetType: 'inline'
+#     script: sed -i "s/1.0.0/$GITVERSIONNUMBER/g" BladeMonRT.nuspec
+#   env:
+#     GITVERSIONNUMBER: $(GitVersion.SemVer)
 
 - task: NugetCommand@2
   inputs:
@@ -29,6 +29,8 @@ steps:
     displayName: 'Nuget pack'
     packagesToPack: '**/*.nuspec'
     packDestination: '$(Build.ArtifactStagingDirectory)'
+    versioningScheme: byEnvVar
+    versionEnvVar: GitVersion.NugetVersion
 
 - task: NuGetAuthenticate@0
   displayName: 'NuGet Authenticate'
@@ -40,3 +42,4 @@ steps:
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
     vstsFeed: 'BladeMonRT/BladeMonRTPipelines'
     publishVstsFeed: 'BladeMonRTPipelines'
+    versioningScheme: byBuildNumber
