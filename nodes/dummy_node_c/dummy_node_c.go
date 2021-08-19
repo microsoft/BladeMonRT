@@ -29,9 +29,10 @@ func NewDummyNodeC() *DummyNodeC {
 	return &dummyNode
 }
 
-func (dummyNode *DummyNodeC) ProcessVirt(workflowContext *nodes.WorkflowContext) {
+func (dummyNode *DummyNodeC) ProcessVirt(workflowContext *nodes.WorkflowContext) error {
 	dummyNode.Logger.Println("Running ProcessVirt method.")
 	dummyNode.SaveResult(dummyNode, workflowContext, dummyNode.resultProvider.result())
+	return nil
 }
 
 func (dummyNode ResultProvider) result() string {

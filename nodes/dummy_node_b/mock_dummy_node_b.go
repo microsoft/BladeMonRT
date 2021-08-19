@@ -77,9 +77,11 @@ func (mr *MockInterfaceDummyNodeBMockRecorder) GetResult(interfaceNode, workflow
 }
 
 // Process mocks base method.
-func (m *MockInterfaceDummyNodeB) Process(interfaceNode nodes.InterfaceNode, workflowContext *nodes.WorkflowContext) {
+func (m *MockInterfaceDummyNodeB) Process(interfaceNode nodes.InterfaceNode, workflowContext *nodes.WorkflowContext) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Process", interfaceNode, workflowContext)
+	ret := m.ctrl.Call(m, "Process", interfaceNode, workflowContext)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Process indicates an expected call of Process.
@@ -89,9 +91,11 @@ func (mr *MockInterfaceDummyNodeBMockRecorder) Process(interfaceNode, workflowCo
 }
 
 // ProcessVirt mocks base method.
-func (m *MockInterfaceDummyNodeB) ProcessVirt(workflowContext *nodes.WorkflowContext) {
+func (m *MockInterfaceDummyNodeB) ProcessVirt(workflowContext *nodes.WorkflowContext) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "ProcessVirt", workflowContext)
+	ret := m.ctrl.Call(m, "ProcessVirt", workflowContext)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // ProcessVirt indicates an expected call of ProcessVirt.

@@ -29,8 +29,8 @@ func (workflowContext *WorkflowContext) GetNodes() []InterfaceNode {
 
 /** Interface for defining unit of work to be processed by event loop. Classes that implement InterfaceNode can provide their own constructor. */
 type InterfaceNode interface {
- 	Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext)
-	ProcessVirt(workflowContext *WorkflowContext)
+ 	Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext) error
+	ProcessVirt(workflowContext *WorkflowContext) error
 	SaveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{})
 	GetResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext) interface{}
 	GetPredecessorNodes(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []InterfaceNode
@@ -42,9 +42,9 @@ type Node struct {
 	Logger *log.Logger
 }
 
-func (node *Node) Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext) {
+func (node *Node) Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext) error {
 	// TODO: Add logging.
-	interfaceNode.ProcessVirt(workflowContext)
+	return interfaceNode.ProcessVirt(workflowContext)
 }
 
 func (node *Node) SaveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{}) {

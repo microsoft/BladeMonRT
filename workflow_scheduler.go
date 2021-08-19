@@ -118,7 +118,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 func newWorkflowScheduler() *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext : guidToContext, utils: utils.NewUtils()}
 	return workflowScheduler
 }
 

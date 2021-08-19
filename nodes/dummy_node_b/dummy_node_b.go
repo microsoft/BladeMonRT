@@ -8,8 +8,8 @@ import (
 
 /** Interface for a node that has a hard-coded value for its result. */
 type InterfaceDummyNodeB interface {
-	Process(interfaceNode nodes.InterfaceNode, workflowContext *nodes.WorkflowContext)
-	ProcessVirt(workflowContext *nodes.WorkflowContext)
+	Process(interfaceNode nodes.InterfaceNode, workflowContext *nodes.WorkflowContext) error
+	ProcessVirt(workflowContext *nodes.WorkflowContext) error
 	SaveResult(interfaceNode nodes.InterfaceNode, workflowContext *nodes.WorkflowContext, result interface{})
 	GetResult(interfaceNode nodes.InterfaceNode, workflowContext *nodes.WorkflowContext) interface{}
 	GetPredecessorNodes(interfaceNode nodes.InterfaceNode, workflowContext *nodes.WorkflowContext) []nodes.InterfaceNode
@@ -32,7 +32,8 @@ func (dummyNode *DummyNodeB) result() string {
 	return "dummy-node-b-result"
 }
 
-func (dummyNode *DummyNodeB) ProcessVirt(workflowContext *nodes.WorkflowContext) {
+func (dummyNode *DummyNodeB) ProcessVirt(workflowContext *nodes.WorkflowContext) error {
 	dummyNode.Logger.Println("Running ProcessVirt method.")
 	dummyNode.SaveResult(dummyNode, workflowContext, dummyNode.result())
+	return nil
 }
