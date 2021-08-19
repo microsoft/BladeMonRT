@@ -35,27 +35,26 @@ Use of Microsoft trademarks or logos in modified versions of this project must n
 Any use of third-party trademarks or logos are subject to those third-party's policies.
 
 ## Run and Test
-To run the main use:
+#### To run the main use:
 
 cd BladeMonRT
 
 go run .
 
-To run all tests except the end-to-end test use:
+#### To run all tests except the end-to-end test use:
 
 cd BladeMonRT
 
 go test ./... -short
 
-To run the end-to-end test:
+#### To run the end-to-end test:
 
 go test -run TestEndToEnd
 
 * The end-to-end test runs BRT until a keyboard interrupt.
 * You will have to manually raise ETW events in a separate terminal.
 
-
-To create a mock use:
+#### To create a mock use:
 
 the mockgen command described here https://github.com/golang/mock
 
@@ -66,7 +65,7 @@ the mockgen command described here https://github.com/golang/mock
     mockgen -source="./nodes/node.go" -destination="./nodes/mock_node.go" -package="nodes"
 
 
-To format all GO files run:
+#### To format all GO files run:
 
 cd BladeMonRT
 
