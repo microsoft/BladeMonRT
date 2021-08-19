@@ -23,3 +23,9 @@ jobs:
 
     - name: Test
       run: go test -v -short ./...
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check code formatting using gofmt
+      uses: Jerome1337/gofmt-action@v1.0.4
