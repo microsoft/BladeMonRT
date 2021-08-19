@@ -48,9 +48,6 @@ go test -run TestEndToEnd
 * The end-to-end test runs BRT until a keyboard interrupt.
 * You will have to manually raise ETW events in a separate terminal.
 
-Remove all log files:
-rm -r *log
-
 To create a mock use:
 the mockgen command described here https://github.com/golang/mock
     Example: 
