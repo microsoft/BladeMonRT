@@ -10,13 +10,10 @@ pool:
   vmImage: 'windows-2019'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: UseGitVersion@5
+  displayName: 'GitVersion'
+  inputs:
+    versionSpec: '5.x.x'
 
 - task: NugetCommand@2
   inputs:
@@ -24,9 +21,12 @@ steps:
     displayName: 'Nuget pack'
     packagesToPack: '**/*.nuspec'
     packDestination: '$(Build.ArtifactStagingDirectory)'
+    versioningScheme: byEnvVar
+    versionEnvVar: GitVersion.NugetVersion
 
 - task: NuGetAuthenticate@0
   displayName: 'NuGet Authenticate'
+
 - task: NugetCommand@2
   displayName: 'Nuget push'  
   inputs:
@@ -34,3 +34,4 @@ steps:
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
     vstsFeed: 'BladeMonRT/BladeMonRTPipelines'
     publishVstsFeed: 'BladeMonRTPipelines'
+    versioningScheme: byBuildNumber
