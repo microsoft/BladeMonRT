@@ -21,8 +21,6 @@ steps:
     displayName: 'Nuget pack'
     packagesToPack: '**/*.nuspec'
     packDestination: '$(Build.ArtifactStagingDirectory)'
-    versioningScheme: byEnvVar
-    versionEnvVar: GitVersion.NugetVersion
 
 - task: NuGetAuthenticate@0
   displayName: 'NuGet Authenticate'
@@ -34,4 +32,3 @@ steps:
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
     vstsFeed: 'BladeMonRT/BladeMonRTPipelines'
     publishVstsFeed: 'BladeMonRTPipelines'
-    versioningScheme: byBuildNumber
