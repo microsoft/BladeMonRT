@@ -4,6 +4,7 @@ import (
   "github.com/microsoft/BladeMonRT/nodes"
   "github.com/microsoft/BladeMonRT/logging"
   "log"
+  "time"
 )
 
 /** Node that has the concatenation of its predecessors' results and a hard-coded value for its result. */
@@ -32,5 +33,8 @@ func (dummyNode *DummyNodeA) ProcessVirt(workflowContext *nodes.WorkflowContext)
   result += dummyNode.Result
 
   dummyNode.SaveResult(dummyNode, workflowContext, result)
+
+  time.Sleep(8 * time.Second)
+  dummyNode.Logger.Println("Finished running ProcessVirt method.")
   return nil
 }
