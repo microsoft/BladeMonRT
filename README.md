@@ -49,7 +49,9 @@ go test -run TestEndToEnd
 * You will have to manually raise ETW events in a separate terminal.
 
 To create a mock of a GO interface
-1.Use the mockgen command described here https://github.com/golang/mock
+
+1. Use the mockgen command described here https://github.com/golang/mock
+
     Example: 
     cd BladeMonRT
     mockgen -source="./nodes/node.go" -destination="./nodes/mock_node.go" -package="nodes"
