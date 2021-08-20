@@ -34,7 +34,7 @@ func (dummyNode *DummyNodeA) ProcessVirt(workflowContext *nodes.WorkflowContext)
 
   dummyNode.SaveResult(dummyNode, workflowContext, result)
 
-  time.Sleep(8 * time.Second)
+  time.Sleep(30 * time.Second)
   dummyNode.Logger.Println("Finished running ProcessVirt method.")
   return nil
 }
