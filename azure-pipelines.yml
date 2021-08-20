@@ -15,14 +15,6 @@ steps:
   inputs:
     versionSpec: '5.x.x'
 
-# - task: Bash@3
-#   displayName: 'Update version in .nuspec'
-#   inputs:
-#     targetType: 'inline'
-#     script: sed -i "s/1.0.0/$GITVERSIONNUMBER/g" BladeMonRT.nuspec
-#   env:
-#     GITVERSIONNUMBER: $(GitVersion.SemVer)
-
 - task: NugetCommand@2
   inputs:
     command: pack
