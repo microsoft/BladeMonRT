@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BladeMonRT.test</id>
-    <version>1.0.1</version>
+    <version>1.0.0</version>
     <authors>varunkrishna</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
