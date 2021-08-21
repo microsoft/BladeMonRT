@@ -12,6 +12,11 @@ import (
 	"github.com/microsoft/BladeMonRT/workflows"
 	"log"
 	"unsafe"
+	"regexp"
+	"time"
+	"github.com/microsoft/BladeMonRT/configs"
+	"strings"
+	"strconv"
 )
 
 /** Interface for scheduling workflows. */
@@ -24,6 +29,7 @@ type WorkflowScheduler struct {
 	logger                   *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext            map[string]*CallbackContext
+	queryToEventRecordIdBookmark map[string]int
 	utils                    utils.UtilsInterface
 }
 
@@ -46,6 +52,7 @@ type ScheduleDescription struct {
 
 /** Class that holds information used in the subscription callback function. */
 type CallbackContext struct {
+	query 			string
 	workflow        workflows.InterfaceWorkflow
 	workflowContext *nodes.WorkflowContext
 }
@@ -66,6 +73,21 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		}
 		var eventXML string = win32.UTF16BytesToString(Utf16EventXml)
 		var event utils.EtwEvent = workflowScheduler.utils.ParseEventXML(eventXML)
+		var nowTime time.Time = time.Now()
+
+		// We use the start of today because the time defaults to 00:00 in event.TimeCreated.
+		var startOfToday time.Time = time.Date(nowTime.Year(), nowTime.Month(), nowTime.Day(), 0, 0, 0, 0, event.TimeCreated.Location())
+
+		// Check if the event is too old to process.
+		var age float64 = startOfToday.Sub(event.TimeCreated).Hours() / float64(24)
+		if (age > configs.MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS) {
+			workflowScheduler.logger.Println("Event flagged as too old. Age:", age)
+			return uintptr(0)
+		}
+
+		if (configs.ENABLE_BOOKMARK_FEATURE) {
+			workflowScheduler.updateEventRecordIdBookmark(callbackContext.query, event.EventRecordID)
+		}
 
 		callbackContext.workflowContext = nodes.NewWorkflowContext()
 		callbackContext.workflowContext.Seed = eventXML
@@ -91,9 +113,31 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 	// Subscribe to the events that match the event queries specified.
 	for _, eventQuery := range eventQueries {
 		// Create the callback context for the subscription.
-		var ctx *CallbackContext = &CallbackContext{workflow: workflow}
+		var ctx *CallbackContext = &CallbackContext{query: eventQuery.query, workflow: workflow}
 		var callbackContextUID string = workflowScheduler.storeCallbackContext(ctx)
 		var CStringCallbackContextUID *C.char = C.CString(callbackContextUID)
+
+		// Decide whether to subscribe to future events or start at the oldest record.
+        var subscribeToFutureEvents bool = true
+        var queryText = eventQuery.query
+        queryIncludesCondition, err := regexp.MatchString(".*{condition}.*", eventQuery.query)
+        if (err != nil) {
+            return
+        }
+        if (queryIncludesCondition) {
+            var eventRecordIdBookmark int = workflowScheduler.getEventRecordIdBookmark(eventQuery.query)
+			fmt.Println("EventRecordIDBookmark: %d", eventRecordIdBookmark)
+            if (eventRecordIdBookmark != 0) {
+                subscribeToFutureEvents = false
+            }
+            workflowScheduler.logger.Println(eventRecordIdBookmark)
+            queryText = strings.Replace(eventQuery.query, "{condition}", strconv.Itoa(eventRecordIdBookmark), -1)
+        }
+        workflowScheduler.logger.Println(fmt.Sprintf("Constructed queryText: %s; subscribeToFutureEvents: %t", queryText, subscribeToFutureEvents))
+        var subscribeMethod win32.DWORD =wevtapi.EvtSubscribeStartAtOldestRecord
+        if (subscribeToFutureEvents) {
+             subscribeMethod = wevtapi.EvtSubscribeToFutureEvents
+        }
 
 		// Create a subscription for the event.
 		subscriptionEventHandle, err := wevtapi.EvtSubscribe(
@@ -104,7 +148,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 			wevtapi.EVT_HANDLE(win32.NULL),
 			win32.PVOID(unsafe.Pointer(CStringCallbackContextUID)),
 			workflowScheduler.SubscriptionCallback,
-			wevtapi.EvtSubscribeToFutureEvents)
+			subscribeMethod)
 		if err != nil {
 			workflowScheduler.logger.Println(err)
 			return
@@ -118,7 +162,9 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 func newWorkflowScheduler() *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, utils: utils.NewUtils()}
+	var queryToEventRecordIdBookmark map[string]int = make(map[string]int)
+	var utils utils.UtilsInterface = utils.NewUtils()
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, queryToEventRecordIdBookmark: queryToEventRecordIdBookmark, utils: utils}
 	return workflowScheduler
 }
 
@@ -132,4 +178,20 @@ func parseEventSubscribeQueries(eventQueries [][]string) []WinEventSubscribeQuer
 		parsedEventQueries = append(parsedEventQueries, WinEventSubscribeQuery{channel: channel, query: query})
 	}
 	return parsedEventQueries
+}
+
+func (workflowScheduler *WorkflowScheduler) getEventRecordIdBookmark(query string) int {
+	if (!configs.ENABLE_BOOKMARK_FEATURE) {
+		return 0
+	}
+
+	if eventRecordIdBookmark, ok := workflowScheduler.queryToEventRecordIdBookmark[query]; ok {
+		return eventRecordIdBookmark
+	} else {
+		return 0
+	}
+}
+
+func (workflowScheduler *WorkflowScheduler) updateEventRecordIdBookmark(query string, newEventRecordId int) {
+	workflowScheduler.queryToEventRecordIdBookmark[query] = newEventRecordId
 }
