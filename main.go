@@ -11,7 +11,6 @@ import (
 	"os/signal"
 	"runtime"
 	"syscall"
-	"github.com/microsoft/BladeMonRT/store"
 )
 
 type Main struct {
@@ -20,10 +19,6 @@ type Main struct {
 }
 
 func main() {
-	configStore := store.NewConfigStore()
-	configStore.InitTable()
-	configStore.SetConfigValue("nikhita", "shanker")
-
 	// Set GOMAXPROCS such that all operations execute on a single thread.
 	runtime.GOMAXPROCS(1)
 
