@@ -6,6 +6,9 @@ import (
 	"log"
 )
 
+// InterfaceDummyNodeB mock generation.
+//go:generate mockgen -source=./dummy_node_b.go -destination=./mock_dummy_node_b.go -package=dummy_node_b
+
 /** Interface for a node that has a hard-coded value for its result. */
 type InterfaceDummyNodeB interface {
 	Process(interfaceNode nodes.InterfaceNode, workflowContext *nodes.WorkflowContext) error
