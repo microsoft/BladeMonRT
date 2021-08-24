@@ -1,14 +1,14 @@
 package main
 
 import (
-	nodes "github.com/microsoft/BladeMonRT/nodes"
-	workflows "github.com/microsoft/BladeMonRT/workflows"
 	gomock "github.com/golang/mock/gomock"
-	"testing"
-	"log"
-	"io/ioutil"
-	"gotest.tools/assert"
+	nodes "github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/test_configs"
+	workflows "github.com/microsoft/BladeMonRT/workflows"
+	"gotest.tools/assert"
+	"io/ioutil"
+	"log"
+	"testing"
 )
 
 func TestWorkflowFactory(t *testing.T) {
@@ -43,11 +43,11 @@ func TestWorkflowFactory(t *testing.T) {
 	var workflow workflows.InterfaceWorkflow = workflowFactory.constructWorkflow("dummy_workflow")
 	var workflowContext *nodes.WorkflowContext = nodes.NewWorkflowContext()
 	workflow.Run(workflow, workflowContext)
-	
+
 	// Check the results of nodes in the workflow.
 	var workflowNodes []nodes.InterfaceNode = workflow.GetNodes()
-	assert.Equal(t, workflowNodes[0].GetResult(workflowNodes[0], workflowContext), "node-a-result");
-	assert.Equal(t, workflowNodes[1].GetResult(workflowNodes[1], workflowContext), "node-a-result");
-	assert.Equal(t, workflowNodes[2].GetResult(workflowNodes[2], workflowContext), "node-b-result");
-	assert.Equal(t, workflowNodes[3].GetResult(workflowNodes[3], workflowContext), "node-c-result");
+	assert.Equal(t, workflowNodes[0].GetResult(workflowNodes[0], workflowContext), "node-a-result")
+	assert.Equal(t, workflowNodes[1].GetResult(workflowNodes[1], workflowContext), "node-a-result")
+	assert.Equal(t, workflowNodes[2].GetResult(workflowNodes[2], workflowContext), "node-b-result")
+	assert.Equal(t, workflowNodes[3].GetResult(workflowNodes[3], workflowContext), "node-c-result")
 }
