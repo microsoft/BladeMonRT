@@ -1,8 +1,8 @@
 package dummy_node_b
 
 import (
-	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/logging"
+	"github.com/microsoft/BladeMonRT/nodes"
 	"log"
 )
 
@@ -27,7 +27,7 @@ type DummyNodeB struct {
 
 func NewDummyNodeB() *DummyNodeB {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("DummyNodeB")
-	var dummyNode DummyNodeB = DummyNodeB{Node : nodes.Node{Logger : logger}}
+	var dummyNode DummyNodeB = DummyNodeB{Node: nodes.Node{Logger: logger}}
 	return &dummyNode
 }
 

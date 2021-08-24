@@ -1,10 +1,10 @@
 package workflows
 
 import (
-	"log"
-	"github.com/microsoft/BladeMonRT/nodes"
-	"github.com/microsoft/BladeMonRT/logging"
 	"fmt"
+	"github.com/microsoft/BladeMonRT/logging"
+	"github.com/microsoft/BladeMonRT/nodes"
+	"log"
 )
 
 /** Workflow for executing nodes sequentially. */
@@ -13,9 +13,9 @@ type SimpleWorkflow struct {
 	nodes []nodes.InterfaceNode
 }
 
-func NewSimpleWorkflow() *SimpleWorkflow{
+func NewSimpleWorkflow() *SimpleWorkflow {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("SimpleWorkflow")
-	return &SimpleWorkflow{Workflow: Workflow{Logger : logger}}
+	return &SimpleWorkflow{Workflow: Workflow{Logger: logger}}
 }
 
 func (simpleWorkflow *SimpleWorkflow) AddNode(node nodes.InterfaceNode) {
@@ -30,7 +30,7 @@ func (simpleWorkflow *SimpleWorkflow) runVirt(workflowContext *nodes.WorkflowCon
 	simpleWorkflow.Logger.Println("Running runVirt method.")
 	for _, node := range simpleWorkflow.GetNodes() {
 		var err error = simpleWorkflow.processNode(node, workflowContext)
-		if (err != nil) {
+		if err != nil {
 			simpleWorkflow.Logger.Println(fmt.Sprintf("Workflow aborted."))
 			return err
 		}

@@ -1,8 +1,8 @@
 package nodes
 
 import (
-	"log"
 	"github.com/microsoft/BladeMonRT/utils"
+	"log"
 )
 
 // InterfaceNode mock generation.
@@ -10,15 +10,15 @@ import (
 
 /** Class that stores information about the current state of a running workflow. */
 type WorkflowContext struct {
-	nodes []InterfaceNode
+	nodes        []InterfaceNode
 	nodeToResult map[InterfaceNode]interface{}
-	Seed string
-	EtwEvent utils.EtwEvent
+	Seed         string
+	EtwEvent     utils.EtwEvent
 }
 
 func NewWorkflowContext() *WorkflowContext {
 	var nodeToResult map[InterfaceNode]interface{} = make(map[InterfaceNode]interface{})
-	var workflowContext WorkflowContext = WorkflowContext{nodeToResult : nodeToResult}
+	var workflowContext WorkflowContext = WorkflowContext{nodeToResult: nodeToResult}
 	return &workflowContext
 }
 
@@ -32,14 +32,14 @@ func (workflowContext *WorkflowContext) GetNodes() []InterfaceNode {
 
 /** Interface for defining unit of work to be processed by event loop. Classes that implement InterfaceNode can provide their own constructor. */
 type InterfaceNode interface {
- 	Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext) error
+	Process(interfaceNode InterfaceNode, workflowContext *WorkflowContext) error
 	ProcessVirt(workflowContext *WorkflowContext) error
 	SaveResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext, result interface{})
 	GetResult(interfaceNode InterfaceNode, workflowContext *WorkflowContext) interface{}
 	GetPredecessorNodes(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []InterfaceNode
 	GetPredecessorNodesResults(interfaceNode InterfaceNode, workflowContext *WorkflowContext) []interface{}
 }
- 
+
 /** Concrete type for defining unit of work to be processed by event loop. */
 type Node struct {
 	Logger *log.Logger
@@ -64,7 +64,7 @@ func (node *Node) GetPredecessorNodes(interfaceNode InterfaceNode, workflowConte
 	var predecessorNodes []InterfaceNode
 	var nodes []InterfaceNode = workflowContext.GetNodes()
 	for _, currNode := range nodes {
-		if (interfaceNode == currNode) {
+		if interfaceNode == currNode {
 			break
 		}
 		predecessorNodes = append(predecessorNodes, currNode)
