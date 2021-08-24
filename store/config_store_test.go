@@ -7,7 +7,7 @@ import (
 
 func TestInitTable(t *testing.T) {
 	// Action
-	configStore, err := NewConfigStore("./sqlite-database.db", "ConfigTable")
+	configStore, err := NewConfigStore("./BookmarkStore.sqlite", "ConfigTable")
 	configStore.InitTable()
 
 	// Assert
@@ -16,7 +16,7 @@ func TestInitTable(t *testing.T) {
 
 func TestSetConfigValue(t *testing.T) {
 	// Assume
-	configStore, _ := NewConfigStore("./sqlite-database.db", "ConfigTable")
+	configStore, _ := NewConfigStore("./BookmarkStore.sqlite", "ConfigTable")
 	configStore.InitTable()
 
 	// Action
@@ -29,7 +29,7 @@ func TestSetConfigValue(t *testing.T) {
 
 func TestGetConfigValue(t *testing.T) {
 	// Assume
-	configStore, _ := NewConfigStore("./sqlite-database.db", "ConfigTable")
+	configStore, _ := NewConfigStore("./BookmarkStore.sqlite", "ConfigTable")
 	configStore.InitTable()
 	configStore.SetConfigValue("key1", "value1")
 	configStore.SetConfigValue("key2", "value2")

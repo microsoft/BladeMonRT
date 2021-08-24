@@ -15,6 +15,7 @@ import (
 	"regexp"
 	"time"
 	"github.com/microsoft/BladeMonRT/configs"
+	"github.com/microsoft/BladeMonRT/store"
 	"strings"
 	"strconv"
 )
@@ -30,6 +31,7 @@ type WorkflowScheduler struct {
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext            map[string]*CallbackContext
 	queryToEventRecordIdBookmark map[string]int
+	bookmarkStore 			 *store.ConfigStore
 	utils                    utils.UtilsInterface
 }
 
@@ -86,6 +88,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		}
 
 		if (configs.ENABLE_BOOKMARK_FEATURE) {
+			workflowScheduler.logger.Println("Updating event record ID bookmark: %s to %d.", callbackContext.query, event.EventRecordID)
 			workflowScheduler.updateEventRecordIdBookmark(callbackContext.query, event.EventRecordID)
 		}
 
@@ -144,7 +147,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 			wevtapi.EVT_HANDLE(win32.NULL),
 			win32.HANDLE(win32.NULL),
 			eventQuery.channel,
-			eventQuery.query,
+			queryText,
 			wevtapi.EVT_HANDLE(win32.NULL),
 			win32.PVOID(unsafe.Pointer(CStringCallbackContextUID)),
 			workflowScheduler.SubscriptionCallback,
@@ -164,7 +167,16 @@ func newWorkflowScheduler() *WorkflowScheduler {
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 	var queryToEventRecordIdBookmark map[string]int = make(map[string]int)
 	var utils utils.UtilsInterface = utils.NewUtils()
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, queryToEventRecordIdBookmark: queryToEventRecordIdBookmark, utils: utils}
+	
+	var bookmarkStore *store.ConfigStore
+	bookmarkStore, err := store.NewConfigStore(configs.BOOKMARK_DATABASE_FILE, configs.BOOKMARK_DATABASE_TABLE_NAME)
+	bookmarkStore.InitTable()
+
+	if err != nil {
+		panic(err)
+	}
+	
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, queryToEventRecordIdBookmark: queryToEventRecordIdBookmark, bookmarkStore: bookmarkStore, utils: utils}
 	return workflowScheduler
 }
 
@@ -185,13 +197,27 @@ func (workflowScheduler *WorkflowScheduler) getEventRecordIdBookmark(query strin
 		return 0
 	}
 
+	stringEventRecordId, err := workflowScheduler.bookmarkStore.GetConfigValue(query)
+
+	if err != nil {
+		return 0
+	}
+
+	eventRecordId, err := strconv.Atoi(stringEventRecordId)
+
+
+	return eventRecordId
+
+	/*
 	if eventRecordIdBookmark, ok := workflowScheduler.queryToEventRecordIdBookmark[query]; ok {
 		return eventRecordIdBookmark
 	} else {
 		return 0
 	}
+	*/
 }
 
 func (workflowScheduler *WorkflowScheduler) updateEventRecordIdBookmark(query string, newEventRecordId int) {
-	workflowScheduler.queryToEventRecordIdBookmark[query] = newEventRecordId
+	//workflowScheduler.queryToEventRecordIdBookmark[query] = newEventRecordId
+	workflowScheduler.bookmarkStore.SetConfigValue(query, strconv.Itoa(newEventRecordId))
 }
