@@ -89,7 +89,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 			return uintptr(0)
 		}
 
-		// TODO: change to if (configs.ENABLE_BOOKMARK_FEATURE && callbackContext.queryIncludesCondition) {
+		// PersistentKeyValueStore: change to if (configs.ENABLE_BOOKMARK_FEATURE && callbackContext.queryIncludesCondition) {
 		if (callbackContext.queryIncludesCondition) {
 			workflowScheduler.logger.Println(fmt.Sprintf("Updating event record ID bookmark: %s to %d.", callbackContext.query, event.EventRecordID))
 			workflowScheduler.updateEventRecordIdBookmark(callbackContext.query, event.EventRecordID)
@@ -197,10 +197,9 @@ func parseEventSubscribeQueries(eventQueries [][]string) []WinEventSubscribeQuer
 }
 
 func (workflowScheduler *WorkflowScheduler) getEventRecordIdBookmark(query string) int {
-	// TODO: Uncomment in the next PR.
-	// if (!configs.ENABLE_BOOKMARK_FEATURE) {
-		// return 0
-	// }
+	if (!configs.ENABLE_BOOKMARK_FEATURE) {
+		return 0
+	}
 
 	stringEventRecordId, err := workflowScheduler.bookmarkStore.GetConfigValue(query)
 	if err != nil {

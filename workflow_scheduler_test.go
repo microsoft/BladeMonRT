@@ -28,6 +28,14 @@ func (utilsForTest UtilsForTest) ParseEventXML(eventXML string) utils.EtwEvent {
 	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: time.Now(), EventRecordID: 6}
 }
 
+type UtilsForTestWithOldEvent struct {
+}
+
+func (utilsForTest UtilsForTestWithOldEvent) ParseEventXML(eventXML string) utils.EtwEvent {
+	time := time.Date(1994, 8, 10, 19, 10, 29, 0, time.UTC)
+	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: time, EventRecordID: 6}
+}
+
 func TestSetupWorkflowsBasic(t *testing.T) {
 	// Assume
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
@@ -65,6 +73,8 @@ func TestSetupWorkflowsBasic(t *testing.T) {
 }
 
 func TestAddWinEventBasedSchedule_Basic(t *testing.T) {
+	// Case 1: Call the AddWinEventBasedSchedule method with a schedule containing a query that does not contain a condition.
+
 	// Assume
 	workflowScheduler := newWorkflowScheduler()
 	workflow := workflows.NewSimpleWorkflow()
@@ -89,6 +99,8 @@ func TestAddWinEventBasedSchedule_Basic(t *testing.T) {
 }
 
 func TestAddWinEventBasedSchedule_QueryWithCondition(t *testing.T) {
+	// Case 2: Call the AddWinEventBasedSchedule method with a schedule containing a query that contains a condition.
+
 	// Assume
 	workflowScheduler := newWorkflowScheduler()
 	workflow := workflows.NewSimpleWorkflow()
@@ -112,26 +124,8 @@ func TestAddWinEventBasedSchedule_QueryWithCondition(t *testing.T) {
 	assert.Equal(t, context.query,  `["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > 0]]"]`)
 }
 
-
-/*
-func TestAddWinEventBasedSchedule_QueryWithCondition(t *testing.T) {
-	// Assume
-	workflowScheduler := newWorkflowScheduler()
-	workflow := NewSimpleWorkflow()
-	var eventQueries = [1]WinEventSubscribeQuery{`["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"]`}
-
-	workflowScheduler.addWinEventBasedSchedule(workflow, eventQueries)
-
-	// Check that context's contents related to the bookmark feature.
-	expectedQuery :=  `["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > 0]]"]`
-	assert.Equal(t, context.queryIncludesCondition, true)
-	assert.NotNil(t, context.bookmarkStore)
-	assert.Equal(t, context.query, )
-}
-*/
-
 func TestSubscriptionCallback_Basic(t *testing.T) {
-	// Case 1: Call the SubscriptionCallback method with 'queryIncludesCondition' being false.
+	// Case 1: Call the SubscriptionCallback method with a query that does not contain a condition.
 
 	// Assume
 	ctrl := gomock.NewController(t)
@@ -160,6 +154,8 @@ func TestSubscriptionCallback_Basic(t *testing.T) {
 
 
 func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
+	// Case 2: Call the SubscriptionCallback method with a query that contains a condition.
+
 	// Assume
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -183,5 +179,31 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 
 	// Wait for 5 seconds since the main thread has to switch to the goroutine to run the workflow before Run() is called on mockWorkflow.
 	// If we do not wait, the assertion that Run() was called on mockWorkflow will fail.
+	time.Sleep(5 * time.Second)
+}
+
+func TestSubscriptionCallback_OldEvent(t *testing.T) {
+	// Case 3: Call the SubscriptionCallback method with an event older than MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS in the config.
+	// 'ParseEventXML' from utils returns an event from 1994.
+
+	// Assume
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
+	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, utils: UtilsForTestWithOldEvent{}}
+
+	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
+	// Set up assertions
+	// Expect that the workflow is not run because the event is too old.
+
+	// Assume
+	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow}
+	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
+
+	// Action
+	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))
+
+	// Wait for 5 seconds since the main thread has to switch to the goroutine to run the workflow before Run() may be called on mockWorkflow.
 	time.Sleep(5 * time.Second)
 }
