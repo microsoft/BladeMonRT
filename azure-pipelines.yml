@@ -23,8 +23,8 @@ steps:
   displayName: 'ESRP CodeSigning'
   inputs:
     ConnectedServiceName: 'BladeMonRT-PRSS'
-    FolderPath: '$(Build.SourcesDirectory)'
-    Pattern: '*.go'
+    FolderPath: '$(Build.ArtifactStagingDirectory)'
+    Pattern: '*.dll,*exe,*nupkg'
     signConfigType: 'inlineSignParams'
     inlineOperation: |
       [ 
