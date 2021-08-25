@@ -12,10 +12,7 @@ import (
 // PersistentKeyValueStoreInterface mock generation.
 //go:generate mockgen -source=./persistent_key_value_store.go -destination=./mock_persistent_key_value_store.go -package=store
 
-
-/** This class is copy of PersistentKeyValueStore.py class in GO with the functionality of initializing a table, setting name-value pairs, and retrieving the value for a given name. */
-
-// type == 0 for string
+// Type == 0 for string
 const (
 	TABLE_CREATE_QUERY = `
 		CREATE TABLE IF NOT EXISTS %s
@@ -26,18 +23,22 @@ const (
 		);`
 	INSERT_OR_REPLACE_QUERY = `INSERT OR REPLACE INTO %s (Name, Value, Type) VALUES(?,?,?);`
 	READ_WHERE_QUERY        = `SELECT Value FROM %s WHERE Name = $1;`
+	DELETE_ALL_QUERY = `DELETE FROM %s;`
 )
 
+/** Interface for the PersistentKeyValueStore that define which methods are implemented by PersistentKeyValueStore. */
 type PersistentKeyValueStoreInterface interface {
 	InitTable() error
-	SetConfigValue(configName string, configValue string) error
-	GetConfigValue(configName string) (string, error)
+	SetValue(key string, value string) error
+	GetValue(key string) (string, error)
+	Clear()
 }
 
+/** This class is copy of PersistentKeyValueStore.py class in GO with the functionality of initializing a table, setting name-value pairs, and retrieving the value for a given name. */
 type PersistentKeyValueStore struct {
 	logger          *log.Logger
 	db              *sql.DB
-	configTableName string
+	tableName string
 }
 
 func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentKeyValueStore, error) {
@@ -45,19 +46,19 @@ func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentK
 
 	sqliteDatabase, err := sql.Open("sqlite3", fileName)
 	if err != nil {
-		logger.Println("Error creating new config store.")
+		logger.Println("Error creating new config store:", err)
 		return nil, err
 	}
 
-	var PersistentKeyValueStore *PersistentKeyValueStore = &PersistentKeyValueStore{logger: logger, db: sqliteDatabase, configTableName: tableName}
+	var PersistentKeyValueStore *PersistentKeyValueStore = &PersistentKeyValueStore{logger: logger, db: sqliteDatabase, tableName: tableName}
 	return PersistentKeyValueStore, nil
 }
 
 func (store *PersistentKeyValueStore) InitTable() error {
-	store.logger.Println("Create table...")
-	statement, err := store.db.Prepare(fmt.Sprintf(TABLE_CREATE_QUERY, store.configTableName))
+	store.logger.Println("Creating table.")
+	statement, err := store.db.Prepare(fmt.Sprintf(TABLE_CREATE_QUERY, store.tableName))
 	if err != nil {
-		store.logger.Println("Error initializing table.")
+		store.logger.Println("Error initializing table:", err)
 		return err
 	}
 	statement.Exec()
@@ -65,40 +66,53 @@ func (store *PersistentKeyValueStore) InitTable() error {
 }
 
 /** Sets or adds a config name-value pair. */
-func (store *PersistentKeyValueStore) SetConfigValue(configName string, configValue string) error {
-	store.logger.Println(fmt.Sprintf("Setting config name: %s with value: %s", configName, configValue))
-	statement, err := store.db.Prepare(fmt.Sprintf(INSERT_OR_REPLACE_QUERY, store.configTableName))
+func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
+	store.logger.Println(fmt.Sprintf("Setting key: %s to value: %s", key, value))
+	statement, err := store.db.Prepare(fmt.Sprintf(INSERT_OR_REPLACE_QUERY, store.tableName))
 	if err != nil {
-		store.logger.Println("Error setting config value.")
+		store.logger.Println("Error setting config value:", err)
 		return err
 	}
 	// It only supports string type (type==0) for now. Can be extented in future.
-	statement.Exec(configName, configValue, 0)
+	statement.Exec(key, value, 0)
 	return nil
 }
 
 /** Get the value for a given config name. */
-func (store *PersistentKeyValueStore) GetConfigValue(configName string) (string, error) {
-	statement, err := store.db.Prepare(fmt.Sprintf(READ_WHERE_QUERY, store.configTableName))
+func (store *PersistentKeyValueStore) GetValue(key string) (string, error) {
+	statement, err := store.db.Prepare(fmt.Sprintf(READ_WHERE_QUERY, store.tableName))
 	if err != nil {
-		store.logger.Println(err.Error())
+		store.logger.Println(err)
 		return "", err
 	}
-	rows, err := statement.Query(configName)
+	rows, err := statement.Query(key)
 	if err != nil {
-		store.logger.Println(err.Error())
+		store.logger.Println(err)
 		return "", err
 	}
 
 	defer statement.Close()
+	defer rows.Close()
 	if rows.Next() {
 		var value string
 		err = rows.Scan(&value)
 		if err != nil {
-			store.logger.Println(err.Error())
+			store.logger.Println(err)
 			return "", err
 		}
 		return value, nil
 	}
-	return "", errors.New(fmt.Sprintf("Row with Name=%s not found.", configName))
+	return "", errors.New(fmt.Sprintf("Row with Name=%s not found.", key))
+}
+
+
+/** Clears all key-values. */
+func (store *PersistentKeyValueStore) Clear() {
+	store.logger.Println("Clear table.")
+	statement, err := store.db.Prepare(fmt.Sprintf(DELETE_ALL_QUERY, store.tableName))
+	if err != nil {
+		store.logger.Println("Error clearing table:", err)
+		return
+	}
+	statement.Exec()
 }

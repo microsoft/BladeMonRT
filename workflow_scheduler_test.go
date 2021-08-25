@@ -168,7 +168,7 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
 	// Set up assertions
 	mockWorkflow.EXPECT().Run(gomock.Any(), gomock.Any())
-	mockBookmarkStore.EXPECT().SetConfigValue(queryWithCondition, "6")
+	mockBookmarkStore.EXPECT().SetValue(queryWithCondition, "6")
 
 	// Assume
 	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow, query: queryWithCondition, bookmarkStore: mockBookmarkStore, queryIncludesCondition: true}

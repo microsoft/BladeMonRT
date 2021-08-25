@@ -33,19 +33,31 @@ func (m *MockPersistentKeyValueStoreInterface) EXPECT() *MockPersistentKeyValueS
 	return m.recorder
 }
 
-// GetConfigValue mocks base method.
-func (m *MockPersistentKeyValueStoreInterface) GetConfigValue(configName string) (string, error) {
+// Clear mocks base method.
+func (m *MockPersistentKeyValueStoreInterface) Clear() {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetConfigValue", configName)
+	m.ctrl.Call(m, "Clear")
+}
+
+// Clear indicates an expected call of Clear.
+func (mr *MockPersistentKeyValueStoreInterfaceMockRecorder) Clear() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockPersistentKeyValueStoreInterface)(nil).Clear))
+}
+
+// GetValue mocks base method.
+func (m *MockPersistentKeyValueStoreInterface) GetValue(key string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetValue", key)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetConfigValue indicates an expected call of GetConfigValue.
-func (mr *MockPersistentKeyValueStoreInterfaceMockRecorder) GetConfigValue(configName interface{}) *gomock.Call {
+// GetValue indicates an expected call of GetValue.
+func (mr *MockPersistentKeyValueStoreInterfaceMockRecorder) GetValue(key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfigValue", reflect.TypeOf((*MockPersistentKeyValueStoreInterface)(nil).GetConfigValue), configName)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValue", reflect.TypeOf((*MockPersistentKeyValueStoreInterface)(nil).GetValue), key)
 }
 
 // InitTable mocks base method.
@@ -62,16 +74,16 @@ func (mr *MockPersistentKeyValueStoreInterfaceMockRecorder) InitTable() *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InitTable", reflect.TypeOf((*MockPersistentKeyValueStoreInterface)(nil).InitTable))
 }
 
-// SetConfigValue mocks base method.
-func (m *MockPersistentKeyValueStoreInterface) SetConfigValue(configName, configValue string) error {
+// SetValue mocks base method.
+func (m *MockPersistentKeyValueStoreInterface) SetValue(key, value string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetConfigValue", configName, configValue)
+	ret := m.ctrl.Call(m, "SetValue", key, value)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SetConfigValue indicates an expected call of SetConfigValue.
-func (mr *MockPersistentKeyValueStoreInterfaceMockRecorder) SetConfigValue(configName, configValue interface{}) *gomock.Call {
+// SetValue indicates an expected call of SetValue.
+func (mr *MockPersistentKeyValueStoreInterfaceMockRecorder) SetValue(key, value interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetConfigValue", reflect.TypeOf((*MockPersistentKeyValueStoreInterface)(nil).SetConfigValue), configName, configValue)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetValue", reflect.TypeOf((*MockPersistentKeyValueStoreInterface)(nil).SetValue), key, value)
 }

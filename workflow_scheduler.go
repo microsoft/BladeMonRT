@@ -89,8 +89,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 			return uintptr(0)
 		}
 
-		// PersistentKeyValueStore: change to if (configs.ENABLE_BOOKMARK_FEATURE && callbackContext.queryIncludesCondition) {
-		if (callbackContext.queryIncludesCondition) {
+		if (configs.ENABLE_BOOKMARK_FEATURE && callbackContext.queryIncludesCondition) {
 			workflowScheduler.logger.Println(fmt.Sprintf("Updating event record ID bookmark: %s to %d.", callbackContext.query, event.EventRecordID))
 			workflowScheduler.updateEventRecordIdBookmark(callbackContext.query, event.EventRecordID)
 	
@@ -132,17 +131,17 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 
 		// Decide whether to subscribe to future events or start at the oldest record. 
 		var subscribeToFutureEvents bool = true
-        var queryText = eventQuery.query
+		var queryText string
         if (ctx.queryIncludesCondition) {
             var eventRecordIdBookmark int = workflowScheduler.getEventRecordIdBookmark(eventQuery.query)
             if (eventRecordIdBookmark != 0) {
                 subscribeToFutureEvents = false
             }
-            ctx.query = strings.Replace(eventQuery.query, "{condition}", strconv.Itoa(eventRecordIdBookmark), -1)
+            queryText = strings.Replace(eventQuery.query, "{condition}", strconv.Itoa(eventRecordIdBookmark), -1)
         }
 
         workflowScheduler.logger.Println(fmt.Sprintf("Constructed queryText: %s; subscribeToFutureEvents: %t", queryText, subscribeToFutureEvents))
-        var subscribeMethod win32.DWORD =wevtapi.EvtSubscribeStartAtOldestRecord
+        var subscribeMethod win32.DWORD = wevtapi.EvtSubscribeStartAtOldestRecord
         if (subscribeToFutureEvents) {
              subscribeMethod = wevtapi.EvtSubscribeToFutureEvents
         }
@@ -152,7 +151,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 			wevtapi.EVT_HANDLE(win32.NULL),
 			win32.HANDLE(win32.NULL),
 			eventQuery.channel,
-			ctx.query,
+			queryText,
 			wevtapi.EVT_HANDLE(win32.NULL),
 			win32.PVOID(unsafe.Pointer(CStringCallbackContextUID)),
 			workflowScheduler.SubscriptionCallback,
@@ -201,7 +200,7 @@ func (workflowScheduler *WorkflowScheduler) getEventRecordIdBookmark(query strin
 		return 0
 	}
 
-	stringEventRecordId, err := workflowScheduler.bookmarkStore.GetConfigValue(query)
+	stringEventRecordId, err := workflowScheduler.bookmarkStore.GetValue(query)
 	if err != nil {
 		return 0
 	}
@@ -227,5 +226,5 @@ func (workflowScheduler *WorkflowScheduler) decideCallbackContext(eventQuery Win
 }
 
 func (workflowScheduler *WorkflowScheduler) updateEventRecordIdBookmark(query string, newEventRecordId int) {
-	workflowScheduler.bookmarkStore.SetConfigValue(query, strconv.Itoa(newEventRecordId))
+	workflowScheduler.bookmarkStore.SetValue(query, strconv.Itoa(newEventRecordId))
 }
