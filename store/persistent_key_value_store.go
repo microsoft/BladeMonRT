@@ -9,7 +9,11 @@ import (
 	"log"
 )
 
-/** This class is copy of ConfigStore.py class in GO with the functionality of initializing a table, setting name-value pairs, and retrieving the value for a given name. */
+// PersistentKeyValueStoreInterface mock generation.
+//go:generate mockgen -source=./persistent_key_value_store.go -destination=./mock_persistent_key_value_store.go -package=store
+
+
+/** This class is copy of PersistentKeyValueStore.py class in GO with the functionality of initializing a table, setting name-value pairs, and retrieving the value for a given name. */
 
 // type == 0 for string
 const (
@@ -24,14 +28,20 @@ const (
 	READ_WHERE_QUERY        = `SELECT Value FROM %s WHERE Name = $1;`
 )
 
-type ConfigStore struct {
+type PersistentKeyValueStoreInterface interface {
+	InitTable() error
+	SetConfigValue(configName string, configValue string) error
+	GetConfigValue(configName string) (string, error)
+}
+
+type PersistentKeyValueStore struct {
 	logger          *log.Logger
 	db              *sql.DB
 	configTableName string
 }
 
-func NewConfigStore(fileName string, tableName string) (*ConfigStore, error) {
-	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("ConfigStore")
+func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentKeyValueStore, error) {
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("PersistentKeyValueStore")
 
 	sqliteDatabase, err := sql.Open("sqlite3", fileName)
 	if err != nil {
@@ -39,11 +49,11 @@ func NewConfigStore(fileName string, tableName string) (*ConfigStore, error) {
 		return nil, err
 	}
 
-	var configStore *ConfigStore = &ConfigStore{logger: logger, db: sqliteDatabase, configTableName: tableName}
-	return configStore, nil
+	var PersistentKeyValueStore *PersistentKeyValueStore = &PersistentKeyValueStore{logger: logger, db: sqliteDatabase, configTableName: tableName}
+	return PersistentKeyValueStore, nil
 }
 
-func (store *ConfigStore) InitTable() error {
+func (store *PersistentKeyValueStore) InitTable() error {
 	store.logger.Println("Create table...")
 	statement, err := store.db.Prepare(fmt.Sprintf(TABLE_CREATE_QUERY, store.configTableName))
 	if err != nil {
@@ -55,7 +65,7 @@ func (store *ConfigStore) InitTable() error {
 }
 
 /** Sets or adds a config name-value pair. */
-func (store *ConfigStore) SetConfigValue(configName string, configValue string) error {
+func (store *PersistentKeyValueStore) SetConfigValue(configName string, configValue string) error {
 	store.logger.Println(fmt.Sprintf("Setting config name: %s with value: %s", configName, configValue))
 	statement, err := store.db.Prepare(fmt.Sprintf(INSERT_OR_REPLACE_QUERY, store.configTableName))
 	if err != nil {
@@ -68,7 +78,7 @@ func (store *ConfigStore) SetConfigValue(configName string, configValue string) 
 }
 
 /** Get the value for a given config name. */
-func (store *ConfigStore) GetConfigValue(configName string) (string, error) {
+func (store *PersistentKeyValueStore) GetConfigValue(configName string) (string, error) {
 	statement, err := store.db.Prepare(fmt.Sprintf(READ_WHERE_QUERY, store.configTableName))
 	if err != nil {
 		store.logger.Println(err.Error())

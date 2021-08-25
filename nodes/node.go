@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"github.com/microsoft/BladeMonRT/utils"
+	"github.com/microsoft/BladeMonRT/store"
 	"log"
 )
 
@@ -11,6 +12,8 @@ type WorkflowContext struct {
 	nodeToResult map[InterfaceNode]interface{}
 	Seed         string
 	EtwEvent     utils.EtwEvent
+	Query 			string
+	BookmarkStore	store.PersistentKeyValueStoreInterface
 }
 
 func NewWorkflowContext() *WorkflowContext {
