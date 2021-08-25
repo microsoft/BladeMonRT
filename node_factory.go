@@ -7,6 +7,9 @@ import (
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_c"
 )
 
+// InterfaceNodeFactory mock generation.
+//go:generate mockgen -source=./node_factory.go -destination=./mock_node_factory.go -package=main
+
 /** Interface used to convert node names to node instances. */
 type InterfaceNodeFactory interface {
 	constructNode(typeName string) nodes.InterfaceNode
