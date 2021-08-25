@@ -10,15 +10,6 @@ steps:
   inputs:
     versionSpec: '5.x.x'
 
-- task: NugetCommand@2
-  inputs:
-    command: pack
-    displayName: 'Nuget pack'
-    packagesToPack: '**/*.nuspec'
-    packDestination: '$(Build.ArtifactStagingDirectory)'
-    versioningScheme: byEnvVar
-    versionEnvVar: GitVersion.NugetVersion
-
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
   displayName: 'ESRP CodeSigning'
   inputs:
@@ -43,6 +34,15 @@ steps:
             "toolVersion": "1.0"
         }
       ]
+
+- task: NugetCommand@2
+  inputs:
+    command: pack
+    displayName: 'Nuget pack'
+    packagesToPack: '**/*.nuspec'
+    packDestination: '$(Build.ArtifactStagingDirectory)'
+    versioningScheme: byEnvVar
+    versionEnvVar: GitVersion.NugetVersion
 
 - task: NuGetAuthenticate@0
   displayName: 'NuGet Authenticate'
