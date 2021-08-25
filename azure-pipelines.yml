@@ -15,7 +15,7 @@ steps:
   inputs:
     ConnectedServiceName: 'BladeMonRT-PRSS'
     FolderPath: '$(Build.ArtifactStagingDirectory)'
-    Pattern: '*'
+    Pattern: 'main.go'
     signConfigType: 'inlineSignParams'
     inlineOperation: |
       [ 
