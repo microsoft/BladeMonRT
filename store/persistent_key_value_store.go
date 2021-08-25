@@ -23,7 +23,7 @@ const (
 		);`
 	INSERT_OR_REPLACE_QUERY = `INSERT OR REPLACE INTO %s (Name, Value, Type) VALUES(?,?,?);`
 	READ_WHERE_QUERY        = `SELECT Value FROM %s WHERE Name = $1;`
-	DELETE_ALL_QUERY = `DELETE FROM %s;`
+	DELETE_ALL_QUERY        = `DELETE FROM %s;`
 )
 
 /** Interface for the PersistentKeyValueStore that define which methods are implemented by PersistentKeyValueStore. */
@@ -36,8 +36,8 @@ type PersistentKeyValueStoreInterface interface {
 
 /** This class is copy of PersistentKeyValueStore.py class in GO with the functionality of initializing a table, setting name-value pairs, and retrieving the value for a given name. */
 type PersistentKeyValueStore struct {
-	logger          *log.Logger
-	db              *sql.DB
+	logger    *log.Logger
+	db        *sql.DB
 	tableName string
 }
 
@@ -104,7 +104,6 @@ func (store *PersistentKeyValueStore) GetValue(key string) (string, error) {
 	}
 	return "", errors.New(fmt.Sprintf("Row with Name=%s not found.", key))
 }
-
 
 /** Clears all key-values. */
 func (store *PersistentKeyValueStore) Clear() {

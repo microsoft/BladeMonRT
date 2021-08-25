@@ -68,5 +68,3 @@ func TestClear(t *testing.T) {
 	assert.Assert(t, errKey2 != nil)
 
 }
-
-
