@@ -19,6 +19,31 @@ steps:
     versioningScheme: byEnvVar
     versionEnvVar: GitVersion.NugetVersion
 
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  displayName: 'ESRP CodeSigning'
+  inputs:
+    ConnectedServiceName: 'BladeMonRT-PRSS'
+    FolderPath: '$(Build.ArtifactStagingDirectory)/*'
+    Pattern: 'BladeMonRT.test.*'
+    signConfigType: 'inlineSignParams'
+    inlineOperation: |
+      [ 
+        {
+            "keyCode": "CP-401405",
+            "operationSetCode": "NuGetSign",
+            "parameters": [ ],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+        },
+        {
+            "keyCode": "CP-401405",
+            "operationSetCode": "NuGetVerify",
+            "parameters": [ ],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+        }
+      ]
+
 - task: NuGetAuthenticate@0
   displayName: 'NuGet Authenticate'
 
