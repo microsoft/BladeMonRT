@@ -72,7 +72,7 @@ func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
 		store.logger.Println("Error setting value:", err)
 		return err
 	}
-	// It only supports string type (type==0) for now. Can be extented in future.
+	// It only supports string type (type==0) for now. Can be extended in future.
 	statement.Exec(key, value, 0)
 	return nil
 }
