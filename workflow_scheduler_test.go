@@ -181,29 +181,3 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	// If we do not wait, the assertion that Run() was called on mockWorkflow will fail.
 	time.Sleep(5 * time.Second)
 }
-
-func TestSubscriptionCallback_OldEvent(t *testing.T) {
-	// Case 3: Call the SubscriptionCallback method with an event older than MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS in the config.
-	// 'ParseEventXML' from utils returns an event from 1994.
-
-	// Assume
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
-	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, utils: UtilsForTestWithOldEvent{}}
-
-	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
-	// Set up assertions
-	// Expect that the workflow is not run because the event is too old.
-
-	// Assume
-	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow}
-	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
-
-	// Action
-	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))
-
-	// Wait for 5 seconds since the main thread has to switch to the goroutine to run the workflow before Run() may be called on mockWorkflow.
-	time.Sleep(5 * time.Second)
-}

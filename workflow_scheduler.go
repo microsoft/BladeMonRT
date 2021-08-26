@@ -77,17 +77,6 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		}
 		var eventXML string = win32.UTF16BytesToString(Utf16EventXml)
 		var event utils.EtwEvent = workflowScheduler.utils.ParseEventXML(eventXML)
-		var nowTime time.Time = time.Now()
-
-		// We use the start of today because the time defaults to 00:00 in event.TimeCreated.
-		var startOfToday time.Time = time.Date(nowTime.Year(), nowTime.Month(), nowTime.Day(), 0, 0, 0, 0, event.TimeCreated.Location())
-
-		// Check if the event is too old to process.
-		var age float64 = startOfToday.Sub(event.TimeCreated).Hours() / float64(24)
-		if (age > configs.MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS) {
-			workflowScheduler.logger.Println("Event flagged as too old. Age:", age)
-			return uintptr(0)
-		}
 
 		if (configs.ENABLE_BOOKMARK_FEATURE && callbackContext.queryIncludesCondition) {
 			workflowScheduler.logger.Println(fmt.Sprintf("Updating event record ID bookmark: %s to %d.", callbackContext.query, event.EventRecordID))
