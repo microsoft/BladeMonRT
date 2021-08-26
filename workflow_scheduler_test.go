@@ -64,7 +64,7 @@ func TestSetupWorkflowsBasic(t *testing.T) {
 }
 
 func TestAddWinEventBasedSchedule_Basic(t *testing.T) {
-	// Case 1: Call the AddWinEventBasedSchedule method with a schedule containing a query that does not contain a condition.
+	// Case 1: Call the addWinEventBasedSchedule method with a schedule containing a query that does not contain a condition.
 
 	// Assume
 	workflowScheduler := newWorkflowScheduler()
@@ -90,7 +90,7 @@ func TestAddWinEventBasedSchedule_Basic(t *testing.T) {
 }
 
 func TestAddWinEventBasedSchedule_QueryWithCondition(t *testing.T) {
-	// Case 2: Call the AddWinEventBasedSchedule method with a schedule containing a query that contains a condition.
+	// Case 2: Call the addWinEventBasedSchedule method with a schedule containing a query that contains a condition.
 
 	// Assume
 	workflowScheduler := newWorkflowScheduler()
@@ -125,15 +125,13 @@ func TestSubscriptionCallback_Basic(t *testing.T) {
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
-
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
+	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow, bookmarkStore: mockBookmarkStore, queryIncludesCondition: false}
+	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
+
 	// Set up assertion
 	mockWorkflow.EXPECT().Run(gomock.Any(), gomock.Any())
 	// Expect no calls made on mockBookmarkStore.
-
-	// Assume
-	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow, bookmarkStore: mockBookmarkStore, queryIncludesCondition: false}
-	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
 
 	// Action
 	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))
@@ -154,16 +152,15 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
 	var queryWithCondition string = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
-
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
+
+	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow, query: queryWithCondition, bookmarkStore: mockBookmarkStore, queryIncludesCondition: true}
+	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
+
 	// Set up assertions
 	mockWorkflow.EXPECT().Run(gomock.Any(), gomock.Any())
 	// Event has EventRecordID=6 as specified in the return value of 'ParseEventXML'.
 	mockBookmarkStore.EXPECT().SetValue(queryWithCondition, "6")
-
-	// Assume
-	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow, query: queryWithCondition, bookmarkStore: mockBookmarkStore, queryIncludesCondition: true}
-	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
 
 	// Action
 	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))
