@@ -34,7 +34,7 @@ type PersistentKeyValueStoreInterface interface {
 	Clear() error
 }
 
-/** This class is copy of PersistentKeyValueStore.py class in GO. It stores key value pairs persistently using a database. */ 
+/** This class is copy of PersistentKeyValueStore.py class in GO. It stores key-value pairs persistently using a database. */ 
 type PersistentKeyValueStore struct {
 	logger          *log.Logger
 	db              *sql.DB
