@@ -5,16 +5,6 @@ import (
 	"testing"
 )
 
-func TestInitTable(t *testing.T) {
-	// Action
-	PersistentKeyValueStore, err := NewPersistentKeyValueStore("./BookmarkStore.sqlite", "KeyValueTable")
-	PersistentKeyValueStore.InitTable()
-	PersistentKeyValueStore.Clear()
-
-	// Assert
-	assert.Equal(t, err, nil)
-}
-
 func TestSetValue(t *testing.T) {
 	// Assume
 	PersistentKeyValueStore, _ := NewPersistentKeyValueStore("./BookmarkStore.sqlite", "KeyValueTable")
@@ -25,6 +15,7 @@ func TestSetValue(t *testing.T) {
 	errKey1 := PersistentKeyValueStore.SetValue("key1", "value1")
 	errKey2 := PersistentKeyValueStore.SetValue("key2", "value2")
 
+	// Assert
 	assert.Equal(t, errKey1, nil)
 	assert.Equal(t, errKey2, nil)
 }
@@ -41,7 +32,7 @@ func TestGetValue_KeyExists(t *testing.T) {
 	valKey1, errKey1 := PersistentKeyValueStore.GetValue("key1")
 	valKey2, errKey2 := PersistentKeyValueStore.GetValue("key2")
 
-	// Test
+	// Assert
 	assert.Equal(t, valKey1, "value1")
 	assert.Equal(t, errKey1, nil)
 	assert.Equal(t, valKey2, "value2")
@@ -58,7 +49,7 @@ func TestGetValue_KeyDoesNotExist(t *testing.T) {
 	// Action
 	val, err := PersistentKeyValueStore.GetValue("key2")
 
-	// Test
+	// Assert
 	assert.Equal(t, val, "")
 	assert.DeepEqual(t, err.Error(), "Key=key2 not found in the store.")
 }
@@ -72,9 +63,8 @@ func TestClear(t *testing.T) {
 	// Action
 	PersistentKeyValueStore.Clear()
 
-	// Action
+	// Assert
 	valKey1, errKey1 := PersistentKeyValueStore.GetValue("key1")
-
 	assert.Equal(t, valKey1, "")
 	assert.Assert(t, errKey1 != nil)
 }
