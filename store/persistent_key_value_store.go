@@ -46,7 +46,7 @@ func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentK
 
 	sqliteDatabase, err := sql.Open("sqlite3", fileName)
 	if err != nil {
-		logger.Println("Error creating new config store:", err)
+		logger.Println("Error creating new key-value store:", err)
 		return nil, err
 	}
 
@@ -55,7 +55,7 @@ func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentK
 }
 
 func (store *PersistentKeyValueStore) InitTable() error {
-	store.logger.Println("Creating table.")
+	store.logger.Println("Creating table:", store.tableName)
 	statement, err := store.db.Prepare(fmt.Sprintf(TABLE_CREATE_QUERY, store.tableName))
 	if err != nil {
 		store.logger.Println("Error initializing table:", err)
@@ -69,7 +69,7 @@ func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
 	store.logger.Println(fmt.Sprintf("Setting key: %s to value: %s", key, value))
 	statement, err := store.db.Prepare(fmt.Sprintf(INSERT_OR_REPLACE_QUERY, store.tableName))
 	if err != nil {
-		store.logger.Println("Error setting config value:", err)
+		store.logger.Println("Error setting value:", err)
 		return err
 	}
 	// It only supports string type (type==0) for now. Can be extented in future.

@@ -27,14 +27,6 @@ func (utilsForTest UtilsForTest) ParseEventXML(eventXML string) utils.EtwEvent {
 	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: time.Now(), EventRecordID: 6}
 }
 
-type UtilsForTestWithOldEvent struct {
-}
-
-func (utilsForTest UtilsForTestWithOldEvent) ParseEventXML(eventXML string) utils.EtwEvent {
-	time := time.Date(1994, 8, 10, 19, 10, 29, 0, time.UTC)
-	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: time, EventRecordID: 6}
-}
-
 func TestSetupWorkflowsBasic(t *testing.T) {
 	// Assume
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
@@ -167,6 +159,7 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
 	// Set up assertions
 	mockWorkflow.EXPECT().Run(gomock.Any(), gomock.Any())
+	// Event has EventID=6 as specified in the return value of 'ParseEventXML'. 
 	mockBookmarkStore.EXPECT().SetValue(queryWithCondition, "6")
 
 	// Assume
@@ -179,4 +172,20 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	// Wait for 5 seconds since the main thread has to switch to the goroutine to run the workflow before Run() is called on mockWorkflow.
 	// If we do not wait, the assertion that Run() was called on mockWorkflow will fail.
 	time.Sleep(5 * time.Second)
+}
+
+func TestDecideSubscriptionType(t *testing.T) {
+	// Assume
+	ctx := &CallbackContext{}
+	ctx.query = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]" 
+	ctx.queryIncludesCondition = true 
+	workflowScheduler := newWorkflowScheduler()
+	workflowScheduler.bookmarkStore.SetValue(ctx.query, "7")
+
+	// Action
+	queryText, subscribeMethod := workflowScheduler.decideSubscriptionType(ctx)
+
+	// Assert
+	assert.Equal(t, queryText, "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > 7]]")
+	assert.Equal(t, subscribeMethod, win32.DWORD(wevtapi.EvtSubscribeStartAtOldestRecord))
 }
