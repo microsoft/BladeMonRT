@@ -121,7 +121,7 @@ func TestAddWinEventBasedSchedule_QueryWithCondition(t *testing.T) {
 	// Check that context's contents related to the bookmark feature.
 	assert.Equal(t, context.queryIncludesCondition, true)
 	assert.Assert(t, context.bookmarkStore != nil)
-	assert.Equal(t, context.query,  `["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > 0]]"]`)
+	assert.Equal(t, context.query,  `["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"]`)
 }
 
 func TestSubscriptionCallback_Basic(t *testing.T) {
