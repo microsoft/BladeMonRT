@@ -131,7 +131,7 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 
 		// Decide whether to subscribe to future events or start at the oldest record. 
 		var subscribeToFutureEvents bool = true
-		var queryText string
+		var queryText string = eventQuery.query
         if (ctx.queryIncludesCondition) {
             var eventRecordIdBookmark int = workflowScheduler.getEventRecordIdBookmark(eventQuery.query)
             if (eventRecordIdBookmark != 0) {
