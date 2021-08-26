@@ -2,22 +2,22 @@ package main
 
 import (
 	"C"
+	"errors"
 	"fmt"
 	win32 "github.com/0xrawsec/golang-win32/win32"
 	wevtapi "github.com/0xrawsec/golang-win32/win32/wevtapi"
 	"github.com/google/uuid"
+	"github.com/microsoft/BladeMonRT/configs"
 	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/nodes"
+	"github.com/microsoft/BladeMonRT/store"
 	"github.com/microsoft/BladeMonRT/utils"
 	"github.com/microsoft/BladeMonRT/workflows"
 	"log"
-	"unsafe"
 	"regexp"
-	"github.com/microsoft/BladeMonRT/configs"
-	"github.com/microsoft/BladeMonRT/store"
-	"strings"
 	"strconv"
-	"errors"
+	"strings"
+	"unsafe"
 )
 
 /** Interface for scheduling workflows. */
@@ -30,7 +30,7 @@ type WorkflowScheduler struct {
 	logger                   *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext            map[string]*CallbackContext
-	bookmarkStore 			 store.PersistentKeyValueStoreInterface
+	bookmarkStore            store.PersistentKeyValueStoreInterface
 	utils                    utils.UtilsInterface
 }
 
@@ -53,11 +53,11 @@ type ScheduleDescription struct {
 
 /** Class that holds information used in the subscription callback function. */
 type CallbackContext struct {
-	query 			string
+	query                  string
 	queryIncludesCondition bool
-	bookmarkStore	store.PersistentKeyValueStoreInterface
-	workflow        workflows.InterfaceWorkflow
-	workflowContext *nodes.WorkflowContext
+	bookmarkStore          store.PersistentKeyValueStoreInterface
+	workflow               workflows.InterfaceWorkflow
+	workflowContext        *nodes.WorkflowContext
 }
 
 func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.EVT_SUBSCRIBE_NOTIFY_ACTION, UserContext win32.PVOID, Event wevtapi.EVT_HANDLE) uintptr {
@@ -77,7 +77,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		var eventXML string = win32.UTF16BytesToString(Utf16EventXml)
 		var event utils.EtwEvent = workflowScheduler.utils.ParseEventXML(eventXML)
 
-		if (configs.ENABLE_BOOKMARK_FEATURE && callbackContext.queryIncludesCondition) {
+		if configs.ENABLE_BOOKMARK_FEATURE && callbackContext.queryIncludesCondition {
 			workflowScheduler.logger.Println(fmt.Sprintf("Updating event record ID bookmark: %s to %d.", callbackContext.query, event.EventRecordID))
 			workflowScheduler.updateEventRecordIdBookmark(callbackContext.query, event.EventRecordID)
 		}
@@ -108,17 +108,16 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 	// Subscribe to the events that match the event queries specified.
 	for _, eventQuery := range eventQueries {
 		// Create the callback context for the subscription.
-		ctx, err := workflowScheduler.decideCallbackContext(eventQuery, workflow)
-		if (err != nil) {
+		context, err := workflowScheduler.decideCallbackContext(eventQuery, workflow)
+		if err != nil {
 			workflowScheduler.logger.Println("Error in deciding callback context:", err)
 			return
 		}
-
-		var callbackContextUID string = workflowScheduler.storeCallbackContext(ctx)
+		var callbackContextUID string = workflowScheduler.storeCallbackContext(context)
 		var CStringCallbackContextUID *C.char = C.CString(callbackContextUID)
 
 		// Decide the query and the subscribe method for the subscription.
-		queryText, subscribeMethod := workflowScheduler.decideSubscriptionType(ctx)
+		queryText, subscribeMethod := workflowScheduler.decideSubscriptionType(context)
 
 		// Create a subscription for the event.
 		subscriptionEventHandle, err := wevtapi.EvtSubscribe(
@@ -144,14 +143,14 @@ func newWorkflowScheduler() *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 	var utils utils.UtilsInterface = utils.NewUtils()
-	
+
 	var bookmarkStore *store.PersistentKeyValueStore
 	bookmarkStore, err := store.NewPersistentKeyValueStore(configs.BOOKMARK_DATABASE_FILE, configs.BOOKMARK_DATABASE_TABLE_NAME)
-	bookmarkStore.InitTable()
 	if err != nil {
 		panic("Unable to create bookmark store.")
 	}
-	
+	bookmarkStore.InitTable()
+
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, bookmarkStore: bookmarkStore, utils: utils}
 	return workflowScheduler
 }
@@ -169,7 +168,7 @@ func parseEventSubscribeQueries(eventQueries [][]string) []WinEventSubscribeQuer
 }
 
 func (workflowScheduler *WorkflowScheduler) getEventRecordIdBookmark(query string) int {
-	if (!configs.ENABLE_BOOKMARK_FEATURE) {
+	if !configs.ENABLE_BOOKMARK_FEATURE {
 		return 0
 	}
 
@@ -181,39 +180,39 @@ func (workflowScheduler *WorkflowScheduler) getEventRecordIdBookmark(query strin
 	return eventRecordId
 }
 
-func (workflowScheduler *WorkflowScheduler) decideCallbackContext(eventQuery WinEventSubscribeQuery, workflow workflows.InterfaceWorkflow) (*CallbackContext, error) {	
+func (workflowScheduler *WorkflowScheduler) decideCallbackContext(eventQuery WinEventSubscribeQuery, workflow workflows.InterfaceWorkflow) (*CallbackContext, error) {
 	var query string = eventQuery.query
 
 	// Check if the query contains a condition.
 	queryIncludesCondition, err := regexp.MatchString(".*{condition}.*", query)
-	if (err != nil) {
+	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to check if query %s contains condition.", query))
 	}
 	var bookmarkStore store.PersistentKeyValueStoreInterface = nil
-	if (queryIncludesCondition) {
+	if queryIncludesCondition {
 		bookmarkStore = workflowScheduler.bookmarkStore
 	}
 
-	var ctx *CallbackContext = &CallbackContext{query: query, workflow: workflow, queryIncludesCondition: queryIncludesCondition, bookmarkStore: bookmarkStore}
-	return ctx, nil
+	var context *CallbackContext = &CallbackContext{query: query, workflow: workflow, queryIncludesCondition: queryIncludesCondition, bookmarkStore: bookmarkStore}
+	return context, nil
 }
 
-func (workflowScheduler *WorkflowScheduler) decideSubscriptionType(ctx *CallbackContext) (queryText string, subscribeMethod win32.DWORD) {
-	// Decide whether to subscribe to future events or start at the oldest record. 
+func (workflowScheduler *WorkflowScheduler) decideSubscriptionType(context *CallbackContext) (queryText string, subscribeMethod win32.DWORD) {
+	// Decide whether to subscribe to future events or start at the oldest record.
 	var subscribeToFutureEvents bool = true
-	queryText = ctx.query
-	if (ctx.queryIncludesCondition) {
-		var eventRecordIdBookmark int = workflowScheduler.getEventRecordIdBookmark(ctx.query)
-		if (eventRecordIdBookmark != 0) {
+	queryText = context.query
+	if context.queryIncludesCondition {
+		var eventRecordIdBookmark int = workflowScheduler.getEventRecordIdBookmark(context.query)
+		if eventRecordIdBookmark != 0 {
 			subscribeToFutureEvents = false
 		}
-		queryText = strings.Replace(ctx.query, "{condition}", strconv.Itoa(eventRecordIdBookmark), -1)
+		queryText = strings.Replace(context.query, "{condition}", strconv.Itoa(eventRecordIdBookmark), -1)
 	}
-
 	workflowScheduler.logger.Println(fmt.Sprintf("Constructed queryText: %s; subscribeToFutureEvents: %t", queryText, subscribeToFutureEvents))
+
 	subscribeMethod = wevtapi.EvtSubscribeStartAtOldestRecord
-	if (subscribeToFutureEvents) {
-		 subscribeMethod = wevtapi.EvtSubscribeToFutureEvents
+	if subscribeToFutureEvents {
+		subscribeMethod = wevtapi.EvtSubscribeToFutureEvents
 	}
 
 	return queryText, subscribeMethod

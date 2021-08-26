@@ -5,9 +5,9 @@ import (
 	wevtapi "github.com/0xrawsec/golang-win32/win32/wevtapi"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/microsoft/BladeMonRT/logging"
-	"github.com/microsoft/BladeMonRT/store"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_a"
+	"github.com/microsoft/BladeMonRT/store"
 	"github.com/microsoft/BladeMonRT/test_configs"
 	"github.com/microsoft/BladeMonRT/test_utils"
 	"github.com/microsoft/BladeMonRT/utils"
@@ -16,8 +16,8 @@ import (
 	"io/ioutil"
 	"log"
 	"testing"
-	"unsafe"
 	"time"
+	"unsafe"
 )
 
 type UtilsForTest struct {
@@ -112,7 +112,7 @@ func TestAddWinEventBasedSchedule_QueryWithCondition(t *testing.T) {
 	// Check that context's contents related to the bookmark feature.
 	assert.Equal(t, context.queryIncludesCondition, true)
 	assert.Assert(t, context.bookmarkStore != nil)
-	assert.Equal(t, context.query,  `["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"]`)
+	assert.Equal(t, context.query, `["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"]`)
 }
 
 func TestSubscriptionCallback_Basic(t *testing.T) {
@@ -143,7 +143,6 @@ func TestSubscriptionCallback_Basic(t *testing.T) {
 	time.Sleep(5 * time.Second)
 }
 
-
 func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	// Case 2: Call the SubscriptionCallback method with a query that contains a condition.
 
@@ -159,7 +158,7 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
 	// Set up assertions
 	mockWorkflow.EXPECT().Run(gomock.Any(), gomock.Any())
-	// Event has EventID=6 as specified in the return value of 'ParseEventXML'. 
+	// Event has EventRecordID=6 as specified in the return value of 'ParseEventXML'.
 	mockBookmarkStore.EXPECT().SetValue(queryWithCondition, "6")
 
 	// Assume
@@ -176,14 +175,14 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 
 func TestDecideSubscriptionType(t *testing.T) {
 	// Assume
-	ctx := &CallbackContext{}
-	ctx.query = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]" 
-	ctx.queryIncludesCondition = true 
+	context := &CallbackContext{}
+	context.query = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
+	context.queryIncludesCondition = true
 	workflowScheduler := newWorkflowScheduler()
-	workflowScheduler.bookmarkStore.SetValue(ctx.query, "7")
+	workflowScheduler.bookmarkStore.SetValue(context.query, "7")
 
 	// Action
-	queryText, subscribeMethod := workflowScheduler.decideSubscriptionType(ctx)
+	queryText, subscribeMethod := workflowScheduler.decideSubscriptionType(context)
 
 	// Assert
 	assert.Equal(t, queryText, "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > 7]]")

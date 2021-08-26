@@ -5,6 +5,4 @@ const (
 	TEST_WORKFLOW_FILE        = "test_configs/test_workflows.json"
 	TEST_SCHEDULE_FILE        = "test_configs/test_schedule.json"
 	TEST_SINGLE_SCHEDULE_FILE = "test_configs/test_single_schedule.json"
-	TEST_BOOKMARK_DATABASE_FILE = "./BookmarkStore.sqlite"
-	TEST_BOOKMARK_DATABASE_TABLE_NAME = "Table"
 )

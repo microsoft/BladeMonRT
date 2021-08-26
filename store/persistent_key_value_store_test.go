@@ -68,18 +68,13 @@ func TestClear(t *testing.T) {
 	PersistentKeyValueStore, _ := NewPersistentKeyValueStore("./BookmarkStore.sqlite", "KeyValueTable")
 	PersistentKeyValueStore.InitTable()
 	PersistentKeyValueStore.SetValue("key1", "value1")
-	PersistentKeyValueStore.SetValue("key2", "value2")
 
 	// Action
 	PersistentKeyValueStore.Clear()
 
 	// Action
 	valKey1, errKey1 := PersistentKeyValueStore.GetValue("key1")
-	valKey2, errKey2 := PersistentKeyValueStore.GetValue("key2")
 
 	assert.Equal(t, valKey1, "")
 	assert.Assert(t, errKey1 != nil)
-	assert.Equal(t, valKey2, "")
-	assert.Assert(t, errKey2 != nil)
-
 }
