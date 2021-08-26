@@ -16,9 +16,8 @@ import (
 	"io/ioutil"
 	"log"
 	"testing"
-	"time"
 	"unsafe"
-
+	"time"
 )
 
 type UtilsForTest struct {

@@ -34,9 +34,11 @@ func (m *MockPersistentKeyValueStoreInterface) EXPECT() *MockPersistentKeyValueS
 }
 
 // Clear mocks base method.
-func (m *MockPersistentKeyValueStoreInterface) Clear() {
+func (m *MockPersistentKeyValueStoreInterface) Clear() error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Clear")
+	ret := m.ctrl.Call(m, "Clear")
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Clear indicates an expected call of Clear.

@@ -13,7 +13,6 @@ import (
 	"log"
 	"unsafe"
 	"regexp"
-	"time"
 	"github.com/microsoft/BladeMonRT/configs"
 	"github.com/microsoft/BladeMonRT/store"
 	"strings"
