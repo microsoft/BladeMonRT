@@ -31,7 +31,7 @@ type PersistentKeyValueStoreInterface interface {
 	InitTable() error
 	SetValue(key string, value string) error
 	GetValue(key string) (string, error)
-	Clear()
+	Clear() error
 }
 
 /** This class is copy of PersistentKeyValueStore.py class in GO with the functionality of initializing a table, setting name-value pairs, and retrieving the value for a given name. */
@@ -116,4 +116,5 @@ func (store *PersistentKeyValueStore) Clear() error{
 	}
 
 	statement.Exec()
+	return nil
 }
