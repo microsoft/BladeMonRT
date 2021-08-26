@@ -34,7 +34,7 @@ type PersistentKeyValueStoreInterface interface {
 	Clear() error
 }
 
-/** This class is copy of PersistentKeyValueStore.py class in GO with the functionality of initializing a table, setting name-value pairs, and retrieving the value for a given name. */
+/** This class is copy of PersistentKeyValueStore.py class in GO. It stores key value pairs persistently using a database. */ 
 type PersistentKeyValueStore struct {
 	logger          *log.Logger
 	db              *sql.DB
@@ -65,7 +65,6 @@ func (store *PersistentKeyValueStore) InitTable() error {
 	return nil
 }
 
-/** Sets or adds a config name-value pair. */
 func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
 	store.logger.Println(fmt.Sprintf("Setting key: %s to value: %s", key, value))
 	statement, err := store.db.Prepare(fmt.Sprintf(INSERT_OR_REPLACE_QUERY, store.tableName))
@@ -78,7 +77,6 @@ func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
 	return nil
 }
 
-/** Get the value for a given config name. */
 func (store *PersistentKeyValueStore) GetValue(key string) (string, error) {
 	statement, err := store.db.Prepare(fmt.Sprintf(READ_WHERE_QUERY, store.tableName))
 	if err != nil {
@@ -91,7 +89,6 @@ func (store *PersistentKeyValueStore) GetValue(key string) (string, error) {
 		return "", err
 	}
 
-	defer statement.Close()
 	defer rows.Close()
 	if rows.Next() {
 		var value string
@@ -102,11 +99,9 @@ func (store *PersistentKeyValueStore) GetValue(key string) (string, error) {
 		}
 		return value, nil
 	}
-	return "", errors.New(fmt.Sprintf("Row with Name=%s not found.", key))
+	return "", errors.New(fmt.Sprintf("Key=%s not found in the store.", key))
 }
 
-
-/** Clears all key-values. */
 func (store *PersistentKeyValueStore) Clear() error{
 	store.logger.Println("Clear table.")
 	statement, err := store.db.Prepare(fmt.Sprintf(DELETE_ALL_QUERY, store.tableName))
