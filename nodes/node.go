@@ -1,8 +1,8 @@
 package nodes
 
 import (
-	"github.com/microsoft/BladeMonRT/utils"
 	"github.com/microsoft/BladeMonRT/store"
+	"github.com/microsoft/BladeMonRT/utils"
 	"log"
 )
 
@@ -11,12 +11,12 @@ import (
 
 /** Class that stores information about the current state of a running workflow. */
 type WorkflowContext struct {
-	nodes        []InterfaceNode
-	nodeToResult map[InterfaceNode]interface{}
-	Seed         string
-	EtwEvent     utils.EtwEvent
-	Query 			string
-	BookmarkStore	store.PersistentKeyValueStoreInterface
+	nodes         []InterfaceNode
+	nodeToResult  map[InterfaceNode]interface{}
+	Seed          string
+	EtwEvent      utils.EtwEvent
+	Query         string
+	BookmarkStore store.PersistentKeyValueStoreInterface
 }
 
 func NewWorkflowContext() *WorkflowContext {

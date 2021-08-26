@@ -62,20 +62,6 @@ func (mr *MockPersistentKeyValueStoreInterfaceMockRecorder) GetValue(key interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValue", reflect.TypeOf((*MockPersistentKeyValueStoreInterface)(nil).GetValue), key)
 }
 
-// InitTable mocks base method.
-func (m *MockPersistentKeyValueStoreInterface) InitTable() error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "InitTable")
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// InitTable indicates an expected call of InitTable.
-func (mr *MockPersistentKeyValueStoreInterfaceMockRecorder) InitTable() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InitTable", reflect.TypeOf((*MockPersistentKeyValueStoreInterface)(nil).InitTable))
-}
-
 // SetValue mocks base method.
 func (m *MockPersistentKeyValueStoreInterface) SetValue(key, value string) error {
 	m.ctrl.T.Helper()

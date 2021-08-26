@@ -8,7 +8,6 @@ import (
 func TestSetValue(t *testing.T) {
 	// Assume
 	PersistentKeyValueStore, _ := NewPersistentKeyValueStore("./BookmarkStore.sqlite", "KeyValueTable")
-	PersistentKeyValueStore.InitTable()
 	PersistentKeyValueStore.Clear()
 
 	// Action
@@ -23,7 +22,6 @@ func TestSetValue(t *testing.T) {
 func TestGetValue_KeyExists(t *testing.T) {
 	// Assume
 	PersistentKeyValueStore, _ := NewPersistentKeyValueStore("./BookmarkStore.sqlite", "KeyValueTable")
-	PersistentKeyValueStore.InitTable()
 	PersistentKeyValueStore.Clear()
 	PersistentKeyValueStore.SetValue("key1", "value1")
 	PersistentKeyValueStore.SetValue("key2", "value2")
@@ -42,7 +40,6 @@ func TestGetValue_KeyExists(t *testing.T) {
 func TestGetValue_KeyDoesNotExist(t *testing.T) {
 	// Assume
 	PersistentKeyValueStore, _ := NewPersistentKeyValueStore("./BookmarkStore.sqlite", "KeyValueTable")
-	PersistentKeyValueStore.InitTable()
 	PersistentKeyValueStore.Clear()
 	PersistentKeyValueStore.SetValue("key1", "value1")
 
@@ -57,7 +54,6 @@ func TestGetValue_KeyDoesNotExist(t *testing.T) {
 func TestClear(t *testing.T) {
 	// Assume
 	PersistentKeyValueStore, _ := NewPersistentKeyValueStore("./BookmarkStore.sqlite", "KeyValueTable")
-	PersistentKeyValueStore.InitTable()
 	PersistentKeyValueStore.SetValue("key1", "value1")
 
 	// Action

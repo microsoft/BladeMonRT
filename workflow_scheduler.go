@@ -149,7 +149,6 @@ func newWorkflowScheduler() *WorkflowScheduler {
 	if err != nil {
 		panic("Unable to create bookmark store.")
 	}
-	bookmarkStore.InitTable()
 
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, bookmarkStore: bookmarkStore, utils: utils}
 	return workflowScheduler

@@ -23,46 +23,41 @@ const (
 		);`
 	INSERT_OR_REPLACE_QUERY = `INSERT OR REPLACE INTO %s (Name, Value, Type) VALUES(?,?,?);`
 	READ_WHERE_QUERY        = `SELECT Value FROM %s WHERE Name = $1;`
-	DELETE_ALL_QUERY = `DELETE FROM %s;`
+	DELETE_ALL_QUERY        = `DELETE FROM %s;`
 )
 
 /** Interface for the PersistentKeyValueStore that define which methods are implemented by PersistentKeyValueStore. */
 type PersistentKeyValueStoreInterface interface {
-	InitTable() error
 	SetValue(key string, value string) error
 	GetValue(key string) (string, error)
 	Clear() error
 }
 
-/** This class is copy of PersistentKeyValueStore.py class in GO. It stores key-value pairs persistently using a database. */ 
+/** This class is copy of PersistentKeyValueStore.py class in GO. It stores key-value pairs persistently using a database. */
 type PersistentKeyValueStore struct {
-	logger          *log.Logger
-	db              *sql.DB
+	logger    *log.Logger
+	db        *sql.DB
 	tableName string
 }
 
 func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentKeyValueStore, error) {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("PersistentKeyValueStore")
-
 	sqliteDatabase, err := sql.Open("sqlite3", fileName)
 	if err != nil {
 		logger.Println("Error creating new key-value store:", err)
 		return nil, err
 	}
+	var store *PersistentKeyValueStore = &PersistentKeyValueStore{logger: logger, db: sqliteDatabase, tableName: tableName}
 
-	var PersistentKeyValueStore *PersistentKeyValueStore = &PersistentKeyValueStore{logger: logger, db: sqliteDatabase, tableName: tableName}
-	return PersistentKeyValueStore, nil
-}
-
-func (store *PersistentKeyValueStore) InitTable() error {
-	store.logger.Println("Creating table:", store.tableName)
-	statement, err := store.db.Prepare(fmt.Sprintf(TABLE_CREATE_QUERY, store.tableName))
+	store.logger.Println("Creating table:", tableName)
+	statement, err := store.db.Prepare(fmt.Sprintf(TABLE_CREATE_QUERY, tableName))
 	if err != nil {
 		store.logger.Println("Error initializing table:", err)
-		return err
+		return nil, err
 	}
 	statement.Exec()
-	return nil
+
+	return store, nil
 }
 
 func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
@@ -102,7 +97,7 @@ func (store *PersistentKeyValueStore) GetValue(key string) (string, error) {
 	return "", errors.New(fmt.Sprintf("Key=%s not found in the store.", key))
 }
 
-func (store *PersistentKeyValueStore) Clear() error{
+func (store *PersistentKeyValueStore) Clear() error {
 	store.logger.Println("Clear table.")
 	statement, err := store.db.Prepare(fmt.Sprintf(DELETE_ALL_QUERY, store.tableName))
 	if err != nil {

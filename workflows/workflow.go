@@ -17,7 +17,7 @@ type InterfaceWorkflow interface {
 
 /** Concrete type for defining execution sequence of nodes. */
 type Workflow struct {
-	Logger          *log.Logger
+	Logger *log.Logger
 }
 
 func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowContext *nodes.WorkflowContext) {
