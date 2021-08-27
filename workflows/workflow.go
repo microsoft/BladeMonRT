@@ -4,7 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/microsoft/BladeMonRT/nodes"
+	"github.com/microsoft/BladeMonRT/store"
+	"github.com/microsoft/BladeMonRT/configs"
 	"log"
+	"strconv"
 )
 
 /** Interface for defining execution sequence of nodes. */
@@ -30,6 +33,12 @@ func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowConte
 	// Handle errors thrown when running the workflow.
 	if err != nil {
 		workflow.Logger.Println(fmt.Sprintf("Workflow error: %s", err))
+		return
+	}
+
+	if configs.ENABLE_BOOKMARK_FEATURE && workflowContext.QueryIncludesCondition {
+		workflow.Logger.Println(fmt.Sprintf("Updating event record ID bookmark: %s to %d.", workflowContext.Query, workflowContext.EtwEvent.EventRecordID))
+		workflow.updateEventRecordIdBookmark(workflowContext.BookmarkStore, workflowContext.Query, workflowContext.EtwEvent.EventRecordID)
 	}
 }
 
@@ -44,4 +53,11 @@ func (workflow *Workflow) processNode(node nodes.InterfaceNode, workflowContext 
 	// Return error returned by the processing of a node to the caller function.
 	err = node.Process(node, workflowContext)
 	return err
+}
+
+func (workflow *Workflow) updateEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string, newEventRecordId int) {
+	err := bookmarkStore.SetValue(query, strconv.Itoa(newEventRecordId))
+	if (err != nil) {
+		workflow.Logger.Println("Unable to update event record ID bookmark for query:", query)
+	}
 }

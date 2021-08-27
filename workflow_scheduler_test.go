@@ -152,30 +152,30 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
 	var queryWithCondition string = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
-	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
+	workflow := workflows.NewSimpleWorkflow()
 
-	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow, query: queryWithCondition, bookmarkStore: mockBookmarkStore, queryIncludesCondition: true}
+	var callbackContext *CallbackContext = &CallbackContext{workflow: workflow, query: queryWithCondition, bookmarkStore: mockBookmarkStore, queryIncludesCondition: true}
 	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
 
 	// Set up assertions
-	mockWorkflow.EXPECT().Run(gomock.Any(), gomock.Any())
 	// Event has EventRecordID=6 as specified in the return value of 'ParseEventXML'.
 	mockBookmarkStore.EXPECT().SetValue(queryWithCondition, "6")
 
 	// Action
 	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))
 
-	// Wait for 5 seconds since the main thread has to switch to the goroutine to run the workflow before Run() is called on mockWorkflow.
-	// If we do not wait, the assertion that Run() was called on mockWorkflow will fail.
+	// Wait for 5 seconds since the main thread has to switch to the goroutine to run the workflow before Run() is called on workflow.
+	// If we do not wait, the assertion that SetValue was called may fail. (Run() calls SetValue on the bookmark store.)
 	time.Sleep(5 * time.Second)
 }
 
-func TestDecideSubscriptionType(t *testing.T) {
+func TestDecideSubscriptionType_QueryExistsInBookmarkStore(t *testing.T) {
 	// Assume
 	context := &CallbackContext{}
 	context.query = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
 	context.queryIncludesCondition = true
 	workflowScheduler := newWorkflowScheduler()
+	workflowScheduler.bookmarkStore.Clear()
 	workflowScheduler.bookmarkStore.SetValue(context.query, "7")
 
 	// Action
@@ -184,4 +184,20 @@ func TestDecideSubscriptionType(t *testing.T) {
 	// Assert
 	assert.Equal(t, queryText, "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > 7]]")
 	assert.Equal(t, subscribeMethod, win32.DWORD(wevtapi.EvtSubscribeStartAtOldestRecord))
+}
+
+func TestDecideSubscriptionType_QueryDoesNotExistInBookmarkStore(t *testing.T) {
+	// Assume
+	context := &CallbackContext{}
+	context.query = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
+	context.queryIncludesCondition = true
+	workflowScheduler := newWorkflowScheduler()
+	workflowScheduler.bookmarkStore.Clear()
+
+	// Action
+	queryText, subscribeMethod := workflowScheduler.decideSubscriptionType(context)
+
+	// Assert
+	assert.Equal(t, queryText, "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > 0]]")
+	assert.Equal(t, subscribeMethod, win32.DWORD(wevtapi.EvtSubscribeToFutureEvents))
 }

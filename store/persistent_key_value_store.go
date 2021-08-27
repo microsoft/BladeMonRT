@@ -2,7 +2,6 @@ package store
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/microsoft/BladeMonRT/logging"
@@ -52,10 +51,14 @@ func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentK
 	store.logger.Println("Creating table:", tableName)
 	statement, err := store.db.Prepare(fmt.Sprintf(TABLE_CREATE_QUERY, tableName))
 	if err != nil {
-		store.logger.Println("Error initializing table:", err)
+		store.logger.Println("Error initializing table in prepare:", err)
 		return nil, err
 	}
-	statement.Exec()
+	_, err = statement.Exec()
+	if err != nil {
+		store.logger.Println("Error initializing table in exec:", err)
+		return nil, err
+	}
 
 	return store, nil
 }
@@ -64,11 +67,16 @@ func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
 	store.logger.Println(fmt.Sprintf("Setting key: %s to value: %s", key, value))
 	statement, err := store.db.Prepare(fmt.Sprintf(INSERT_OR_REPLACE_QUERY, store.tableName))
 	if err != nil {
-		store.logger.Println("Error setting value:", err)
+		store.logger.Println("Error setting value in prepare:", err)
 		return err
 	}
 	// It only supports string type (type==0) for now. Can be extended in future.
-	statement.Exec(key, value, 0)
+	_, err = statement.Exec(key, value, 0)
+	if err != nil {
+		store.logger.Println("Error setting value in exec:", err)
+		return err
+	}
+
 	return nil
 }
 
@@ -94,7 +102,7 @@ func (store *PersistentKeyValueStore) GetValue(key string) (string, error) {
 		}
 		return value, nil
 	}
-	return "", errors.New(fmt.Sprintf("Key=%s not found in the store.", key))
+	return "", nil
 }
 
 func (store *PersistentKeyValueStore) Clear() error {

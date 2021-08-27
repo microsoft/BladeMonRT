@@ -77,15 +77,11 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		var eventXML string = win32.UTF16BytesToString(Utf16EventXml)
 		var event utils.EtwEvent = workflowScheduler.utils.ParseEventXML(eventXML)
 
-		if configs.ENABLE_BOOKMARK_FEATURE && callbackContext.queryIncludesCondition {
-			workflowScheduler.logger.Println(fmt.Sprintf("Updating event record ID bookmark: %s to %d.", callbackContext.query, event.EventRecordID))
-			workflowScheduler.updateEventRecordIdBookmark(callbackContext.query, event.EventRecordID)
-		}
-
 		callbackContext.workflowContext = nodes.NewWorkflowContext()
 		callbackContext.workflowContext.Query = callbackContext.query
+		callbackContext.workflowContext.QueryIncludesCondition = callbackContext.queryIncludesCondition
 		callbackContext.workflowContext.BookmarkStore = callbackContext.bookmarkStore
-		callbackContext.workflowContext.Seed = eventXML
+		callbackContext.workflowContext.EtwEventXml = eventXML
 		callbackContext.workflowContext.EtwEvent = event
 
 		// Create a goroutine to run the workflow included in the callback context.
@@ -172,7 +168,11 @@ func (workflowScheduler *WorkflowScheduler) getEventRecordIdBookmark(query strin
 	}
 
 	stringEventRecordId, err := workflowScheduler.bookmarkStore.GetValue(query)
-	if err != nil {
+	if (err != nil) {
+		workflowScheduler.logger.Println("Unable to get event record ID bookmark for query:", query)
+		return 0
+	}
+	if stringEventRecordId == "" {
 		return 0
 	}
 	eventRecordId, err := strconv.Atoi(stringEventRecordId)
@@ -215,8 +215,4 @@ func (workflowScheduler *WorkflowScheduler) decideSubscriptionType(context *Call
 	}
 
 	return queryText, subscribeMethod
-}
-
-func (workflowScheduler *WorkflowScheduler) updateEventRecordIdBookmark(query string, newEventRecordId int) {
-	workflowScheduler.bookmarkStore.SetValue(query, strconv.Itoa(newEventRecordId))
 }

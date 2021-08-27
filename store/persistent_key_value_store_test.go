@@ -48,7 +48,7 @@ func TestGetValue_KeyDoesNotExist(t *testing.T) {
 
 	// Assert
 	assert.Equal(t, val, "")
-	assert.DeepEqual(t, err.Error(), "Key=key2 not found in the store.")
+	assert.DeepEqual(t, err, nil)
 }
 
 func TestClear(t *testing.T) {
@@ -62,5 +62,5 @@ func TestClear(t *testing.T) {
 	// Assert
 	valKey1, errKey1 := PersistentKeyValueStore.GetValue("key1")
 	assert.Equal(t, valKey1, "")
-	assert.Assert(t, errKey1 != nil)
+	assert.Assert(t, errKey1, nil)
 }

@@ -13,9 +13,10 @@ import (
 type WorkflowContext struct {
 	nodes         []InterfaceNode
 	nodeToResult  map[InterfaceNode]interface{}
-	Seed          string
+	EtwEventXml          string
 	EtwEvent      utils.EtwEvent
 	Query         string
+	QueryIncludesCondition bool
 	BookmarkStore store.PersistentKeyValueStoreInterface
 }
 
