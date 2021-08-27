@@ -10,8 +10,10 @@ import (
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/utils"
 	"github.com/microsoft/BladeMonRT/workflows"
+	"github.com/microsoft/BladeMonRT/configs"
 	"log"
 	"unsafe"
+	"time"
 )
 
 /** Interface for scheduling workflows. */
@@ -21,6 +23,7 @@ type WorkflowSchedulerInterface interface {
 
 /** Class for scheduling workflows. */
 type WorkflowScheduler struct {
+	config configs.Config
 	logger                   *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext            map[string]*CallbackContext
@@ -66,6 +69,16 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		}
 		var eventXML string = win32.UTF16BytesToString(Utf16EventXml)
 		var event utils.EtwEvent = workflowScheduler.utils.ParseEventXML(eventXML)
+
+		// Check if the event is too old to process.
+		duration := 24 * time.Hour
+		var eventCreatedDate time.Time = event.TimeCreated.Truncate(duration)
+        var nowDate time.Time = time.Now().Truncate(duration)
+        var ageInDays int = int(nowDate.Sub(eventCreatedDate).Hours() / 24)
+        if (ageInDays > workflowScheduler.config.MaxAgeToProcessWinEvtsInDays) {
+            workflowScheduler.logger.Println("Event flagged as too old. Age:", ageInDays)
+            return uintptr(0)
+        }
 
 		callbackContext.workflowContext = nodes.NewWorkflowContext()
 		callbackContext.workflowContext.Seed = eventXML
@@ -115,10 +128,10 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 	}
 }
 
-func newWorkflowScheduler() *WorkflowScheduler {
+func newWorkflowScheduler(config configs.Config) *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, utils: utils.NewUtils()}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, utils: utils.NewUtils()}
 	return workflowScheduler
 }
 

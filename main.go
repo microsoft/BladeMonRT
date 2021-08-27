@@ -22,18 +22,20 @@ func main() {
 	// Set GOMAXPROCS such that all operations execute on a single thread.
 	runtime.GOMAXPROCS(1)
 
-	workflowsJson, err := ioutil.ReadFile(configs.WORKFLOW_FILE)
+	var configFactory configs.ConfigFactory = configs.ConfigFactory{}
+	var config configs.Config = configFactory.GetConfig()
+	workflowsJson, err := ioutil.ReadFile(config.WorkflowFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 
-	schedulesJson, err := ioutil.ReadFile(configs.SCHEDULE_FILE)
+	schedulesJson, err := ioutil.ReadFile(config.ScheduleFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var mainObj *Main = newMain()
+	var mainObj *Main = newMain(config)
 	mainObj.setupWorkflows(schedulesJson, workflowFactory)
 	mainObj.logger.Println("Initialized main.")
 
@@ -43,9 +45,9 @@ func main() {
 	<-quitChannel
 }
 
-func newMain() *Main {
+func newMain(config configs.Config) *Main {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("Main")
-	return &Main{WorkflowScheduler: newWorkflowScheduler(), logger: logger}
+	return &Main{WorkflowScheduler: newWorkflowScheduler(config), logger: logger}
 }
 
 func (main *Main) setupWorkflows(schedulesJson []byte, workflowFactory WorkflowFactory) {

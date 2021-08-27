@@ -30,7 +30,8 @@ func TestEndToEnd(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	var mainObj *Main = newMain()
+	config := test_configs.TestConfigFactory{}.GetConfig()
+	var mainObj *Main = newMain(config)
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 	mainObj.setupWorkflows(schedulesJson, workflowFactory)
 	mainObj.logger.Println("Initialized main for test.")

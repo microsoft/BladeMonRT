@@ -23,11 +23,20 @@ type UtilsForTest struct {
 }
 
 func (utilsForTest UtilsForTest) ParseEventXML(eventXML string) utils.EtwEvent {
-	return utils.EtwEvent{}
+	return utils.EtwEvent{TimeCreated: time.Now()}
+}
+
+type UtilsForTestWithOldEvent struct {
+}
+
+func (utilsForTest UtilsForTestWithOldEvent) ParseEventXML(eventXML string) utils.EtwEvent {
+    timeTwoDaysAgo := time.Now().AddDate(0, 0, -2)
+    return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: timeTwoDaysAgo, EventRecordID: 6}
 }
 
 func TestSetupWorkflows(t *testing.T) {
 	// Assume
+	config := test_configs.TestConfigFactory{}.GetConfig()
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -41,7 +50,7 @@ func TestSetupWorkflows(t *testing.T) {
 	}
 
 	// Action
-	var mainObj *Main = newMain()
+	var mainObj *Main = newMain(config)
 	mainObj.setupWorkflows(schedulesJson, workflowFactory)
 
 	// Assert
@@ -67,7 +76,8 @@ func TestSubscriptionCallback(t *testing.T) {
 	defer ctrl.Finish()
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, utils: UtilsForTest{}}
+	config := test_configs.TestConfigFactory{}.GetConfig()
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, utils: UtilsForTest{}}
 
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
 	// Set up assertion
@@ -84,3 +94,28 @@ func TestSubscriptionCallback(t *testing.T) {
 	// If we do not wait, the assertion that Run() was called on mockWorkflow will fail.
 	time.Sleep(5 * time.Second)
 }
+
+func TestSubscriptionCallback_OldEvent(t *testing.T) {
+    // Case 3: Call the SubscriptionCallback method with an event older than MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS in the config.
+	// Assume
+    ctrl := gomock.NewController(t)
+    defer ctrl.Finish()
+    var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
+    var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
+
+	// 'ParseEventXML' from UtilsForTestWithOldEvent returns an event from two days ago.
+    var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, utils: UtilsForTestWithOldEvent{}}
+    mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
+	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow}
+    workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
+
+    // Set up assertions
+    // Expect that mockWorkflow is not run because the event is too old.
+   
+    // Action
+    workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))
+    // Wait for 5 seconds since the main thread has to switch to the goroutine to run the workflow before Run() may be called on mockWorkflow.
+    time.Sleep(5 * time.Second)
+}
+
+
