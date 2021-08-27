@@ -6,14 +6,14 @@ import (
 	win32 "github.com/0xrawsec/golang-win32/win32"
 	wevtapi "github.com/0xrawsec/golang-win32/win32/wevtapi"
 	"github.com/google/uuid"
+	"github.com/microsoft/BladeMonRT/configs"
 	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/utils"
 	"github.com/microsoft/BladeMonRT/workflows"
-	"github.com/microsoft/BladeMonRT/configs"
 	"log"
-	"unsafe"
 	"time"
+	"unsafe"
 )
 
 /** Interface for scheduling workflows. */
@@ -23,7 +23,7 @@ type WorkflowSchedulerInterface interface {
 
 /** Class for scheduling workflows. */
 type WorkflowScheduler struct {
-	config configs.Config
+	config                   configs.Config
 	logger                   *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext            map[string]*CallbackContext
@@ -73,12 +73,12 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		// Check if the event is too old to process.
 		duration := 24 * time.Hour
 		var eventCreatedDate time.Time = event.TimeCreated.Truncate(duration)
-        var nowDate time.Time = time.Now().Truncate(duration)
-        var ageInDays int = int(nowDate.Sub(eventCreatedDate).Hours() / 24)
-        if (ageInDays > workflowScheduler.config.MaxAgeToProcessWinEvtsInDays) {
-            workflowScheduler.logger.Println("Event flagged as too old. Age:", ageInDays)
-            return uintptr(0)
-        }
+		var nowDate time.Time = time.Now().Truncate(duration)
+		var ageInDays int = int(nowDate.Sub(eventCreatedDate).Hours() / 24)
+		if ageInDays > workflowScheduler.config.MaxAgeToProcessWinEvtsInDays {
+			workflowScheduler.logger.Println("Event flagged as too old. Age:", ageInDays)
+			return uintptr(0)
+		}
 
 		callbackContext.workflowContext = nodes.NewWorkflowContext()
 		callbackContext.workflowContext.Seed = eventXML
