@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/microsoft/BladeMonRT/configs"
 	"github.com/microsoft/BladeMonRT/test_configs"
 	"io/ioutil"
 	"log"
@@ -30,7 +31,7 @@ func TestEndToEnd(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	config := test_configs.TestConfigFactory{}.GetConfig()
+	config := configs.Config{MaxAgeToProcessWinEvtsInDays: 1}
 	var mainObj *Main = newMain(config)
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 	mainObj.setupWorkflows(schedulesJson, workflowFactory)

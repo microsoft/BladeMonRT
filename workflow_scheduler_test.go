@@ -4,6 +4,7 @@ import (
 	win32 "github.com/0xrawsec/golang-win32/win32"
 	wevtapi "github.com/0xrawsec/golang-win32/win32/wevtapi"
 	gomock "github.com/golang/mock/gomock"
+	configs "github.com/microsoft/BladeMonRT/configs"
 	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_a"
@@ -36,7 +37,7 @@ func (utilsForTest UtilsForTestWithOldEvent) ParseEventXML(eventXML string) util
 
 func TestSetupWorkflows(t *testing.T) {
 	// Assume
-	config := test_configs.TestConfigFactory{}.GetConfig()
+	config := configs.Config{}
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -76,7 +77,7 @@ func TestSubscriptionCallback(t *testing.T) {
 	defer ctrl.Finish()
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	config := test_configs.TestConfigFactory{}.GetConfig()
+	config := configs.Config{MaxAgeToProcessWinEvtsInDays: 1}
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, utils: UtilsForTest{}}
 
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
@@ -104,7 +105,8 @@ func TestSubscriptionCallback_OldEvent(t *testing.T) {
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 
 	// 'ParseEventXML' from UtilsForTestWithOldEvent returns an event from two days ago.
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, utils: UtilsForTestWithOldEvent{}}
+	config := configs.Config{MaxAgeToProcessWinEvtsInDays: 1}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, utils: UtilsForTestWithOldEvent{}}
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
 	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow}
 	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
