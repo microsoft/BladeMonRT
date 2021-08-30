@@ -31,7 +31,7 @@ type UtilsForTestWithOldEvent struct {
 }
 
 func (utilsForTest UtilsForTestWithOldEvent) ParseEventXML(eventXML string) utils.EtwEvent {
-	timeTwoDaysAgo := time.Now().AddDate(0, 0, -2)
+	timeTwoDaysAgo := time.Now().Add(time.Hour * -25)
 	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: timeTwoDaysAgo, EventRecordID: 6}
 }
 
@@ -112,7 +112,7 @@ func TestSubscriptionCallback_OldEvent(t *testing.T) {
 	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
 
 	// Set up assertions
-	// Expect that mockWorkflow is not run because the event is too old.
+	// Expect that mockWorkflow is not run because the event is 25 hours old.
 
 	// Action
 	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))

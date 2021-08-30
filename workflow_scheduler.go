@@ -71,12 +71,10 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		var event utils.EtwEvent = workflowScheduler.utils.ParseEventXML(eventXML)
 
 		// Check if the event is too old to process.
-		duration := 24 * time.Hour
-		var eventCreatedDate time.Time = event.TimeCreated.Truncate(duration)
-		var nowDate time.Time = time.Now().Truncate(duration)
-		var ageInDays int = int(nowDate.Sub(eventCreatedDate).Hours() / 24)
-		if ageInDays > workflowScheduler.config.MaxAgeToProcessWinEvtsInDays {
-			workflowScheduler.logger.Println("Event flagged as too old. Age:", ageInDays)
+		var nowTime time.Time = time.Now()
+		var ageInHours float64 = nowTime.Sub(event.TimeCreated).Hours()
+		if ageInHours > float64(workflowScheduler.config.MaxAgeToProcessWinEvtsInDays * 24) {
+			workflowScheduler.logger.Println("Event flagged as too old. Age in hours:", ageInHours)
 			return uintptr(0)
 		}
 
