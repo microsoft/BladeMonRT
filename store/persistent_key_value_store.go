@@ -56,7 +56,6 @@ func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentK
 	if err != nil {
 		return nil, err
 	}
-
 	return store, nil
 }
 
@@ -66,12 +65,12 @@ func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
 	if err != nil {
 		return err
 	}
+
 	// It only supports string type (type==0) for now. Can be extended in future.
 	_, err = statement.Exec(key, value, 0)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -104,6 +103,9 @@ func (store *PersistentKeyValueStore) Clear() error {
 		return err
 	}
 
-	statement.Exec()
+	_, err = statement.Exec()
+	if (err != nil) {
+		return err
+	}
 	return nil
 }
