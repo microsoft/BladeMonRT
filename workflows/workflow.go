@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/store"
+	"github.com/microsoft/BladeMonRT/utils"
 	"github.com/microsoft/BladeMonRT/configs"
 	"log"
 	"strconv"
@@ -21,6 +22,7 @@ type InterfaceWorkflow interface {
 /** Concrete type for defining execution sequence of nodes. */
 type Workflow struct {
 	Logger *log.Logger
+	utils *utils.Utils
 }
 
 func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowContext *nodes.WorkflowContext) {
@@ -55,9 +57,13 @@ func (workflow *Workflow) processNode(node nodes.InterfaceNode, workflowContext 
 	return err
 }
 
+/** Updates the event record ID for the query if the current event record ID for the query is less than the given event record ID. */
 func (workflow *Workflow) updateEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string, newEventRecordId int) {
-	err := bookmarkStore.SetValue(query, strconv.Itoa(newEventRecordId))
-	if (err != nil) {
-		workflow.Logger.Println("Unable to update event record ID bookmark for query:", query)
-	}
+	var currEventRecordID int = workflow.utils.GetEventRecordIdBookmark(bookmarkStore, query)
+	if (newEventRecordId > currEventRecordID) {
+		err := bookmarkStore.SetValue(query, strconv.Itoa(newEventRecordId))
+		if (err != nil) {
+			workflow.Logger.Println("Unable to update event record ID bookmark for query:", query)
+		}
+	}	
 }

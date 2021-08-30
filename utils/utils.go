@@ -4,14 +4,18 @@ import (
 	"fmt"
 	"github.com/antchfx/xmlquery"
 	"github.com/microsoft/BladeMonRT/logging"
+	"github.com/microsoft/BladeMonRT/store"
 	"log"
 	"strconv"
 	"strings"
 	"time"
 )
 
+//go:generate mockgen -source=./utils.go -destination=./mock_utils.go -package=utils
+
 type UtilsInterface interface {
 	ParseEventXML(eventXML string) EtwEvent
+	GetEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string) int
 }
 
 /** Class that contains utilities used in BladeMonRT classes. */
@@ -59,4 +63,23 @@ func (utils *Utils) ParseEventXML(eventXML string) EtwEvent {
 	}
 
 	return EtwEvent{Provider: provider, EventID: eventID, TimeCreated: timeCreated, EventRecordID: eventRecordID}
+}
+
+
+func (utils *Utils) GetEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string) int {
+	stringEventRecordId, err := bookmarkStore.GetValue(query)
+	if (err != nil) {
+		utils.logger.Println("Unable to get event record ID bookmark for query:", query)
+		return 0
+	}
+	if stringEventRecordId == "" {
+		return 0
+	}
+
+	eventRecordId, err := strconv.Atoi(stringEventRecordId)
+	if (err != nil) {
+		utils.logger.Println("Unable to parse current event record ID bookmark for query:", query)
+		return 0
+	}
+	return eventRecordId
 }

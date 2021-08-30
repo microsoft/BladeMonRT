@@ -27,6 +27,10 @@ func (utilsForTest UtilsForTest) ParseEventXML(eventXML string) utils.EtwEvent {
 	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: time.Now(), EventRecordID: 6}
 }
 
+func (utilsForTest UtilsForTest) GetEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string) int {
+	return 0
+}
+
 func TestSetupWorkflowsBasic(t *testing.T) {
 	// Assume
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
@@ -141,6 +145,7 @@ func TestSubscriptionCallback_Basic(t *testing.T) {
 	time.Sleep(5 * time.Second)
 }
 
+
 func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	// Case 2: Call the SubscriptionCallback method with a query that contains a condition.
 
@@ -159,7 +164,39 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 
 	// Set up assertions
 	// Event has EventRecordID=6 as specified in the return value of 'ParseEventXML'.
+	mockBookmarkStore.EXPECT().GetValue(gomock.Any()).Return("5", nil)
 	mockBookmarkStore.EXPECT().SetValue(queryWithCondition, "6")
+
+	// Action
+	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))
+
+	// Wait for 5 seconds since the main thread has to switch to the goroutine to run the workflow before Run() is called on workflow.
+	// If we do not wait, the assertion that SetValue was called may fail. (Run() calls SetValue on the bookmark store.)
+	time.Sleep(5 * time.Second)
+}
+
+
+func TestSubscriptionCallback_QueryWithCondition_2(t *testing.T) {
+	// Case 2: Call the SubscriptionCallback method with a query that contains a condition.
+
+	// Assume
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
+	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
+	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
+	mockUtils := utils.NewMockUtilsInterface(ctrl)
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: mockUtils}
+	var queryWithCondition string = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
+	workflow := workflows.NewSimpleWorkflow()
+
+	var callbackContext *CallbackContext = &CallbackContext{workflow: workflow, query: queryWithCondition, bookmarkStore: mockBookmarkStore, queryIncludesCondition: true}
+	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
+	mockUtils.EXPECT().ParseEventXML(gomock.Any()).Return(utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: time.Now(), EventRecordID: 6})
+	mockBookmarkStore.EXPECT().GetValue(gomock.Any()).Return("7", nil)
+
+	// Set up assertions
+	// Expect SetValue is not called because EventRecordID is 6 which is less than the EventRecordID in the bookmark store which is 7.
 
 	// Action
 	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))

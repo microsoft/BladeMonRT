@@ -99,7 +99,7 @@ func (workflowScheduler *WorkflowScheduler) storeCallbackContext(context *Callba
 }
 
 func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow workflows.InterfaceWorkflow, eventQueries []WinEventSubscribeQuery) {
-	workflowScheduler.logger.Println("Workflow:", workflow)
+	workflowScheduler.logger.Println("Adding windows event based schedule.")
 
 	// Subscribe to the events that match the event queries specified.
 	for _, eventQuery := range eventQueries {
@@ -167,16 +167,7 @@ func (workflowScheduler *WorkflowScheduler) getEventRecordIdBookmark(query strin
 		return 0
 	}
 
-	stringEventRecordId, err := workflowScheduler.bookmarkStore.GetValue(query)
-	if (err != nil) {
-		workflowScheduler.logger.Println("Unable to get event record ID bookmark for query:", query)
-		return 0
-	}
-	if stringEventRecordId == "" {
-		return 0
-	}
-	eventRecordId, err := strconv.Atoi(stringEventRecordId)
-	return eventRecordId
+	return workflowScheduler.utils.GetEventRecordIdBookmark(workflowScheduler.bookmarkStore, query)
 }
 
 func (workflowScheduler *WorkflowScheduler) decideCallbackContext(eventQuery WinEventSubscribeQuery, workflow workflows.InterfaceWorkflow) (*CallbackContext, error) {
