@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// UtilsInterface mock generation.
 //go:generate mockgen -source=./utils.go -destination=./mock_utils.go -package=utils
 
 type UtilsInterface interface {
