@@ -43,7 +43,6 @@ func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentK
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("PersistentKeyValueStore")
 	sqliteDatabase, err := sql.Open("sqlite3", fileName)
 	if err != nil {
-		logger.Println("Error creating new key-value store:", err)
 		return nil, err
 	}
 	var store *PersistentKeyValueStore = &PersistentKeyValueStore{logger: logger, db: sqliteDatabase, tableName: tableName}
@@ -51,12 +50,10 @@ func NewPersistentKeyValueStore(fileName string, tableName string) (*PersistentK
 	store.logger.Println("Creating table:", tableName)
 	statement, err := store.db.Prepare(fmt.Sprintf(TABLE_CREATE_QUERY, tableName))
 	if err != nil {
-		store.logger.Println("Error initializing table in prepare:", err)
 		return nil, err
 	}
 	_, err = statement.Exec()
 	if err != nil {
-		store.logger.Println("Error initializing table in exec:", err)
 		return nil, err
 	}
 
@@ -67,13 +64,11 @@ func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
 	store.logger.Println(fmt.Sprintf("Setting key: %s to value: %s", key, value))
 	statement, err := store.db.Prepare(fmt.Sprintf(INSERT_OR_REPLACE_QUERY, store.tableName))
 	if err != nil {
-		store.logger.Println("Error setting value in prepare:", err)
 		return err
 	}
 	// It only supports string type (type==0) for now. Can be extended in future.
 	_, err = statement.Exec(key, value, 0)
 	if err != nil {
-		store.logger.Println("Error setting value in exec:", err)
 		return err
 	}
 
@@ -83,12 +78,10 @@ func (store *PersistentKeyValueStore) SetValue(key string, value string) error {
 func (store *PersistentKeyValueStore) GetValue(key string) (string, error) {
 	statement, err := store.db.Prepare(fmt.Sprintf(READ_WHERE_QUERY, store.tableName))
 	if err != nil {
-		store.logger.Println(err)
 		return "", err
 	}
 	rows, err := statement.Query(key)
 	if err != nil {
-		store.logger.Println(err)
 		return "", err
 	}
 
@@ -97,7 +90,6 @@ func (store *PersistentKeyValueStore) GetValue(key string) (string, error) {
 		var value string
 		err = rows.Scan(&value)
 		if err != nil {
-			store.logger.Println(err)
 			return "", err
 		}
 		return value, nil
@@ -109,7 +101,6 @@ func (store *PersistentKeyValueStore) Clear() error {
 	store.logger.Println("Clear table.")
 	statement, err := store.db.Prepare(fmt.Sprintf(DELETE_ALL_QUERY, store.tableName))
 	if err != nil {
-		store.logger.Println("Error clearing table:", err)
 		return err
 	}
 

@@ -39,7 +39,6 @@ func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowConte
 	}
 
 	if configs.ENABLE_BOOKMARK_FEATURE && workflowContext.QueryIncludesCondition {
-		workflow.Logger.Println(fmt.Sprintf("Updating event record ID bookmark: %s to %d.", workflowContext.Query, workflowContext.EtwEvent.EventRecordID))
 		workflow.updateEventRecordIdBookmark(workflowContext.BookmarkStore, workflowContext.Query, workflowContext.EtwEvent.EventRecordID)
 	}
 }
