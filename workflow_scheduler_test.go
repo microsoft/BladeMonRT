@@ -146,7 +146,7 @@ func TestSubscriptionCallback_Basic(t *testing.T) {
 }
 
 func TestSubscriptionCallback_QueryWithCondition_1(t *testing.T) {
-	// Case 2: Call the SubscriptionCallback method with a query that contains a condition. The bookmark store contains a eventRecordID for a query less than the eventRecordID in the current event.
+	// Case 2: Call the SubscriptionCallback method with a query that contains a condition. The bookmark store contains the eventRecordID for a query less than the eventRecordID in the current event.
 
 	// Assume
 	ctrl := gomock.NewController(t)
@@ -200,7 +200,6 @@ func TestSubscriptionCallback_QueryWithCondition_2(t *testing.T) {
 	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))
 
 	// Wait for 5 seconds since the main thread has to switch to the goroutine to run the workflow before Run() is called on workflow.
-	// If we do not wait, the assertion that SetValue was called may fail. (Run() calls SetValue on the bookmark store.)
 	time.Sleep(5 * time.Second)
 }
 
