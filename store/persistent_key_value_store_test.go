@@ -48,7 +48,7 @@ func TestGetValue_KeyDoesNotExist(t *testing.T) {
 
 	// Assert
 	assert.Equal(t, val, "")
-	assert.DeepEqual(t, err, nil)
+	assert.Equal(t, err, nil)
 }
 
 func TestClear(t *testing.T) {

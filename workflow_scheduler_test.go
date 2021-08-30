@@ -145,9 +145,8 @@ func TestSubscriptionCallback_Basic(t *testing.T) {
 	time.Sleep(5 * time.Second)
 }
 
-
-func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
-	// Case 2: Call the SubscriptionCallback method with a query that contains a condition.
+func TestSubscriptionCallback_QueryWithCondition_1(t *testing.T) {
+	// Case 2: Call the SubscriptionCallback method with a query that contains a condition. The bookmark store contains a eventRecordID for a query less than the eventRecordID in the current event.
 
 	// Assume
 	ctrl := gomock.NewController(t)
@@ -175,9 +174,8 @@ func TestSubscriptionCallback_QueryWithCondition(t *testing.T) {
 	time.Sleep(5 * time.Second)
 }
 
-
 func TestSubscriptionCallback_QueryWithCondition_2(t *testing.T) {
-	// Case 2: Call the SubscriptionCallback method with a query that contains a condition.
+	// Case 3: Call the SubscriptionCallback method with a query that contains a condition. The bookmark store contains a eventRecordID for the query greater than the eventRecordID in the current event.
 
 	// Assume
 	ctrl := gomock.NewController(t)
@@ -192,10 +190,10 @@ func TestSubscriptionCallback_QueryWithCondition_2(t *testing.T) {
 
 	var callbackContext *CallbackContext = &CallbackContext{workflow: workflow, query: queryWithCondition, bookmarkStore: mockBookmarkStore, queryIncludesCondition: true}
 	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
-	mockUtils.EXPECT().ParseEventXML(gomock.Any()).Return(utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: time.Now(), EventRecordID: 6})
-	mockBookmarkStore.EXPECT().GetValue(gomock.Any()).Return("7", nil)
 
 	// Set up assertions
+	mockUtils.EXPECT().ParseEventXML(gomock.Any()).Return(utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: time.Now(), EventRecordID: 6})
+	mockBookmarkStore.EXPECT().GetValue(gomock.Any()).Return("7", nil)
 	// Expect SetValue is not called because EventRecordID is 6 which is less than the EventRecordID in the bookmark store which is 7.
 
 	// Action

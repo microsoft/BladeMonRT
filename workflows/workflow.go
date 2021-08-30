@@ -56,10 +56,11 @@ func (workflow *Workflow) processNode(node nodes.InterfaceNode, workflowContext 
 	return err
 }
 
-/** Updates the event record ID for the query if the current event record ID for the query is less than the given event record ID. */
+/** Updates the event record ID for the query in the bookmark store if the current event record ID for the query is less than the given event record ID. */
 func (workflow *Workflow) updateEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string, newEventRecordId int) {
 	var currEventRecordID int = workflow.utils.GetEventRecordIdBookmark(bookmarkStore, query)
 	if (newEventRecordId > currEventRecordID) {
+		workflow.Logger.Println(fmt.Sprintf("Updating bookmark store with query=%s and eventRecordID=%d.", query, newEventRecordId))
 		err := bookmarkStore.SetValue(query, strconv.Itoa(newEventRecordId))
 		if (err != nil) {
 			workflow.Logger.Println("Unable to update event record ID bookmark for query:", query)

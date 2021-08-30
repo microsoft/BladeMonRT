@@ -65,7 +65,6 @@ func (utils *Utils) ParseEventXML(eventXML string) EtwEvent {
 	return EtwEvent{Provider: provider, EventID: eventID, TimeCreated: timeCreated, EventRecordID: eventRecordID}
 }
 
-
 func (utils *Utils) GetEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string) int {
 	stringEventRecordId, err := bookmarkStore.GetValue(query)
 	if (err != nil) {
