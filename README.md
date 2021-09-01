@@ -26,6 +26,12 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
+#### Submitting a Pull Request
+- This project follows the GitHubFlow branching technique and all branches should be named with the *feature/* prefix.
+- A new Azure DevOps build is created for every commit to a feature branch or to the master. 
+- GitVersion is used to automate package versioning.
+- feature branches have the *alpha* tag appended.
+
 ## Trademarks
 
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
