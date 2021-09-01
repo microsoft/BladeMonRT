@@ -10,12 +10,21 @@ steps:
   inputs:
     versionSpec: '5.x.x'
 
-- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+- task: NugetCommand@2
+  inputs:
+    command: pack
+    displayName: 'Nuget pack'
+    packagesToPack: '**/*.nuspec'
+    packDestination: '$(Build.ArtifactStagingDirectory)'
+    versioningScheme: byEnvVar
+    versionEnvVar: GitVersion.NugetVersion
+
+- task: EsrpCodeSigning@1
   displayName: 'ESRP CodeSigning'
   inputs:
     ConnectedServiceName: 'BladeMonRT-PRSS'
     FolderPath: '$(Build.ArtifactStagingDirectory)'
-    Pattern: '*.go'
+    Pattern: '*.dll,*exe,*nupkg'
     signConfigType: 'inlineSignParams'
     inlineOperation: |
       [ 
@@ -34,15 +43,6 @@ steps:
             "toolVersion": "1.0"
         }
       ]
-
-- task: NugetCommand@2
-  inputs:
-    command: pack
-    displayName: 'Nuget pack'
-    packagesToPack: '**/*.nuspec'
-    packDestination: '$(Build.ArtifactStagingDirectory)'
-    versioningScheme: byEnvVar
-    versionEnvVar: GitVersion.NugetVersion
 
 - task: NuGetAuthenticate@0
   displayName: 'NuGet Authenticate'

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package >
   <metadata>
-    <id>BladeMonRT.test</id>
+    <id>Microsoft.BladeMonRT.EventHandler</id>
     <version>1.0.0</version>
     <authors>varunkrishna</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
