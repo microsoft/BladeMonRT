@@ -1,0 +1,3068 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.AzCompute.AzPubSub</name>
+    </assembly>
+    <members>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.#ctor">
+            <summary>
+            Create a new AzPubSubClient client.
+            Initialize must be called before the client can be used.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.Initialize(Microsoft.AzCompute.AzPubSub.LogCallback,Microsoft.AzCompute.AzPubSub.IMetrics)">
+            <summary>
+            Initialize the client.  The client can only be initialized once.
+            </summary>
+            <param name="logRoutine">Log routine will be invoked to allow the client to log.  Can be null.</param>
+            <param name="metrics">Caller supplied implementation if IMetric that will be invoked to allow the client to emit metrics.  Can be null.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.Initialize``1(Microsoft.AzCompute.AzPubSub.LogCallback{``0},``0,Microsoft.AzCompute.AzPubSub.IMetrics)">
+            <summary>
+            Initialize the client.  The client can only be initialized once.
+            </summary>
+            <typeparam name="T">Type of the context object</typeparam>
+            <param name="logRoutine">Log routine will be invoked to allow the client to log.  Can be null.</param>
+            <param name="context">Caller supplied context object that will be returned to the caller in logRoutine.</param>
+            <param name="metrics">Caller supplied implementation if IMetric that will be invoked to allow the client to emit metrics.  Can be null.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateConfiguration(Microsoft.AzCompute.AzPubSub.GlobalConfigurationTemplates)">
+            <summary>
+            Create a configuration that is used to create Producers and Consumers.
+            See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
+            for details of the configuration options which apply to Producers and Consumers.
+            </summary>
+            <param name="template">GlobalConfigurationTemplates to be applied on the config object. Default template applied is None</param>
+            <returns>IGlobalConfiguration object</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateTopicConfiguration">
+            <summary>
+            Create a configuration that is used to create ProducerTopics.
+            See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md 
+            for details of the configuration options which apply to Topics.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateSimpleProducerConfiguration">
+            <summary>
+            Creates the configuration for the simple producer.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateProducer(Microsoft.AzCompute.AzPubSub.IGlobalConfiguration)">
+            <summary>
+            Create a producer that can be used to produce messages to multiple topics.
+            The caller will have to serialize the data into ArraySegment&lt;byte&gt;.
+            Use TypedProducer&lt;K, P&gt; for automatic serialization of message data.
+            </summary>
+            <param name="configuration">Configuration for the producer and can also include default topic configuration.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateTypedTopicProducer``2(Microsoft.AzCompute.AzPubSub.IProducer,System.String,Microsoft.AzCompute.AzPubSub.ITopicConfiguration,Microsoft.AzCompute.AzPubSub.ISerialize{``0},Microsoft.AzCompute.AzPubSub.ISerialize{``1})">
+            <summary>
+            Create a TypedTopicProducer for sending messages.  Messages data will automatically be serialized using the supplied serializers.
+            </summary>
+            <typeparam name="K">Type of the message key.  Use Ignore if the message does not have a key.</typeparam>
+            <typeparam name="P">Type of the message payload.  P must be nullable.  Null payload indicates that the message is deleted.</typeparam>
+            <param name="producer">A reference to the producer that will be used to send the massage.  It is good practice to share the same producer for all the topics in a process.</param>
+            <param name="topic">Name of the topic.</param>
+            <param name="topicConfiguration">Topic specific producer configuration.  Can be null.</param>
+            <param name="keySerializer">The serializer that will be invoked to serialize the keys.  Can be null if K is of type Ignore.</param>
+            <param name="payloadSerializer">The serializer that will be invoked to serialize the payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateProducerTopic(Microsoft.AzCompute.AzPubSub.IProducer,System.String,Microsoft.AzCompute.AzPubSub.ITopicConfiguration)">
+            <summary>
+            Create a producer topic.  Used to identify the topic to send a message to.
+            </summary>
+            <param name="producer">Reference to the producer that the ProducerTopic will be used with.</param>
+            <param name="topic">Name of the topic.</param>
+            <param name="topicConfiguration">Topic specific producer configuration.  Can be null.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateSimpleProducer(System.String,System.String,Microsoft.AzCompute.AzPubSub.ISimpleProducerConfiguration,Microsoft.AzCompute.AzPubSub.SecurityType)">
+            <summary>
+            Creates a new simple producer
+            </summary>
+            <param name="environment">The enviorment which to connect to.</param>
+            <param name="cluster">The cluster which to connect to.</param>
+            <param name="config">Any configuration settings</param>
+            <param name="type">The security type to use when communicating with the simple producer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateSimpleProducer(System.String,Microsoft.AzCompute.AzPubSub.ISimpleProducerConfiguration,Microsoft.AzCompute.AzPubSub.SecurityType)">
+            <summary>
+            Creates a new simple producer
+            </summary>
+            <param name="endpoint">The endpoint which to connect to.</param>
+            <param name="config">Any configuration settings</param>
+            <param name="type">The security type to use when communicating with the simple producer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateConsumer(Microsoft.AzCompute.AzPubSub.IGlobalConfiguration,System.String)">
+            <summary>
+            Create a consumer.  A single consumer can consume from multiple topics at the same time.
+            After creating a consumer, client have to subscribe to topics and call consume to "pull"
+            messages from the subscribed topics.  Messages are pulled in-order from topic partitions.
+            Its up to the caller to deserialize the message payload.  For automatic deserialization 
+            and Consume polling use TypedConsumer.
+            </summary>
+            <param name="configuration">Consumer configuration.</param>
+            <param name="groupId">The consumer group that the consumer belongs too.  Consumer groups are a important concept in Kafka.  Its important to understand why you are setting this.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateTypedConsumer(Microsoft.AzCompute.AzPubSub.IGlobalConfiguration,System.String)">
+            <summary>
+            Create a TypedConsumer that will dispatch events to the registered topic consumers as messages arrive.
+            Messages are dispatched in-order and the next message is not dispatched until the previous event handler has returned.
+            This is required to maintain message order.  Callers must call Start() to start consuming the topics.
+            </summary>
+            <param name="configuration">Consumer configuration.</param>
+            <param name="groupId">The consumer group that the consumer belongs too.  Consumer groups are a important concept in Kafka.  Its important to understand why you are setting this.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateTypedTopicConsumer``2(System.String,Microsoft.AzCompute.AzPubSub.IDeserialize{``0},Microsoft.AzCompute.AzPubSub.IDeserialize{``1},System.Int64)">
+            <summary>
+            Creates a TypedTopicConsumer&lt;K, P&gt; for use with TypedConsumer.
+            Messages are dispatched in-order to TypedTopicConsumer&lt;K, P&gt; as they arrive.
+            </summary>
+            <typeparam name="K">Type of the message key.  Use Ignore if key deserialization is not required.</typeparam>
+            <typeparam name="P">Type of the message payload.  P must be nullable.  Null payload indicates that the message is deleted.</typeparam>
+            <param name="topic">Name of the topic to consume from.</param>
+            <param name="keyDeserializer">The deserializer that will be used to deserialize the keys.  Can be null if K is of type Ignore.</param>
+            <param name="payloadDeserializer">The deserializer that will be used to deserialize the payload.</param>
+            <param name="startOffset">Specified one of the well know values from the Offset class that describes where consumption should begin.
+                                      Valid values are Offset.Begin, Offset.End and Offset.Stored.  The application can take complete control if
+                                      the offsets by specifying Offset.Invalid and setting the offsets in the RaiseRebalance event.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateReliableTopicProducer``2(System.String,Microsoft.AzCompute.AzPubSub.ITopicConfiguration,System.TimeSpan,System.TimeSpan,System.TimeSpan,System.TimeSpan,Microsoft.AzCompute.AzPubSub.IProducer,Microsoft.AzCompute.AzPubSub.ISerialize{``0},Microsoft.AzCompute.AzPubSub.ISerialize{``1},Microsoft.AzCompute.AzPubSub.ReliableTopicProducerLogCallback)">
+            <summary>
+            Creates a RelableTopicProducer.
+            A RelableTopicProducer takes as input key and value pairs and guarantees that the
+            latest value for each key will be sent to the configured Kafka topic.
+            Serialization, communication and optionally value retrieval are
+            performed as a background task.  This class takes care of:
+              - Error handling and retry.  It recovers from Kafka outages.
+              - Buffering frequently changing values per key to limit message rate.
+              - Optionally re-emitting the value for each key periodically.
+            </summary>
+            <param name="topicName">Name of the topic to send the data to.</param>
+            <param name="topicConfiguration">Topic configuration.  Can be null.  Caller should dispose this after disposing IReliableTopicProducer.</param>
+            <param name="bufferTime">Time span to wait for before sending a message.  Set to TimeSpan.MinValue for no buffering.</param>
+            <param name="resendPeriod">Period at which to re-send the value even id it has not changed.  Set to TimeSpan.MaxValue disable resend.</param>
+            <param name="initialRetryTime">The initial wait time to retry a request with exponential backoff.</param>
+            <param name="maxErrorRetryTime">Maximum time to wait between retries.  Retry time will exponentially approach this time on error.</param>
+            <param name="producer">Producer to use.  Caller should dispose this after disposing IReliableTopicProducer.</param>
+            <param name="keySerializer">Serializer for the keys</param>
+            <param name="valueSerializer">Serializer for the values.</param>
+            <param name="logCallback">Log callback for tracing.  Can be null.</param>
+            <typeparam name="K">Type of the key.</typeparam>
+            <typeparam name="P">Type of the value.</typeparam>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.AzPubSubClient.CreateReliableTopicProducer``2(System.String,Microsoft.AzCompute.AzPubSub.ITopicConfiguration,System.TimeSpan,System.TimeSpan,System.TimeSpan,System.TimeSpan,System.Threading.Tasks.Task{Microsoft.AzCompute.AzPubSub.IProducer},Microsoft.AzCompute.AzPubSub.ISerialize{``0},Microsoft.AzCompute.AzPubSub.ISerialize{``1},Microsoft.AzCompute.AzPubSub.ReliableTopicProducerLogCallback)">
+            <summary>
+            Creates a RelableTopicProducer.
+            A RelableTopicProducer takes as input key and value pairs and guarantees that the
+            latest value for each key will be sent to the configured Kafka topic.
+            Serialization, communication and optionally value retrieval are
+            performed as a background task.  This class takes care of:
+              - Error handling and retry.  It recovers from Kafka outages.
+              - Buffering frequently changing values per key to limit message rate.
+              - Optionally re-emitting the value for each key periodically.
+            </summary>
+            <param name="topicName">Name of the topic to send the data to.</param>
+            <param name="topicConfiguration">Topic configuration.  Can be null.  Caller should dispose this after disposing IReliableTopicProducer.</param>
+            <param name="bufferTime">Time span to wait for before sending a message.  Set to TimeSpan.MinValue for no buffering.</param>
+            <param name="resendPeriod">Period at which to re-send the value even id it has not changed.  Set to TimeSpan.MaxValue disable resend.</param>
+            <param name="initialRetryTime">The initial wait time to retry a request with exponential backoff.</param>
+            <param name="maxErrorRetryTime">Maximum time to wait between retries.  Retry time will exponentially approach this time on error.</param>
+            <param name="producerTask">Task the provofides the produder to use.  Using a task allows the client to start using the ReliableTopicProducer before the producer is created and connected.  Caller should dispose the IProducer returned by the task after disposing IReliableTopicProducer.</param>
+            <param name="keySerializer">Serializer for the keys</param>
+            <param name="valueSerializer">Serializer for the values.</param>
+            <param name="logCallback">Log callback for tracing.  Can be null.</param>
+            <typeparam name="K">Type of the key.</typeparam>
+            <typeparam name="P">Type of the value.</typeparam>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.BufferUtilities.LazyGetObject`1">
+            <remarks>
+            Structs needs to be immutable since they are always passed by value.
+            Thats why GetValue returns the updated lazy object so the cached value is preserved.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.BufferUtilities.LazyGetString">
+            <remarks>
+            Structs needs to be immutable since they are always passed by value.
+            Thats why GetValue returns the updated lazy object so the cached value is preserved.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.BufferUtilities.LazyGetBuffer">
+            <remarks>
+            Structs needs to be immutable since they are always passed by value.
+            Thats why GetValue returns the updated lazy object so the cached value is preserved.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.LogCallback">
+            <summary>
+            Function which logs will be sent to.
+            </summary>
+            <param name="level">The level of the log.</param>
+            <param name="message">The log message.</param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.LogCallback`1">
+            <summary>
+            Function which logs will be sent to with optional context
+            </summary>
+            <typeparam name="T">The context type which will be sent to the log callback.</typeparam>
+            <param name="level">The level of the log.</param>
+            <param name="message">The log message.</param>
+            <param name="context">The context sent to the log callback.</param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.SSLCertificateVerificationCallback">
+            <summary>
+            Function which does authentication for azpubsub client
+            </summary>
+            <param name="brokerName">name of broker for which certificate has to be verified</param>
+            <param name="brokerId">id of broker for which certificate has to be verified</param>
+            <param name="acls">azpubsub.acl property set in azpubsub client</param>
+            <param name="depth">type of certificate specified</param>
+            <param name="buffer">byte array containing cerver certificate</param>
+            <param name="size">size of buffer</param>
+            <returns>result error code of executing auth function</returns>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.SSLCertificateRefreshCallback">
+            <summary>
+            Function which fetches new certificate for azpubsub client
+            </summary>
+            <param name="buffer">name of broker for which certificate has to be verified</param>
+            <param name="size">size of the context</param>
+            <param name="context">context for the callback</param>
+            <returns>result error code of executing auth function</returns>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.DummyMetrics">
+            <summary>
+            NoOp implementation of IMetrics so we don't have to check for null in 
+            all the places a metric are emitted.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.KafkaErrorCode">
+            <summary>
+            Kafka Error codes
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__BEGIN">
+            Begin internal error codes 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__BAD_MSG">
+            Received message is incorrect 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__BAD_COMPRESSION">
+            Bad/unknown compression 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__DESTROY">
+            Broker is going away 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__FAIL">
+            Generic failure 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__TRANSPORT">
+            Broker transport failure 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__CRIT_SYS_RESOURCE">
+            Critical system resource 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__RESOLVE">
+            Failed to resolve broker 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__MSG_TIMED_OUT">
+            Produced message timed out
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__PARTITION_EOF">
+            Reached the end of the topic+partition queue on
+            the broker. Not really an error. 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__UNKNOWN_PARTITION">
+            Permanent: Partition does not exist in cluster. 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__FS">
+            File or filesystem error 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__UNKNOWN_TOPIC">
+            Permanent: Topic does not exist in cluster. 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__ALL_BROKERS_DOWN">
+            All broker connections are down. 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__INVALID_ARG">
+            Invalid argument, or invalid configuration 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__TIMED_OUT">
+            Operation timed out 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__QUEUE_FULL">
+            Queue is full 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__ISR_INSUFF">
+            ISR count &lt; required.acks 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__NODE_UPDATE">
+            Broker node update 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__SSL">
+            SSL error 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__WAIT_COORD">
+            Waiting for coordinator to become available. 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__UNKNOWN_GROUP">
+            Unknown client group 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__IN_PROGRESS">
+            Operation in progress 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__PREV_IN_PROGRESS">
+            Previous operation in progress, wait for it to finish. 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__EXISTING_SUBSCRIPTION">
+            This operation would interfere with an existing subscription 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__ASSIGN_PARTITIONS">
+            Assigned partitions (rebalance_cb) 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__REVOKE_PARTITIONS">
+            Revoked partitions (rebalance_cb) 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__CONFLICT">
+            Conflicting use 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__STATE">
+            Wrong state 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__UNKNOWN_PROTOCOL">
+            Unknown protocol 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__NOT_IMPLEMENTED">
+            Not implemented 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__AUTHENTICATION">
+            Authentication failure
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__NO_OFFSET">
+            No stored offset 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__OUTDATED">
+            Outdated 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__TIMED_OUT_QUEUE">
+            Timed out in queue 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__UNSUPPORTED_FEATURE">
+            Feature not supported by broker 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__WAIT_CACHE">
+            Awaiting cache update 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__INTR">
+            Operation interrupted 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__KEY_SERIALIZATION">
+            Key serialization error 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__VALUE_SERIALIZATION">
+            Value serialization error 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__KEY_DESERIALIZATION">
+            Key deserialization error 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__VALUE_DESERIALIZATION">
+            Value deserialization error 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__PARTIAL">
+            Partial response 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__READ_ONLY">
+            Modification attempted on read-only object 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__NOENT">
+            No such entry / item not found 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__UNDERFLOW">
+            Read underflow 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__INVALID_TYPE">
+            Invalid type 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__RETRY">
+            Retry operation 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__PURGE_QUEUE">
+            Purged in queue 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__PURGE_INFLIGHT">
+            Purged in flight 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__FATAL">
+            Fatal error: see rd_kafka_fatal_error() 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__INCONSISTENT">
+            Inconsistent state 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__GAPLESS_GUARANTEE">
+            Gap-less ordering would not be guaranteed if proceeding 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__MAX_POLL_EXCEEDED">
+            Maximum poll interval exceeded 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR__END">
+            End internal error codes 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_UNKNOWN">
+            Unknown broker error 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_NO_ERROR">
+            Success 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_OFFSET_OUT_OF_RANGE">
+            Offset out of range 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_MSG">
+            Invalid message 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_UNKNOWN_TOPIC_OR_PART">
+            Unknown topic or partition 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_MSG_SIZE">
+            Invalid message size 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_LEADER_NOT_AVAILABLE">
+            Leader not available 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_NOT_LEADER_FOR_PARTITION">
+            Not leader for partition 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_REQUEST_TIMED_OUT">
+            Request timed out 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_BROKER_NOT_AVAILABLE">
+            Broker not available 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_REPLICA_NOT_AVAILABLE">
+            Replica not available 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_MSG_SIZE_TOO_LARGE">
+            Message size too large 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_STALE_CTRL_EPOCH">
+            StaleControllerEpochCode 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_OFFSET_METADATA_TOO_LARGE">
+            Offset metadata string too large 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_NETWORK_EXCEPTION">
+            Broker disconnected before response received 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_GROUP_LOAD_IN_PROGRESS">
+            Group coordinator load in progress 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_GROUP_COORDINATOR_NOT_AVAILABLE">
+            Group coordinator not available 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_NOT_COORDINATOR_FOR_GROUP">
+            Not coordinator for group 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_TOPIC_EXCEPTION">
+            Invalid topic 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_RECORD_LIST_TOO_LARGE">
+            Message batch larger than configured server segment size 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_NOT_ENOUGH_REPLICAS">
+            Not enough in-sync replicas 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_NOT_ENOUGH_REPLICAS_AFTER_APPEND">
+            Message(s) written to insufficient number of in-sync replicas 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_REQUIRED_ACKS">
+            Invalid required acks value 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_ILLEGAL_GENERATION">
+            Specified group generation id is not valid 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INCONSISTENT_GROUP_PROTOCOL">
+            Inconsistent group protocol 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_GROUP_ID">
+            Invalid group.id 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_UNKNOWN_MEMBER_ID">
+            Unknown member 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_SESSION_TIMEOUT">
+            Invalid session timeout 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_REBALANCE_IN_PROGRESS">
+            Group rebalance in progress 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_COMMIT_OFFSET_SIZE">
+            Commit offset data size is not valid 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_TOPIC_AUTHORIZATION_FAILED">
+            Topic authorization failed 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_GROUP_AUTHORIZATION_FAILED">
+            Group authorization failed 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_CLUSTER_AUTHORIZATION_FAILED">
+            Cluster authorization failed 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_TIMESTAMP">
+            Invalid timestamp 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_UNSUPPORTED_SASL_MECHANISM">
+            Unsupported SASL mechanism 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_ILLEGAL_SASL_STATE">
+            Illegal SASL state 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_UNSUPPORTED_VERSION">
+            Unuspported version 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_TOPIC_ALREADY_EXISTS">
+            Topic already exists 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_PARTITIONS">
+            Invalid number of partitions 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_REPLICATION_FACTOR">
+            Invalid replication factor 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_REPLICA_ASSIGNMENT">
+            Invalid replica assignment 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_CONFIG">
+            Invalid config 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_NOT_CONTROLLER">
+            Not controller for cluster 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_REQUEST">
+            Invalid request 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_UNSUPPORTED_FOR_MESSAGE_FORMAT">
+            Message format on broker does not support request 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_POLICY_VIOLATION">
+            Isolation policy volation 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_OUT_OF_ORDER_SEQUENCE_NUMBER">
+            Broker received an out of order sequence number 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_DUPLICATE_SEQUENCE_NUMBER">
+            Broker received a duplicate sequence number 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_PRODUCER_EPOCH">
+            Producer attempted an operation with an old epoch 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_TXN_STATE">
+            Producer attempted a transactional operation in an invalid state 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_PRODUCER_ID_MAPPING">
+            Producer attempted to use a producer id which is not
+            currently assigned to its transactional id 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_TRANSACTION_TIMEOUT">
+            Transaction timeout is larger than the maximum
+            value allowed by the broker's max.transaction.timeout.ms 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_CONCURRENT_TRANSACTIONS">
+            Producer attempted to update a transaction while another
+            concurrent operation on the same transaction was ongoing 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_TRANSACTION_COORDINATOR_FENCED">
+            Indicates that the transaction coordinator sending a
+            WriteTxnMarker is no longer the current coordinator for a
+            given producer 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_TRANSACTIONAL_ID_AUTHORIZATION_FAILED">
+            Transactional Id authorization failed 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_SECURITY_DISABLED">
+            Security features are disabled 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_OPERATION_NOT_ATTEMPTED">
+            Operation not attempted 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_KAFKA_STORAGE_ERROR">
+            Disk error when trying to access log file on the disk 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_LOG_DIR_NOT_FOUND">
+            The user-specified log directory is not found in the broker config 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_SASL_AUTHENTICATION_FAILED">
+            SASL Authentication failed 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_UNKNOWN_PRODUCER_ID">
+            Unknown Producer Id 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_REASSIGNMENT_IN_PROGRESS">
+            Partition reassignment is in progress 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_DELEGATION_TOKEN_AUTH_DISABLED">
+            Delegation Token feature is not enabled 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_DELEGATION_TOKEN_NOT_FOUND">
+            Delegation Token is not found on server 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_DELEGATION_TOKEN_OWNER_MISMATCH">
+            Specified Principal is not valid Owner/Renewer 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_DELEGATION_TOKEN_REQUEST_NOT_ALLOWED">
+            Delegation Token requests are not allowed on this connection 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_DELEGATION_TOKEN_AUTHORIZATION_FAILED">
+            Delegation Token authorization failed 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_DELEGATION_TOKEN_EXPIRED">
+            Delegation Token is expired 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_PRINCIPAL_TYPE">
+            Supplied principalType is not supported 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_NON_EMPTY_GROUP">
+            The group is not empty 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_GROUP_ID_NOT_FOUND">
+            The group id does not exist 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_FETCH_SESSION_ID_NOT_FOUND">
+            The fetch session ID was not found 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_INVALID_FETCH_SESSION_EPOCH">
+            The fetch session epoch is invalid 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_LISTENER_NOT_FOUND">
+            No matching listener 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_TOPIC_DELETION_DISABLED">
+            Topic deletion is disabled 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_FENCED_LEADER_EPOCH">
+            Leader epoch is older than broker epoch 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_UNKNOWN_LEADER_EPOCH">
+            Leader epoch is newer than broker epoch 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_UNSUPPORTED_COMPRESSION_TYPE">
+            Unsupported compression type 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_STALE_BROKER_EPOCH">
+            Broker epoch has changed 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_OFFSET_NOT_AVAILABLE">
+            Leader high watermark is not caught up 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_MEMBER_ID_REQUIRED">
+            Group member needs a valid member ID 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_PREFERRED_LEADER_NOT_AVAILABLE">
+            Preferred leader was not available 
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.KafkaErrorCode.ERR_GROUP_MAX_SIZE_REACHED">
+            Consumer group has reached maximum size 
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ExponentialBackoff">
+            <summary>
+            Class to simplify implementing an exponential back-off retry loop.
+            The wait time is doubled after every wait until the maximum is reached.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ExponentialBackoff.GetWaitTime">
+            <summary>
+            Get the wait time.
+            Every time this method is called the time is doubled until the maximum is reached.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ExponentialBackoff.Reset">
+            <summary>
+            Reset the exponential back-off.  Typically called after a successful operation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.Extensions.HasTaskCanceledException(System.Exception)">
+            <summary>
+            Returns true if the exception is a TaskCanceledException
+            or a AggregateException that contains a TaskCanceledException.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.Offset">
+            <summary>
+            Well known partition offsets.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.Offset.Beginning">
+            <summary>
+            Start consuming from beginning of Kafka partition queue: oldest message
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.Offset.End">
+            <summary>
+            Start consuming from end of Kafka partition queue: next message
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.Offset.Stored">
+            <summary>
+            Start consuming from the last committed message.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.Offset.Invalid">
+            <summary>
+            Invalid offset
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.Offset.Tail(System.Int64)">
+            <summary>
+            Start consuming count messages from topic's current end offset.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.Offset.OffSetToString(System.Int64)">
+            <summary>
+            Format a offset as a string.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.Ignore">
+            <summary>
+            Class used when a the key of a message should be ignored.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.MessageEventArgs`2">
+            <summary>
+            Event args for typed messages
+            </summary>
+            <typeparam name="K">The message key.</typeparam>
+            <typeparam name="P">The message payload.</typeparam>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.MessageEventArgs`2.#ctor(Microsoft.AzCompute.AzPubSub.IMessage{`0,`1})">
+            <summary>
+            Constructor to allow application unit tests to use MessageEventArgs&lt;K, P&gt; when mocking ITypedConsumer.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.MessageEventArgs`2.GetMessage">
+            <summary>
+            Gets a new IMessage&lt;K, P&gt; object.  Note that IMessage&lt;K, P&gt; derives from 
+            IDisposable and must be disposed by the application.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ErrorEventArgs">
+            <summary>
+            Event args for Error events
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ErrorEventArgs.ErrorCode">
+            <summary>
+            The error code.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ErrorEventArgs.ErrorMessage">
+            <summary>
+            Gets the error string of the message.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.StatsicsEventArgs">
+            <summary>
+            Event args for Error events
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.StatsicsEventArgs.ErrorCode">
+            <summary>
+            The error code.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.StatsicsEventArgs.ErrorMessage">
+            <summary>
+            Gets the error string of the message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.StatsicsEventArgs.Statistics">
+            <summary>
+            Gets the statistics as a JSON object (as string).
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ThrottleEventArgs">
+            <summary>
+            Event args for Error events
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ThrottleEventArgs.ThrottleTime">
+            <summary>
+            Gets the throttle time
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ThrottleEventArgs.BrokerName">
+            <summary>
+            Throttling broker's name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ThrottleEventArgs.BrokerId">
+            <summary>
+            Throttling broker's id.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ClientMetricEventArgs">
+            <summary>
+            Event args for client metric events
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ClientMetricEventArgs.Name">
+            <summary>
+            The name of the metric
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ClientMetricEventArgs.Value">
+            <summary>
+            The metric value
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.RebalanceEventArgs">
+            <summary>
+            Event args for when a rebalance occurs
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.RebalanceEventArgs.Consumer">
+            <summary>
+            The consumer which will be used to update/revoke the topic + partitions.  This consumer will be disposed when the callback completes.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.RebalanceEventArgs.Mode">
+            <summary>
+            The type of rebalance which is occurring.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.RebalanceEventArgs.Partitions">
+            <summary>
+            The partitions + offsets which the rebalance will work with.  This collection is only valid within the callback and will be disposed when the callback completes.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.CommittedEventArgs">
+            <summary>
+            Event args for when a commit occurs
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.CommittedEventArgs.Error">
+            <summary>
+            Any errors which occur or ERR_NO_ERROR on success
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.CommittedEventArgs.Offsets">
+            <summary>
+            The committed offsets
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.TokenEventArgs">
+            <summary>
+            Event args for handling a token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.TokenEventArgs.Token">
+            <summary>
+            Gets or sets the token value
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.TokenEventArgs.LeftTimeSinceUnixEpochInMs">
+            <summary>
+            How much left before the token is expired, in MS.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.TokenEventArgs.Id">
+            <summary>
+            Id of the token
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.TokenEventArgs.Status">
+            <summary>
+            Gets or sets the status of the token refresh operation
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.TokenRefreshEventArgs">
+            <summary>
+            Event args for handling refreshing a token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.TokenRefreshEventArgs.RefreshInterval">
+            <summary>
+            Gets or sets the next refresh interval
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateConfiguration(Microsoft.AzCompute.AzPubSub.GlobalConfigurationTemplates)">
+            <summary>
+            Create a configuration that is used to create Producers and Consumers.
+            See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
+            for details of the configuration options which apply to Producers and Consumers.
+            </summary>
+            <param name="template">GlobalConfigurationTemplates to be applied on the config object. Default template applied is None</param>
+            <returns>IGlobalConfiguration object</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateTopicConfiguration">
+            <summary>
+            Create a configuration that is used to create ProducerTopics.
+            See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md 
+            for details of the configuration options which apply to Topics.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateSimpleProducerConfiguration">
+            <summary>
+            Creates the configuration for the simple producer.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateProducer(Microsoft.AzCompute.AzPubSub.IGlobalConfiguration)">
+            <summary>
+            Create a producer that can be used to produce messages to multiple topics.
+            The caller will have to serialize the data into ArraySegment&lt;byte&gt;.
+            Use TypedProducer&lt;K, P&gt; for automatic serialization of message data.
+            </summary>
+            <param name="configuration">Configuration for the producer can be disposed when CreateProducer returns.  The configuration can be used to create multiple producers or consumers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateTypedTopicProducer``2(Microsoft.AzCompute.AzPubSub.IProducer,System.String,Microsoft.AzCompute.AzPubSub.ITopicConfiguration,Microsoft.AzCompute.AzPubSub.ISerialize{``0},Microsoft.AzCompute.AzPubSub.ISerialize{``1})">
+            <summary>
+            Create a TypedTopicProducer for sending messages.  Messages data will automatically be serialized using the supplied serializers.
+            </summary>
+            <typeparam name="K">Type of the message key.  Use Ignore if the message does not have a key.</typeparam>
+            <typeparam name="P">Type of the message payload.  P must be nullable.  Null payload indicates that the message is deleted.</typeparam>
+            <param name="producer">A reference to the producer that will be used to send the massage.  It is good practice to share the same producer for all the topics in a process.</param>
+            <param name="topic">Name of the topic.</param>
+            <param name="topicConfiguration">Topic specific producer configuration.  Can be null.</param>
+            <param name="keySerializer">The serializer that will be invoked to serialize the keys.  Can be null if K is of type Ignore.</param>
+            <param name="payloadSerializer">The serializer that will be invoked to serialize the payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateProducerTopic(Microsoft.AzCompute.AzPubSub.IProducer,System.String,Microsoft.AzCompute.AzPubSub.ITopicConfiguration)">
+            <summary>
+            Create a producer topic.  Used to identify the topic to send a message to.
+            </summary>
+            <param name="producer">Reference to the producer that the ProducerTopic will be used with.</param>
+            <param name="topic">Name of the topic.</param>
+            <param name="topicConfiguration">Topic specific producer configuration.  Can be null.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateSimpleProducer(System.String,Microsoft.AzCompute.AzPubSub.ISimpleProducerConfiguration,Microsoft.AzCompute.AzPubSub.SecurityType)">
+            <summary>
+            Creates a simple producer.
+            </summary>
+            <param name="endpoint">The endpoint which the simple producer will connect to.</param>
+            <param name="config">The configuration to use.</param>
+            <param name="type">The security type to use when communicating with the simple producer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateSimpleProducer(System.String,System.String,Microsoft.AzCompute.AzPubSub.ISimpleProducerConfiguration,Microsoft.AzCompute.AzPubSub.SecurityType)">
+            <summary>
+            Creates a simple producer.
+            </summary>
+            <param name="environment">The environment which the simple producer will connect to.</param>
+            /// <param name="cluster">The cluster which the simple producer will connect to.</param>
+            <param name="config">The configuration to use.</param>
+            <param name="type">The security type to use when communicating with the simple producer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateConsumer(Microsoft.AzCompute.AzPubSub.IGlobalConfiguration,System.String)">
+            <summary>
+            Create a consumer.  A single consumer can consume from multiple topics at the same time.
+            After creating a consumer, client have to subscribe to topics and call consume to "pull"
+            messages from the subscribed topics.  Messages are pulled in-order from topic partitions.
+            Its up to the caller to deserialize the message payload.  For automatic deserialization 
+            and Consume polling use TypedConsumer.
+            </summary>
+            <param name="configuration">Configuration for the consumer can be disposed when CreateConsumer returns.  The configuration can be used to create multiple producers or consumers.</param>
+            <param name="groupId">The consumer group that the consumer belongs too.  Consumer groups are a important concept in Kafka.  Its important to understand why you are setting this.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateTypedConsumer(Microsoft.AzCompute.AzPubSub.IGlobalConfiguration,System.String)">
+            <summary>
+            Create a TypedConsumer that will dispatch events to the registered topic consumers as messages arrive.
+            Messages are dispatched in-order and the next message is not dispatched until the previous event handler has returned.
+            This is required to maintain message order.  Callers must call Start() to start consuming the topics.
+            </summary>
+            <param name="configuration">Consumer configuration.</param>
+            <param name="groupId">The consumer group that the consumer belongs too.  Consumer groups are a important concept in Kafka.  Its important to understand why you are setting this.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateTypedTopicConsumer``2(System.String,Microsoft.AzCompute.AzPubSub.IDeserialize{``0},Microsoft.AzCompute.AzPubSub.IDeserialize{``1},System.Int64)">
+            <summary>
+            Creates a TypedTopicConsumer&lt;K, P&gt; for use with TypedConsumer.
+            Messages are dispatched in-order to TypedTopicConsumer&lt;K, P&gt; as they arrive.
+            If there is an error while processing message, K.ToString() is used in exception message and in logs to provide more context about the error.
+            </summary>
+            <typeparam name="K">Type of the message key.  Use Ignore if key deserialization is not required.</typeparam>
+            <typeparam name="P">Type of the message payload.  P must be nullable.  Null payload indicates that the message is deleted.</typeparam>
+            <param name="topic">Name of the topic to consume from.</param>
+            <param name="keyDeserializer">The deserializer that will be used to deserialize the keys.  Can be null if K is of type Ignore.</param>
+            <param name="payloadDeserializer">The deserializer that will be used to deserialize the payload.</param>
+            /// <param name="startOffset">Specify the offset from where messages should be consumes on start / rebalance.  Typically one of the special offset values.  See the Offset class for a description of options.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateBatch">
+            <summary>
+            Creates the batch used for sending batch messages to the simple producer.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateSecurityContextForSubject(System.String,System.String)">
+            <summary>
+            Creates the security context for local stored certificates based on certificate subject.
+            </summary>
+            <param name="store">The name of the certificate store.</param>
+            <param name="subject">The subject of the certificate to be used.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateSecurityContextForThumbprint(System.String,System.String)">
+            <summary>
+            Creates the security context for local stored certificates based on certificate thumbprint.
+            </summary>
+            <param name="store">The name of the certificate store.</param>
+            <param name="thumbprint">The thumbprint of the certificate to be used.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateReliableTopicProducer``2(System.String,Microsoft.AzCompute.AzPubSub.ITopicConfiguration,System.TimeSpan,System.TimeSpan,System.TimeSpan,System.TimeSpan,Microsoft.AzCompute.AzPubSub.IProducer,Microsoft.AzCompute.AzPubSub.ISerialize{``0},Microsoft.AzCompute.AzPubSub.ISerialize{``1},Microsoft.AzCompute.AzPubSub.ReliableTopicProducerLogCallback)">
+            <summary>
+            Creates a ReliableTopicProducer.
+            A ReliableTopicProducer takes as input key and value pairs and guarantees that the
+            latest value for each key will be sent to the configured Kafka topic.
+            Serialization, communication and optionally value retrieval are
+            performed as a background task.  This class takes care of:
+              - Error handling and retry.  It recovers from Kafka outages.
+              - Buffering frequently changing values per key to limit message rate.
+              - Optionally re-emitting the value for each key periodically.
+            </summary>
+            <param name="topicName">Name of the topic to send the data to.</param>
+            <param name="topicConfiguration">Topic configuration.  Can be null.  Caller should dispose this after disposing IReliableTopicProducer.</param>
+            <param name="bufferTime">Time span to wait for before sending a message.  Set to TimeSpan.Zero for no buffering.</param>
+            <param name="resendPeriod">Period at which to re-send the value even if it has not changed. Set to TimeSpan.MaxValue disable resend.</param>
+            <param name="initialRetryTime">The initial wait time to retry a request with exponential backoff.</param>
+            <param name="maxErrorRetryTime">Maximum time to wait between retries.  Retry time will exponentially approach this time on error.</param>
+            <param name="producer">Producer to use.  Caller should dispose this after disposing IReliableTopicProducer.</param>
+            <param name="keySerializer">Serializer for the keys</param>
+            <param name="valueSerializer">Serializer for the values.</param>
+            <param name="logCallback">Log callback for tracing.  Can be null.</param>
+            <typeparam name="K">Type of the key.</typeparam>
+            <typeparam name="P">Type of the value.</typeparam>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IAzPubSubClient.CreateReliableTopicProducer``2(System.String,Microsoft.AzCompute.AzPubSub.ITopicConfiguration,System.TimeSpan,System.TimeSpan,System.TimeSpan,System.TimeSpan,System.Threading.Tasks.Task{Microsoft.AzCompute.AzPubSub.IProducer},Microsoft.AzCompute.AzPubSub.ISerialize{``0},Microsoft.AzCompute.AzPubSub.ISerialize{``1},Microsoft.AzCompute.AzPubSub.ReliableTopicProducerLogCallback)">
+            <summary>
+            Creates a RelableTopicProducer.
+            A RelableTopicProducer takes as input key and value pairs and guarantees that the
+            latest value for each key will be sent to the configured Kafka topic.
+            Serialization, communication and optionally value retrieval are
+            performed as a background task.  This class takes care of:
+              - Error handling and retry.  It recovers from Kafka outages.
+              - Buffering frequently changing values per key to limit message rate.
+              - Optionally re-emitting the value for each key periodically.
+            </summary>
+            <param name="topicName">Name of the topic to send the data to.</param>
+            <param name="topicConfiguration">Topic configuration.  Can be null.  Caller should dispose this after disposing IReliableTopicProducer.</param>
+            <param name="bufferTime">Time span to wait for before sending a message.  Set to TimeSpan.MinValue for no buffering.</param>
+            <param name="resendPeriod">Period at which to re-send the value even id it has not changed.  Set to TimeSpan.MaxValue disable resend.</param>
+            <param name="initialRetryTime">The initial wait time to retry a request with exponential backoff.</param>
+            <param name="maxErrorRetryTime">Maximum time to wait between retries.  Retry time will exponentially approach this time on error.</param>
+            <param name="producerTask">Task the provofides the produder to use.  Using a task allows the client to start using the ReliableTopicProducer before the producer is created and connected.  Caller should dispose the IProducer returned by the task after disposing IReliableTopicProducer.</param>
+            <param name="keySerializer">Serializer for the keys</param>
+            <param name="valueSerializer">Serializer for the values.</param>
+            <param name="logCallback">Log callback for tracing.  Can be null.</param>
+            <typeparam name="K">Type of the key.</typeparam>
+            <typeparam name="P">Type of the value.</typeparam>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IConfiguration">
+            <summary>
+            The configuration.
+            See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
+            for details of the configuration options.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.Add(System.String,System.String)">
+            <summary>
+            Adds a string configuration value.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.Add(System.String,System.Boolean)">
+            <summary>
+            Adds a boolean configuration.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.Add(System.String,System.Int32)">
+            <summary>
+            Adds an integer configuration.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.Add(System.String,System.Byte[])">
+            <summary>
+            Adds an binary configuration.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.Get(System.String)">
+            <summary>
+            Gets the value of the configuration.  Throw an exception if it doesn't exist.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.TryGet(System.String,System.String@)">
+            <summary>
+            Gets the value of the configuration if it exists.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.GetInt(System.String)">
+            <summary>
+            Gets the value of the configuration.  Throw an exception if it doesn't exist.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.TryGetInt(System.String,System.Int32@)">
+            <summary>
+            Gets the value of the configuration if it exists.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.GetBool(System.String)">
+            <summary>
+            Gets the value of the configuration.  Throw an exception if it doesn't exist.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.TryGetBool(System.String,System.Boolean@)">
+            <summary>
+            Gets the value of the configuration if it exists.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.SetSSLCertificateVerificationCallback(Microsoft.AzCompute.AzPubSub.SSLCertificateVerificationCallback,Microsoft.AzCompute.AzPubSub.AzPubSubClient)">
+            <summary>
+            Sets auth callback for azpubsub client
+            </summary>
+            <param name="authCallback">callback method</param>
+            <param name="azPubSubClient">The client that has the callback</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConfiguration.SetSSLCertificateRefreshCallback(Microsoft.AzCompute.AzPubSub.SSLCertificateRefreshCallback,Microsoft.AzCompute.AzPubSub.AzPubSubClient,System.IntPtr)">
+            <summary>
+            Sets cert refresh callback for azpubsub client user and machine security providers
+            </summary>
+            <param name="certCallback">callback method</param>
+            <param name="azPubSubClient">The client that has the callback</param>
+            <param name="context">The context for the callback</param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ISimpleProducerConfiguration">
+            <summary>
+            The configuration for the simple producer
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration">
+            <summary>
+            Global configuration is used to create producers and consumers.
+            See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
+            for details of the configuration options that apply to Producers and Consumers.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.SetSecurity(Microsoft.AzCompute.AzPubSub.SecurityType,Microsoft.AzCompute.AzPubSub.SecurityFlags)">
+            <summary>
+            Sets security type and flags for the connection.
+            </summary>
+            <param name="type">The type of security which to use</param>
+            <param name="flags">Any security flags</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.GetSecurityType">
+            <summary>
+            Get type of security
+            </summary>
+            <returns>type of security</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.GetSecurityFlags">
+            <summary>
+            Get security flags
+            </summary>
+            <returns>security flags</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.SetConnection(System.String,System.String)">
+            <summary>
+            Sets the connection.
+            </summary>
+            <param name="environment">The target environment.</param>
+            <param name="cluster">The target cluster.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.SetConnection(System.String,System.String,Microsoft.AzCompute.AzPubSub.SecurityType)">
+            <summary>
+            Sets the connection.
+            </summary>
+            <param name="environment">The target environment.</param>
+            <param name="cluster">The target cluster.</param>
+            <param name="type">The type of security which to use.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.SetConnection(System.String,System.String,Microsoft.AzCompute.AzPubSub.SecurityType,Microsoft.AzCompute.AzPubSub.SecurityFlags)">
+            <summary>
+            Sets the connection.
+            </summary>
+            <param name="environment">The target environment.</param>
+            <param name="cluster">The target cluster.</param>
+            <param name="type">The type of security which to use.</param>
+            <param name="flags">Any security flags.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.SetConnection(System.String)">
+            <summary>
+            Sets the connection.
+            </summary>
+            <param name="endpoint">The endpoint which to connect to.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.SetConnection(System.String,Microsoft.AzCompute.AzPubSub.SecurityType)">
+            <summary>
+            Sets the connection.
+            </summary>
+            <param name="endpoint">The endpoint which to connect to.</param>
+            <param name="type">The security type which the connection will use.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.SetConnection(System.String,Microsoft.AzCompute.AzPubSub.SecurityType,Microsoft.AzCompute.AzPubSub.SecurityFlags)">
+            <summary>
+            Sets the connection.
+            </summary>
+            <param name="endpoint">The endpoint which to connect to.</param>
+            <param name="type">The security type which the connection will use.</param>
+            <param name="flags">Any security flags.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IGlobalConfiguration.SetConnection(System.String,Microsoft.AzCompute.AzPubSub.SecurityType,System.String)">
+            <summary>
+            Sets the connection after verifying endpoint with given dns server
+            </summary>
+            <param name="endpoint"></param>
+            <param name="type"></param>
+            <param name="dnsServerIp"></param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ITopicConfiguration">
+            <summary>
+            Configuration that is used to override configuration on a per topic bases.
+            See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
+            for details of the configuration options that apply to topics.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IBackgroundEvents">
+            <summary>
+            Base interface shared by IProducer and IConsumer for background events.
+            </summary>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.IBackgroundEvents.Error">
+            <summary>
+            Event that is raised errors occur.
+            </summary>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.IBackgroundEvents.Statistics">
+            <summary>
+            Event that is raised to periodically report statistics.
+            Set statistics.interval.ms to control how frequently the event is raised.
+            </summary>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.IBackgroundEvents.Throttle">
+            <summary>
+            Throttle events from brokers.
+            </summary>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.IBackgroundEvents.ClientMetrics">
+            <summary>
+            Event is raised when metrics occur.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IBackgroundEvents.ModifyDebugState(System.Int32,System.String)">
+            <summary>
+            Dynamically modify the log level and the debug properties of the producer's configuration file. 
+            </summary>
+            <param name="logLevel"> A vlaue ranging from 1-7 specifying the sytem log level</param>
+            <param name="debugKey"> The type of debug context (Consumer, Producer, Queue, etc.. ). See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md </param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IProducer">
+            <summary>
+            Producers can be used to produce messages to multiple topics.  Its best practice to use a single producer to 
+            to produce to all topics from a process if producer configuration allows.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IProducer.AzPubSubClient">
+            <summary>
+            Return the AzPubSubClient that was used to create this producer.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.UseOAuthBearer(Microsoft.AzCompute.AzPubSub.ITokenProvider)">
+            <summary>
+            Producer is configured to use OAuth Bearer token in SASL_PLAINTEXT or SASL_SSL protocol.
+            </summary>
+            <param name="tokenProvider"></param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.Connect">
+            <summary>
+            Forces a connection to be established if not currently connected.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.Int32)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String,System.Int32)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String,System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String,System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.Int32)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte},System.Int32)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte},System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte},System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessage(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte},System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String,System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.String,System.String,System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte},System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte},System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.SendMessageAsync(Microsoft.AzCompute.AzPubSub.IProducerTopic,System.ArraySegment{System.Byte},System.ArraySegment{System.Byte},System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">Topic to send the message to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param> 
+            <param name="ct">Cancellation token.</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.Flush(System.TimeSpan)">
+            <summary>
+            Flushes any items in the producer queue.
+            </summary>
+            <param name="timeout"></param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.Purge(Microsoft.AzCompute.AzPubSub.PurgeFlags)">
+            <summary>
+            Purges the producer queue.
+            </summary>
+            <param name="flags">The type of purge which to perform.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.Poll(System.TimeSpan)">
+            <summary>
+            Poll the producer for any events.  This will cause application provided callbacks to be called.
+            </summary>
+            <param name="timeout"></param>
+            <returns>The number of events served.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.GetBrokerList(System.TimeSpan)">
+            <summary>
+            Gets the broker list
+            </summary>
+            <param name="timeout">Timeout for fetching the broker list.</param>
+            <returns>The broker list.</returns>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IProducer.IsConnected">
+            <summary>
+            Ture if the connection to the broker has been established otherwise false.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducer.GetBrokerMetadata(System.TimeSpan)">
+            <summary>
+            Gets Broker metadata 
+            </summary>
+            <param name="timeout"> Timeout for fetching the broker metadata</param>
+            <return>The broker metadata</return>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2">
+            <summary>
+            Produces messages with automatic serialization.
+            </summary>
+            <typeparam name="K">Type of the message key.  Use Ignore if the message does not have a key.</typeparam>
+            <typeparam name="P">Type of the message payload.</typeparam>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.Topic">
+            <summary>
+            The topic that the message will be sent to.  This IProducerTopic will be disposed when ITypedTopicProducer&lt;K, P&gt; is disposed.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.Producer">
+            <summary>
+            The underlying producer that will be used to send the message.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessage(`0,`1)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessage(`0,`1,System.Int32)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessage(`0,`1,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessage(`0,`1,System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessage(`0,`1,System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessageAsync(`0,`1,System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessageAsync(`0,`1,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to send message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessageAsync(`0,`1,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="headers">The message headers.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessageAsync(`0,`1,System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">The message headers.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedTopicProducer`2.SendMessageAsync(`0,`1,System.Int32,System.DateTime,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader},System.Threading.CancellationToken)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="timestamp">Time stamp to use as the message produce time.  Should be DateTime.UtcNow for typical production scenarios.</param>
+            <param name="headers">The message headers.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>The task object representing the asynchronous operation. IProduceResult should be inspected to see if the message was successfully delivered.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ISimpleProducer.SendMessage(System.String,System.String)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">The topic which to write to.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ISimpleProducer.SendMessage(System.String,System.String,System.String)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">The topic which to write to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ISimpleProducer.SendMessage(System.String,System.Int32,System.String)">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">The topic which to write to.</param>
+            <param name="partition">The partition which the message will be sent.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ISimpleProducer.SendMessage(System.String,System.Byte[])">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">The topic which to write to.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ISimpleProducer.SendMessage(System.String,System.String,System.Byte[])">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">The topic which to write to.</param>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ISimpleProducer.SendMessage(System.String,System.Int32,System.Byte[])">
+            <summary>
+            Sends a message.
+            </summary>
+            <param name="topic">The topic which to write to.</param>
+            <param name="partition">The partition which the message will be sent.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ISimpleProducer.SendBatch(System.String,Microsoft.AzCompute.AzPubSub.IBatch)">
+            <summary>
+            Sends the batch messages.
+            </summary>
+            <param name="topic">The topic which the messages will be sent to.</param>
+            <param name="batch">The batch containing the topics</param>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.ISimpleProducer.TokenRefresh">
+            <summary>
+            Occurs when a token is needed to be refreshed.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IConsumerBase">
+            <summary>
+            Base consumer interface with common members shared by between IConsumer and ITypedConsumer
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IConsumerBase.AzPubSubClient">
+            <summary>
+            Return the AzPubSubClient that was used to create this consumer.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.Connect">
+            <summary>
+            Forces a connection to be established if not currently connected.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.Commit(System.Collections.Generic.IEnumerable{Microsoft.AzCompute.AzPubSub.ITopicPartition},Microsoft.AzCompute.AzPubSub.ConsumerFlags)">
+            <summary>
+            Commits the offset of the topic and partition.  Clients can subscribe to the Committed Event to get confirmations of commit calls from the broker.
+            Note: Commit semantics specify that the commit offset indicates the next message that should be consumed.
+            </summary>
+            <param name="topicPartitions">The topic and partitions to commit.</param>
+            <param name="flags">Flags to determine whether the Commit call should block until the broker has processed the commit or whether the call should return immediately.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.QueryCommitted(System.Collections.Generic.IEnumerable{Microsoft.AzCompute.AzPubSub.ITopicPartition},System.TimeSpan)">
+            <summary>
+            Retrieves committed offsets for topics + partitions
+            </summary>
+            <param name="topicPartitions">The topics + partitions which to query for.</param>
+            <param name="timeout">The timeout to wait when querying.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.QueryOffsets(Microsoft.AzCompute.AzPubSub.ITopicPartition,System.TimeSpan)">
+            <summary>
+            Gets the watermark offsets for the topic + partition.
+            </summary>
+            <param name="topicPartition">The topic + partition to query.</param>
+            <param name="timeout">The timeout to wait when querying.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.GetTopicMetadata(System.String,System.TimeSpan)">
+            <summary>
+            Gets the topic metadata.
+            </summary>
+            <param name="topic">The topic which to get the metadata from.</param>
+            <param name="timeout">The timeout to wait when querying the metadata.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.GetAllMetadata(System.TimeSpan)">
+            <summary>
+            Gets the all topic metadata.
+            </summary>
+            <param name="timeout">The timeout to wait when querying the metadata.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.Seek(Microsoft.AzCompute.AzPubSub.ITopicPartition,System.TimeSpan)">
+            <summary>
+            Seeks the consumer to the offset of the topic + partition.
+            </summary>
+            <param name="topicPartition">The topic and partition which the offset is seeked to.</param>
+            <param name="timeout">The amount of time which to wait when seeking to an offset.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.Assign(System.Collections.Generic.IEnumerable{Microsoft.AzCompute.AzPubSub.ITopicPartition})">
+            <summary>
+             Assigns the topic + partitions to the current assignment.
+            </summary>
+            <param name="partitions"></param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.Unassign">
+            <summary>
+            Unassigns the topic + partitions form the current assignment.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IConsumerBase.IsConnected">
+            <summary>
+            Ture if the connection to the broker has been established otherwise false.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumerBase.UseOAuthBearer(Microsoft.AzCompute.AzPubSub.ITokenProvider)">
+            <summary>
+            Consumer is configured to use OAuth Bearer token in SASL_PLAINTEXT or SASL_SSL protocol.
+            </summary>
+            <param name="tokenProvider"></param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IConsumer">
+            <summary>
+            A single consumer can consume from multiple topics at the same time.
+            After creating a consumer, clients have to subscribe to topics and call consume to "pull"
+            messages from the subscribed topics.  Messages are pulled in-order from topic partitions.
+            Its up to the caller to deserialize the message payload.  For automatic deserialization 
+            and Consume polling use TypedConsumer.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumer.Subscribe(System.Collections.Generic.ICollection{System.String})">
+            <summary>
+            Subscribes to topics
+            Previously subscribed topics will be unsubscribed.
+            </summary>
+            <param name="topics">The topics to subscribe to.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumer.Consume(System.TimeSpan)">
+            <summary>
+            Consumes messages.
+            </summary>
+            <param name="timeout">The timeout waiting for messages.</param>
+            <returns>The message which occurs.</returns>
+            <remarks>Callers should check the ErrorCode field of IMessage.
+            ERR__TIMED_OUT and ERR__PARTITION_EOF are expected informational error codes.
+            ERR__TIMED_OUT means that the Consume timeout has elapsed without a message arriving.  This is expected, call consume again.
+            ERR__PARTITION_EOF is an expected value when enable.partition.eof is set to true in the
+            consumer configuration and means that all the messages in the Topic / Partition has been consumed. Inspect
+            the Partition field to determine which partition is up to date and then call Consume again.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumer.Unsubscribe">
+            <summary>
+            Unsubscribe from all topics.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumer.Commit(Microsoft.AzCompute.AzPubSub.ConsumerFlags)">
+            <summary>
+            Commit offsets for the current assignment. Clients can subscribe to the Committed Event to get confirmations of commit calls from the broker.
+            </summary>
+            <param name="flags">Flags to determine whether the Commit call should block until the broker has processed the commit or whether the call should return immediately.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumer.Commit(Microsoft.AzCompute.AzPubSub.IMessage,Microsoft.AzCompute.AzPubSub.ConsumerFlags)">
+            <summary>
+            Commits the offset of the message.  Clients can subscribe to the Committed Event to get confirmations of commit calls from the broker.
+            </summary>
+            <param name="message">The message to commit. Clients can subscribe to the Committed Event to get confirmations of commit calls from the broker.</param>
+            <param name="flags">Flags to determine whether the Commit call should block until the broker has processed the commit or whether the call should return immediately.</param>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.IConsumer.Rebalance">
+            <summary>
+            Occurs when a rebalance is required.
+            </summary>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.IConsumer.Committed">
+            <summary>
+            Occurs as a result of a commit .  This can be either a manual or automatic commit.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IConsumer.StoreOffsets(System.Collections.Generic.IEnumerable{Microsoft.AzCompute.AzPubSub.ITopicPartition})">
+            <summary>
+            Stores the offsets in the partitions. 
+            </summary>
+            <param name="partitions"> The partitions and the offsets to store corresponding to each partition.</param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ITypedConsumer">
+            <summary>
+            TypedConsumer will dispatch events to the registered topic consumers as messages arrive.
+            Messages are dispatched in-order and the next message is not dispatched until the previous event handler has returned.
+            This is required to maintain message order.  Callers must call Start() to start consuming the topics.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedConsumer.Subscribe(System.Collections.Generic.ICollection{Microsoft.AzCompute.AzPubSub.ITopicConsumer})">
+            <summary>
+            Subscribe a list of ITopicConsumers (ITypedTopicConsumer&lt;K, V&gt;) to consume.
+            The consumer must be in the stopped state when subscribing to topics.
+            Subscribe can only be called once, and that too before calling Unsubscribe or Dispose.
+            Once Unsubscribe or Dispose is called, the object becomes unusable for fresh message consumption.
+            A new object can be created for fresh consumption.
+            </summary>
+            <param name="topicConsumers">The list of topics to consume.  Callers should register their event handler with the TopicConsumers before calling Start() otherwise messages will be lost.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedConsumer.Unsubscribe">
+            <summary>
+            Unsubscribe from all topics.
+            ITypedConsumer must be stopped before calling Unsubscribe.
+            Unsubscribe cannot be called after calling Dispose.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedConsumer.Start">
+            <summary>
+            Start dispatching messages to the registered TypedTopicConsumers.
+            Subscribe must be called before calling Start.
+            Start cannot be called after calling Unsubscribe or Dispose.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedConsumer.Stop">
+            <summary>
+            Stop dispatching messages.
+            If a consumer is stopped for more than the configured timeout the consumer will disconnect from the broker.
+            Consumers should not be stopped for more than a few seconds at a time.
+            Stop will block until all in flight message event handlers have completed and no additional events will
+            be dispatched after Stop has returned.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITypedConsumer.Commit``2(Microsoft.AzCompute.AzPubSub.IMessage{``0,``1},Microsoft.AzCompute.AzPubSub.ConsumerFlags)">
+            <summary>
+            Commits the offset of the message.  Clients can subscribe to the Committed Event to get confirmations of commit calls from the broker.
+            </summary>
+            <param name="message">The message to commit.</param>
+            <param name="flags">Flags to determine whether the Commit call should block until the broker has processed the commit or whether the call should return immediately.</param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ITopicConsumer">
+            <summary>
+            A base non-generic interface for ITypedTopicConsumer.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ITopicConsumer.TopicName">
+            <summary>
+            Name of the topic being consumed.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ITopicConsumer.SubscribedConsumer">
+            <summary>
+            The Consumer that the TopicConsumer is subscribed to with.
+            </summary>
+            <exception>Throws InvalidOperationExceptoin if the TopicConsumer is not subscribed to a Consumer.</exception>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ITopicConsumer.IsAllPartitionsConsumedToEof">
+            <summary>
+            True when all the stored messages have been consumed for all partitions and the subsequent
+            messages are "real time".
+            Can be called from within RaiseMessageReceived.  The value will transition to 
+            true before RaiseMessageReceived for the EOF message.
+            It is required that enable.partition.eof is set to true in the Consumer configuration
+            to call this property.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ITopicConsumer.IsPartitionConsumedToEof(System.Int32)">
+            <summary>
+            True when all the stored messages have been consumed for the specified partition
+            and the subsequent messages are "real time".
+            Can be called from within RaiseMessageReceived.  The value will transition to 
+            true before RaiseMessageReceived for the EOF message.
+            It is required that enable.partition.eof is set to true in the Consumer configuration
+            to call this method.
+            </summary>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.ITopicConsumer.Rebalance">
+            <summary>
+            Occurs when a rebalance is required for the topic.
+            In many situations applications do not need to subscribe to this event.
+            - If The ITopicConsumer was created with startOffset set to OffSet.Invalid, 
+              the application is taking control of the start offsets and when 
+              RebalanceEventArgs.Mode == RebalanceMode.Assign the application must set 
+              the Offset member for each partition in RebalanceEventArgs.Partitions.
+            - If the application is managing commits (auto.commit.enable == false), then 
+              it may commit offsets manually when RebalanceEventArgs.Mode == RebalanceMode.Revoke.
+            Applications must not call IConsumerBase.Assign or IConsumerBase.Unassign.  This is handled
+            my the library.
+            No action is needed when RebalanceEventArgs.Mode == RebalanceMode.Error.
+            </summary>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.ITopicConsumer.Committed">
+            <summary>
+            Occurs as a result of a commit for the topic.  This can be either a manual or automatic commit.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ITypedTopicConsumer`2">
+            <summary>
+            This interface represents a topic that will be consumed by TypedTopicConsumer.
+            TypedTopicConsumer dispatch messages to OnMessageReceived event handler in-order as they arrive.
+            </summary>
+            <typeparam name="K">Type of the message key.  Use Ignore is the message does not have a key.</typeparam>
+            <typeparam name="P">Type of the message payload.</typeparam>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.ITypedTopicConsumer`2.MessageReceived">
+            <summary>
+            Event handler that will be invoked as messages arrive.
+            OnMessageReceived is invoked once for each message as it is received and
+            the next invocation will not happen until the previous event handler has returned.
+            This ensures that message order is maintained.  All OnMessageReceived events for a
+            TypedConsumer is dispatched on the same thread.
+            </summary>
+            <remarks>Event handlers should check the ErrorCode field of IMessage.
+            ERR__PARTITION_EOF is an expected value when enable.partition.eof is set to true in the
+            consumer configuration and means that all the messages in the Topic / Partition has been consumed. Inspect
+            the Partition field to determine which partition is up to date and then call Consume again.</remarks>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IBatch">
+            <summary>
+            Batch messages.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IBatch.Size">
+            <summary>
+            Gets the size of the batch.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IBatch.GetBuffer">
+            <summary>
+            Gets the buffer containing the batch
+            </summary>
+            <returns>The buffer of the batch.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IBatch.AddItem(System.String)">
+            <summary>
+            Adds a message to the batch.
+            </summary>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IBatch.AddItem(System.String,System.String)">
+            <summary>
+            Adds a message to the batch.
+            </summary>
+            <param name="key">The key of the message.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IBatch.AddItem(System.Byte[])">
+            <summary>
+            Adds a message to the batch.
+            </summary>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IBatch.AddItem(System.String,System.Byte[])">
+            <summary>
+            Adds a message to the batch.
+            </summary>
+            <param name="key">The key of the message.</param>
+            <param name="payload">The message payload.</param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IMessageBase">
+            <summary>
+            Base Message interface with members that are shared between IMessage and IMessage&lt;K, P&gt;
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessageBase.IsSuccessful">
+            <summary>
+            Gets if the message is successful.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessageBase.ErrorMessage">
+            <summary>
+            Gets the error string of the message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessageBase.ErrorCode">
+            <summary>
+            Gets the error code of the message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessageBase.TopicName">
+            <summary>
+            Gets the topic name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessageBase.Partition">
+            <summary>
+            Gets the partition.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessageBase.Offset">
+            <summary>
+            Gets the message offset.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessageBase.Timestamp">
+            <summary>
+            Gets the timestamp of the message.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IMessage">
+            <summary>
+            The message
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessage.Headers">
+            <summary>
+            Gets the headers associated with the message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessage.Payload">
+            <summary>
+            Gets the payload.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessage.PayloadAsString">
+            <summary>
+            Gets the payload as a string.  This handles the case where the payload was produced as a zero terminated string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessage.Key">
+            <summary>
+            Gets the key of the message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessage.KeyAsString">
+            <summary>
+            Gets the key as a string.  This handles the case where the payload was produced as a zero terminated string.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IMessage`2">
+            <summary>
+            Deserialized representation of a message.
+            </summary>
+            <typeparam name="K">Type of the key.  Use Ignore if the message does not have a key</typeparam>
+            <typeparam name="P">Type of the payload.  When Payload is null it indicates that the message has been deleted by the producer.</typeparam>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessage`2.Headers">
+            <summary>
+            Gets the headers associated with the message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessage`2.Payload">
+            <summary>
+            Gets the payload.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IMessage`2.Key">
+            <summary>
+            Gets the key of the message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IProducerTopic.Name">
+            <summary>
+            Gets the topic name
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducerTopic.IsPartitionAvailable(System.Int32)">
+            <summary>
+            Determines if a partition is available.
+            </summary>
+            <param name="partition">The partition to query.</param>
+            <returns>True if the partition is available otherwise false.</returns>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IProducerTopic.StoreOffset(System.Int32,System.Int64)">
+            <summary>
+            Stores the offset for a given partition.
+            </summary>
+            <param name="partition">The partition to store.</param>
+            <param name="offset">The offset to store.</param>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IProduceResult.Latency">
+            <summary>
+            Gets the message the latency in microseconds, or -1 if not available.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.IProduceResult.Status">
+            <summary>
+            Gets the status of the message.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ITopicPartition">
+            <summary>
+            The topic + partition specific information.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ITopicPartition.Topic">
+            <summary>
+            Gets the topic name
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ITopicPartition.Partition">
+            <summary>
+            Gets the partition number
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ITopicPartition.Offset">
+            <summary>
+            Gets or sets the offset.
+            See class Offset for well known offsets.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.ITopicPartition.ErrorCode">
+            <summary>
+            Gets the error code which occurred
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ISerialize`1">
+            <summary>
+            Interface used by TypedProducer to serialize topic data.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ISerialize`1.Serialize(`0)">
+            <summary>
+            Returns the serialized data for the object.
+            Its permissible for the implementations of Serialize to overwrite the internal 
+            buffer represented by the ArraySegment on subsequent calls to Serialize.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IDeserialize`1">
+            <summary>
+            Interface used by TypedTopicConsumer to deserialize topic data.
+            The input buffer will only remain valid for the duration of the 
+            Deserialize call.  Implementations must copy all data to the output object.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.PayloadRetrievalStatus">
+            <summary>
+            Return value used by the ReliableTopicProducer payload retrieval deledates.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.PayloadRetrievalStatus.Success">
+            <summary>
+            Value retrieved successfully.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.PayloadRetrievalStatus.DuplicateSuppressed">
+            <summary>
+            Duplicate value suppressed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.PayloadRetrievalStatus.UnableToRetrieve">
+            <summary>
+            Unable to retrieve the value now.
+            This will trigger a retry.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.PayloadRetriever0`2">
+            <summary>
+            Delegate that retrieves the latest payload for a key.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The latest payload for the key.</param>
+            <returns>PayloadRetrievalStatus that indicates if the payload was successfully retrieved, if the payload is a duplicate or if retrieval should be retried.</returns>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.PayloadRetriever1`2">
+            <summary>
+            Delegate that retrieves the latest payload for a key.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The latest payload for the key.</param>
+            <param name="headers">Message headers that must be sent with the message.  The headers class will be used on a background thread.  Do not modify the headers collection!</param>
+            <returns>PayloadRetrievalStatus that indicates if the payload was successfully retrieved, if the payload is a duplicate or if retrieval should be retried.</returns>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.PayloadRetriever2`2">
+            <summary>
+            Delegate that retrieves the latest payload for a key.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The latest payload for the key.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <returns>PayloadRetrievalStatus that indicates if the payload was successfully retrieved, if the payload is a duplicate or if retrieval should be retried.</returns>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.PayloadRetriever3`2">
+            <summary>
+            Delegate that retrieves the latest payload for a key.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The latest payload for the key.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">Message headers that must be sent with the message.  The headers class will be used on a background thread.  Do not modify the headers collection!</param>
+            <returns>PayloadRetrievalStatus that indicates if the payload was successfully retrieved, if the payload is a duplicate or if retrieval should be retried.</returns>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ReliableTopicProducerLogCallback">
+            <summary>
+            Delegate that logs details about ReliableTopicProducer operations.
+            </summary>
+            <param name="topic">Topic Name.</param>
+            <param name="key">Message Key.</param>
+            <param name="version">Version number of the message for this key.</param>
+            <param name="partition">Partition for the key.</param>
+            <param name="message">Details about the operation.</param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2">
+            <summary>
+            This class takes as input key and value pairs and guarantees that the
+            latest value for each key will be sent to the configured Kafka topic.
+            Serialization, communication and optionally value retrieval are
+            performed as a background task.  This class takes care of:
+              - Error handling and retry.  It recovers from Kafka outages.
+              - Buffering frequently changing values per key to limit message rate.
+              - Optionally re-emitting the value for each key periodically.
+            </summary>
+            <typeparam name="K">Type of the key.</typeparam>
+            <typeparam name="P">Type of the value.</typeparam>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.SendMessage(`0,`1)">
+            <summary>
+            Send a message with a new value for the key.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.  Set to null to delete the key from the topic.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.SendMessage(`0,`1,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Send a message with a new value for the key.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.  Set to null to delete the key from the topic.</param>
+            <param name="headers">Message headers that must be sent with the message.  The headers class will be used on a background thread.  Do not modify the headers collection!</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.SendMessage(`0,`1,System.Int32)">
+            <summary>
+            Send a message with a new value for the key.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.  Set to null to delete the key from the topic.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.SendMessage(`0,`1,System.Int32,System.Collections.Generic.IReadOnlyCollection{Microsoft.AzCompute.AzPubSub.MessageHeader})">
+            <summary>
+            Send a message with a new value for the key.
+            </summary>
+            <param name="key">The message key.</param>
+            <param name="payload">The message payload.  Set to null to delete the key from the topic.</param>
+            <param name="partition">Partition to write the message to.  Use Partition.Unknown to let Kafka do the assignment.</param>
+            <param name="headers">Message headers that must be sent with the message.  The headers class will be used on a background thread.  Do not modify the headers collection!</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.SendMessage(`0,Microsoft.AzCompute.AzPubSub.PayloadRetriever0{`0,`1})">
+            <summary>
+            Send a message with a new value for the key.  The value is fetched on the background thread.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="payloadRetriever">Delegate that retrieves the latest value for the key.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.SendMessage(`0,Microsoft.AzCompute.AzPubSub.PayloadRetriever1{`0,`1})">
+            <summary>
+            Send a message with a new value for the key.  The value is fetched on the background thread.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="payloadRetriever">Delegate that retrieves the latest value and headers for the key.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.SendMessage(`0,Microsoft.AzCompute.AzPubSub.PayloadRetriever2{`0,`1})">
+            <summary>
+            Send a message with a new value for the key.  The value is fetched on the background thread.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="payloadRetriever">Delegate that retrieves the latest value and partition for the key.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.SendMessage(`0,Microsoft.AzCompute.AzPubSub.PayloadRetriever3{`0,`1})">
+            <summary>
+            Send a message with a new value for the key.  The value is fetched on the background thread.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="payloadRetriever">Delegate that retrieves the latest value, partition and headers for the key.</param>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.SuccessfulSendEvent">
+            <summary>
+            Event that is called when a successful SendMessage has occured.
+            </summary>
+        </member>
+        <member name="E:Microsoft.AzCompute.AzPubSub.IReliableTopicProducer`2.FailedSendEvent">
+            <summary>
+            Event that is called when a failed SendMessage has occured.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.IMetrics">
+            <summary>
+            Clients implement IMetrics in order to receive metric information from AzPubSub.
+            The intention is that implementers of this interface will emit the data to a metric system like MDM.
+            Minimal time should be spent in the Emit methods.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ProduceError(System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            Called when a error related to producing a message occurs.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="partition">Partition where the error occurred.</param>
+            <param name="errorCode">Kafka error code if available.  0 if not available.</param>
+            <param name="errorMessage">Kafka error message or exception type.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ProducerSerializationTime(System.String,System.String,System.Int64)">
+            <summary>
+            Time to serialize the message field.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="field">Field being serialized.  Can be "Key", "Payload" or a message header name</param>
+            <param name="timeInMicroseconds">Time to serialize the field in micro seconds.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ProducerMessageSize(System.String,System.String,System.Int64)">
+            <summary>
+            Serialized size of the message field.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="field">Can be "Key", "Payload" or a message header name</param>
+            <param name="sizeInBytes">Serialized size of the message field in bytes.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ProducerTaskTime(System.String,System.Int64)">
+            <summary>
+            Time spent in the client's task completion routine.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="timeInMicroseconds">Time spent in the client's task completion routine in micro seconds</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ProducerMessageLatency(System.String,System.Int32,System.Int64)">
+            <summary>
+            Producer message latency from the time that the message is sent to the time that the acknowledgment is received.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="partition">Partition of the message that latency is reported for.</param>
+            <param name="timeInMicroseconds">Message latency in microseconds.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ConsumeError(System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            Called when a error related to consuming a message occurs.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="partition">Partition where the error occurred.</param>
+            <param name="errorCode">Kafka error code if available. 0 if not available.</param>
+            <param name="errorMessage">Kafka error message or exception type.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ConsumerDeserializationTime(System.String,System.Int32,System.String,System.Int64)">
+            <summary>
+            Time to deserialize the message field.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="partition">Partition where the message was consumed.</param>
+            <param name="field">Field being deserialized.  Can be "Key", "Payload" or a message header name</param>
+            <param name="timeInMicroseconds">Time to deserialize the field in micro seconds.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ConsumerMessageSize(System.String,System.Int32,System.String,System.Int64)">
+            <summary>
+            Serialized size of the message field.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="partition">Partition where the message was consumed.</param>
+            <param name="field">Can be "Key", "Payload" or a message header name</param>
+            <param name="sizeInBytes">Serialized size of the message field in bytes.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ConsumerEventTime(System.String,System.Int32,System.Int64)">
+            <summary>
+            Time spent in the client's MessageReceived event handler.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="partition">Partition where the message was consumed.</param>
+            <param name="timeInMicroseconds">Time spent in the client's MessageReceived event handler in micro seconds</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ConsumerMessageLatency(System.String,System.Int32,System.Int64)">
+            <summary>
+            Message latency as measured by subtracting the message timestamp from the current time at the consumer.
+            It is required that enable.partition.eof is set to true in the Consumer configuration for the metric to be
+            emitted.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="partition">Partition of the message that latency is reported for.</param>
+            <param name="timeInMicroseconds">Message latency in microseconds.</param>
+            <remarks>This metric is only emitted for messages that are produced after the consumer has reached
+            the EOF marker for the partition.  This ensures that the metric measures "real-time" latency and is unaffected
+            by consumers that consume stored messages.  Typically the message timestamp is recorded at produce time but
+            brokers can be configured to record the log append time.  This metric is subject to clock drift between machines
+            and the time functions used in recording the timestamp is accurate to about 1ms at best.</remarks>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.OperationTime(System.String,System.String,System.Int32,System.Int64)">
+            <summary>
+            Time spent in operations that communicate with brokers.
+            </summary>
+            <param name="operation">Operation name.  E.g. Consumer.Commit</param>
+            <param name="topic">Topic name if applicable.  Empty string if the operation does not apply to a topic or it applies to multiple topics.</param>
+            <param name="partition">Partition for the operation if applicable.  Partition.Unknown if the operation does not apply to a partition.</param>
+            <param name="timeInMicroseconds">Time in the operation.  For async operations (Task based operations) Begin and End times are emitted.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ReliableTopicProducerError(System.String,System.String,System.String)">
+            <summary>
+            Emitted when the ReliableTopicProduder encounters an error.
+            </summary>
+            <param name="topic"></param>
+            <param name="operation">Topic Name</param>
+            <param name="exceptionType">TYpe of the exception.</param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.IMetrics.ReliableTopicProducerEventTime(System.String,System.String,System.Int64)">
+            <summary>
+            Time spent in the client's SuccessfulSendEvent or FailedSendEvent event handler.
+            </summary>
+            <param name="topic">Name of the topic.</param>
+            <param name="eventType">SuccessfulSendEvent or FailedSendEvent.</param>
+            <param name="timeInMicroseconds">Time spent in the client's SuccessfulSendEvent or FailedSendEvent event handler in micro seconds</param>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ISystemClock">
+            <summary>
+            The interface provides an abstraction for testing code where DateTime.UtcNow is involved.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.MessageHeader.Key">
+            <summary>
+            The key that identifies the header.
+            </summary>
+            <remarks>
+            Keep key strings short.  Header keys can easily dominate the size of messages.
+            Keys are case sensitive.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.MessageHeader.Value">
+            <summary>
+            Value for the header.  Interpretation of the bytes are key specific.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.MessageHeaderListMarshaler">
+            <summary>
+            This class packs the headers for the message into a single LocalAlloc allocated block of memory.
+            This minimizes the number of allocations required to ship the headers to and from managed code.
+            Structure of this block:
+            - DWORD representing the number of headers.
+            - Array of AZPUBSUB_MESSAGE_HEADER where the pointers in the structure points to 
+              strings and byte arrays after the array.
+            - Keys and Values packed at the end of the block.
+            NOTE: If this format is ever changed, similar changes needs to be applied to the native code.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.LogLevel">
+            <summary>
+            Level of the log events
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.LogLevel.Emergency">
+            <summary>
+            Emergency log level.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.LogLevel.Alert">
+            <summary>
+            Alert log level.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.LogLevel.Critical">
+            <summary>
+            Critical log level.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.LogLevel.Error">
+            <summary>
+            Error log level.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.LogLevel.Warning">
+            <summary>
+            Warning log level.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.LogLevel.Notice">
+            <summary>
+            Notice log level.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.LogLevel.Info">
+            <summary>
+            Info log level.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.LogLevel.Debug">
+            <summary>
+            Debug log level.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.EventType">
+            <summary>
+            Types of events
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.EventType.Error">
+            <summary>
+            Error event type.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.EventType.Stats">
+            <summary>
+            Stats event type.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.EventType.Log">
+            <summary>
+            Log event type.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.EventType.Throttle">
+            <summary>
+            Throttle event type.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.RebalanceMode">
+            <summary>
+            The modes which require a rebalance
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.RebalanceMode.None">
+            <summary>
+            No rebalance required.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.RebalanceMode.Assign">
+            <summary>
+            Rebalance assignment is required.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.RebalanceMode.Revoke">
+            <summary>
+            Rebalance revoke is required.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.RebalanceMode.Error">
+            <summary>
+            A rebalance error has occured.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.MessageTimestamp">
+            <summary>
+            Timestamp used for messages
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.MessageTimestamp.MessageTimestampType.NotAvailable">
+            <summary>
+            Timestamp not available.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.MessageTimestamp.MessageTimestampType.CreateTime">
+            <summary>
+            Message creation time (source).
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.MessageTimestamp.MessageTimestampType.LogAppendTime">
+            <summary>
+            Message log append time (broker).
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.MessageTimestamp.Type">
+            <summary>
+            Timestamp type.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.MessageTimestamp.Timestamp">
+            <summary>
+            Milliseconds since unix epoch (UTC).
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzCompute.AzPubSub.MessageTimestamp.TimestampAsDateTime">
+            <summary>
+            Returns the message time stamp as System.DateTime.  If the type of the 
+            time stamp is MessageTimestampType.NotAvailable DateTime.MinValue is returned.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.OrderedDictionary`2">
+            <summary>
+            This class keeps its values in an ordered sequence as defined by valueComparer.
+            Duplicate values that are equal are allowed.
+            Duplicate keys as defined by keyEqualityComparer are not allowed.
+            Inserts are O(log n).  Removes are O(1).
+            NOTE:
+              - The underlying data structure is a Skip List.
+              - If a value is modified in a way that affects the order, it should be removed and inserted.
+                OrderedDictionary[key] = newValue can be used to do this in one step.
+              - *IMPORTANT*: If value v1 is changed in a way that affects the sort order to create v1' and v2 is added,
+                this can result in v2 being inserted in the incorrect location because v1' is still the skip list in location v1.
+                Always remove all updated values before adding values.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.OrderedDictionary`2.GetOrderedValues">
+            <summary>
+            Enumerates the items in order.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.OrderedDictionary`2.GetReverseOrderedValues">
+            <summary>
+            Enumerates the items in reverse order.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.RefCnt`1">
+            <summary>
+            Ref count a IDisposable object so that it can be referenced
+            by multiple other objects of unknown lifetime.  Object is 
+            disposed when RefCnt goes to 0;
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.syncTracker">
+            <summary>
+            Dictionary that tracks status for each key.
+            Lock the object when accessing the dictionary.  It is updated from multiple threads.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.cancelationTokenSource">
+            <summary>
+            Cancellation source used by dispose to stop background work.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.newValuesAvaialble">
+            <summary>
+            Event used to signal that new values have been set.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.ProduceMessage(Microsoft.AzCompute.AzPubSub.ReliableTopicProducer{`0,`1}.SyncStatus,System.Int64)">
+            <summary>
+            ProduceMessage returns immediately after initiating the send.
+            The completion runs asynchronously.
+            This method is needed because async methods cannot use completions.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.Key">
+            <summary>
+            Key identifying the message.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.KeyString">
+            <summary>
+            String representation of the key for fast logging.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.PayloadRetriever">
+            <summary>
+            Delegate to retrieve the value for the key.
+            Lock the object when accessing this property.  It is accessed from
+            multiple threads.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.BackoffTime">
+            <summary>
+            Back-off time to use for the next send.  Successfully sending the key resets the time.
+            for every send error the time is exponentially increased.
+            Lock the object when accessing this property.  It is accessed from
+            multiple threads.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.InErrorRetry">
+            <summary>
+            Indicates that the send is because of a error retry.
+            Lock the object when accessing this property.  It is accessed from
+            multiple threads.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.NextSendTime">
+            <summary>
+            Time after which this message is eligible to be sent.
+            Lock syncTracker when accessing this property.  It is accessed from
+            multiple threads.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.LastSuccessfulSentTime">
+            <summary>
+            Last time the value was successfully sent.
+            Lock the object when accessing this property.  It is accessed from
+            multiple threads.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.PayloadVersion">
+            <summary>
+            Version number of the value.
+            Lock the object when accessing this property.  It is accessed from
+            multiple threads.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.SendInProgressVersion">
+            <summary>
+            Version number of last serialized version that was sent.
+            -1 indicates that no sends are in progress.
+            Lock the object when accessing this property.  It is accessed from
+            multiple threads.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.LastSuccessfulSentVersion">
+            <summary>
+            Version number of last successfully sent message.
+            Lock the object when accessing this property.  It is accessed from
+            multiple threads.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.SerializedVersion">
+            <summary>
+            Version number of the serialized value.
+            This property is only updated on the worker task, no lock needed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.SerializedKey">
+            <summary>
+            Serialized key data.  This property is only updated 
+            on the worker task, no lock needed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.SerializedPayload">
+            <summary>
+            Serialized payload data.  This property is only updated 
+            on the worker task, no lock needed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.Payload">
+            <summary>
+            Reference to the latest value to send that matches the serialized data.
+            This property is only updated on the worker task, no lock needed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.Partition">
+            <summary>
+            Reference to the latest partition to send the message to that matches the serialized data.
+            This property is only updated on the worker task, no lock needed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.ReliableTopicProducer`2.SyncStatus.Headers">
+            <summary>
+            Reference to the latest headers to send that matches the serialized data.
+            This property is only updated on the worker task, no lock needed.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.BinarySerializer">
+            <summary>
+            byte[] pass through serializer for use with TypedTopicProducer
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.BinarySerializer.Instance">
+            <summary>
+            Provide a single instance of the serializer for convenience.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.BinaryDeserializer">
+            <summary>
+            byte[] pass through deserializer for use TypedTopicConsumer.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.BinaryDeserializer.Instance">
+            <summary>
+            Provide a single instance of the deserializer for convenience.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.StringSerializer">
+            <summary>
+            String serializer for use with TypedTopicProducer
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.StringSerializer.UTF8">
+            <summary>
+            Provide a single instance of the UTF8 serializer for convenience.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.StringSerializer.#ctor(System.Text.Encoding)">
+            <summary>
+            Create a new serializer using the specified encoding.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.StringDeserializer">
+            <summary>
+            String deserializer for use TypedTopicConsumer.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.StringDeserializer.UTF8">
+            <summary>
+            Provide a single instance of the UTF8 deserializer for convenience.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.StringDeserializer.#ctor(System.Text.Encoding)">
+            <summary>
+            Create a new deserializer using the specified encoding.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.SystemClock">
+            <summary>
+            The class provides an abstraction for testing code where DateTime.UtcNow is involved.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.TypedConsumer.isDisposingOrDisposed">
+            <summary>
+            The variable name is `isDisposedOrDisposing` because committed and rebalance callbacks can be called as part of Dispose.
+            So, even though Dispose has not finished yet, these callbacks need to know that it was called.
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.TypedConsumer.flagsLock">
+            <summary>
+            This lock protects isSubscribed, isUnsubscribed and isDisposingOrDisposed.
+            These flags are accessed on both Poller thread and client thread.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.TypedConsumer.Subscribe(System.Collections.Generic.ICollection{Microsoft.AzCompute.AzPubSub.ITopicConsumer})">
+             <summary>
+             Please read comment on Subscribe in ITypedConsumer before continuing.
+             
+             <b>We don't allow Subscribe to be called after Unsubscribe for following reasons:</b>
+             Various callbacks(like Committed, Rebalance etc.) can arrive after Unsubscribe is called, 
+             either because Poller thread was started again or Consumer is disposing/closing.
+             If this happens, then all sorts of things can go wrong 
+             e.g. we might delegate an old callback that was pending from before to a new ITypedTopicConsumer.
+             Maintaining this extra state to cover edge cases like this complicate the code for no real gain.
+             As TypedConsumer creation is not resource heavy, clients can just create a new object.
+            
+             <b>We don't allow Subscribe to be called after Dispose for following reason:</b>
+             Consumer is being disposed off or is already disposed and we don't want client to use this Consumer anymore.
+             
+             <b>We don't allow Subscribe to be called more than once for following reason:</b>
+             Subscribing again has an implicit unsubscribe because otherwise we will run into issues like multiple topic consumers for same topic etc.
+             Because of the implicit unsubscribe, we run into same issues as allowing Subscribe after Unsubscribe.
+             </summary>
+             <param name="topicConsumers"></param>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.TypedConsumer.RebalanceHandler(System.Object,Microsoft.AzCompute.AzPubSub.RebalanceEventArgs)">
+            <summary>
+            Delegate notification to the TypedTopicConsumers but handle Assign and Unassign
+            event when the application registered no handlers.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzCompute.AzPubSub.TypedConsumer.CommitedHandler(System.Object,Microsoft.AzCompute.AzPubSub.CommittedEventArgs)">
+            <summary>
+            Delegate notification to the TypedTopicConsumers.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.WatermarkOffset">
+            <summary>
+            The watermark offsets
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.WatermarkOffset.Low">
+            <summary>
+            The low (beginning) offset
+            </summary>
+        </member>
+        <member name="F:Microsoft.AzCompute.AzPubSub.WatermarkOffset.High">
+            <summary>
+            The high (end) offset.  The value is the next number that will be assigned to a new message.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzCompute.AzPubSub.ZigZagEncoder">
+            <summary>
+            Helper methods for encoding and decoding to and from ZigZag encoding.
+            </summary>
+        </member>
+    </members>
+</doc>

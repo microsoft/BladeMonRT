@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>AzCompute.AzPubSub.Singlebox</id>
+    <version>2.3.1</version>
+    <authors>azpubsub</authors>
+    <owners>azpubsub</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Single box support for AzPubSub broker</description>
+    <releaseNotes>Nothing is changed. Just make it match the version of Kafka broker in AzPubSub.</releaseNotes>
+    <tags>az_pubsub</tags>
+  </metadata>
+</package>

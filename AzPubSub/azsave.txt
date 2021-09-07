@@ -1,0 +1,67 @@
+/**
+
+func (client *AzPubSubSimpleClient) sendMessage(topic string, msg string, key string) {
+	fmt.Println("FHJSDSIDGI")
+	payloadPtr, err := windows.UTF16PtrFromString(client.endpoint)
+	topicPtr, err := windows.UTF16PtrFromString(topic)
+	responseSpace := make([]uint16, 4096)
+	msgLength := len(msg)
+
+    _, _, err = AzPubSubSendMessageEx.Call(0, client.hproducer,
+										uintptr(unsafe.Pointer(topicPtr)),
+                                        0,
+                                        0,
+                                        uintptr(unsafe.Pointer(payloadPtr)),
+                                        uintptr(unsafe.Pointer(&msgLength)),
+										uintptr(unsafe.Pointer(&responseSpace[0])))
+	if (err != nil) {
+		log.Fatal(err)
+	}
+	fmt.Println(responseSpace)
+}
+
+func createProducer(config uintptr, securityType int, endpoint string) (uintptr, error) {
+	endpointPtr, err := syscall.UTF16PtrFromString(endpoint)
+	if (err != nil) {
+		log.Fatal(err)
+	}
+	// AzPubSubOpenSimpleProducer(HCONFIG hConfig, AZPUBSUB_SECURITY_TYPE type, LPCSTR environment, LPCSTR cluster, LPCSTR endpoint)
+	/** AzPubSub.AzPubSubOpenSimpleProducer(self.hconfig,
+		self.aps_security_type,
+		NULL,
+		NULL,
+		LPCSTR(self.endpoint.encode("ascii")))
+		*/
+/*
+	hproducer, _, err := AzPubSubOpenSimpleProducer.Call(0, config, uintptr(securityType), 0, 0, uintptr(unsafe.Pointer(endpointPtr)))
+	return hproducer, err 
+}
+
+func (client *AzPubSubClient) OpenSimpleProducer() {
+	var err error
+	client.hproducer, err = createProducer(client.hconfig, AZPUBSUB_SECURITY_TYPE_NONE, client.endpoint)
+	if (client.hproducer == NULL) {
+		log.Fatal("Error in opensimpleproducer: ", err)
+	}
+}
+
+
+/** This method can be used when implementing the global client. */
+/**
+func (client *AzPubSubClient) InitGlobals() {
+	if (client.isTestInstance) {
+		fmt.Println("Initializing client with test globals")
+		client.apsSecurityType = AZPUBSUB_SECURITY_TYPE_NONE
+		client.apsConnectionFlags = AZPUBSUB_SECURITY_TYPE_SSL
+	} else {
+		client.apsSecurityType = AZPUBSUB_SECURITY_TYPE_SSL
+		client.apsConnectionFlags = AZPUBSUB_SECURITY_FLAGS_NONE
+	}
+}
+*/
+
+AZPUBSUB_SECURITY_TYPE_NONE =  0
+	AZPUBSUB_SECURITY_TYPE_SSL = 1
+
+	AZPUBSUB_SECURITY_FLAGS_NONE = 0
+	AZPUBSUB_SECURITY_FLAGS_LOCAL = 1
