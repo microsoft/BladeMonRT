@@ -83,16 +83,17 @@ const (
 
 type AzPubSubClient struct {
 	isTestInstance bool
-	apsSecurityType int
+	apsSecurityType AZPUBSUB_SECURITY_TYPE
 	apsConnectionFlags int
 	apsConfigType int
 	hclient HCLIENT
 	hconfig HCONFIG
 	hproducer HPRODUCER
+	endpoint string
 }
 
-func NewAzPubSubClient(isTestInstance bool, apsSecurityType int) {
-	var client AzPubSubClient = AzPubSubClient{isTestInstance: isTestInstance, apsSecurityType: apsSecurityType}
+func NewAzPubSubClient(isTestInstance bool, endpoint string) AzPubSubClient {
+	var client AzPubSubClient = AzPubSubClient{isTestInstance: isTestInstance, endpoint: endpoint}
 	if (isTestInstance) {
 		log.Println("Initializing client with test globals.")
 		client.apsSecurityType = AZPUBSUB_SECURITY_TYPE_NONE
@@ -102,14 +103,15 @@ func NewAzPubSubClient(isTestInstance bool, apsSecurityType int) {
 		client.apsSecurityType = AZPUBSUB_SECURITY_TYPE_SSL
 		client.apsConnectionFlags = AZPUBSUB_SECURITY_FLAGS_NONE
 	}
-
+	return client
 }
 
 type AZPUBSUB_LOG_CALLBACK func(level LOG_LEVEL, message LPCSTR, context LPVOID) uintptr
 
 func pLoggerCallback(level LOG_LEVEL, message LPCSTR, context LPVOID) uintptr {
 	// TODO: convert LPCSTR correctly string to be able to read the message not just first character
-	// How do we get the size of the message to know how many bytes to read?
+	// How do we get the size of the message to know how many bytes to rea
+	
 	fmt.Println(fmt.Sprintf("Log: msg=%s at level=%d", string(*message), level))
 	return uintptr(0)
 }
@@ -144,12 +146,10 @@ func (client *AzPubSubClient) InitClient() {
 
 type AzPubSubSimpleClient struct {
 	AzPubSubClient
-	endpoint string
 }
 
 func NewAzPubSubSimpleClient(isTestInstance bool, endpoint string) *AzPubSubSimpleClient {
-	var client AzPubSubSimpleClient = AzPubSubSimpleClient{AzPubSubClient: AzPubSubClient{isTestInstance: isTestInstance},
-		endpoint : endpoint}
+	var client AzPubSubSimpleClient = AzPubSubSimpleClient{AzPubSubClient: NewAzPubSubClient(isTestInstance, endpoint)}
 	client.apsConfigType = AZPUBSUB_CONFIGURATION_TYPE_SIMPLE
 	client.InitClient()
 	client.InitConfig()
@@ -160,7 +160,7 @@ func NewAzPubSubSimpleClient(isTestInstance bool, endpoint string) *AzPubSubSimp
 
 func (client *AzPubSubSimpleClient) OpenSimpleProducer() {
 	var err error
-	client.hproducer, err = CallAzPubSubOpenSimpleProducer(client.hconfig, AZPUBSUB_SECURITY_TYPE_NONE, client.endpoint)
+	client.hproducer, err = CallAzPubSubOpenSimpleProducer(client.hconfig, client.apsSecurityType, client.endpoint)
 	
 	if (err.Error() != ERR_OK) {
 		log.Println("AzPubSubOpenSimpleProducer failed with err: ", err)
