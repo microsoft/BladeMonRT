@@ -5,4 +5,7 @@ type Config struct {
 	ScheduleFile                 string
 	LoggingFile                  string
 	MaxAgeToProcessWinEvtsInDays int
+	EnableBookmarkFeature        bool
+	BookmarkDatabaseFile         string
+	BookmarkDatabaseTableName    string
 }

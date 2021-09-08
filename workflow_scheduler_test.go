@@ -28,6 +28,10 @@ func (utilsForTest UtilsForTest) ParseEventXML(eventXML string) utils.EtwEvent {
 	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: time.Now(), EventRecordID: 6}
 }
 
+func (utilsForTest UtilsForTest) GetEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string) int {
+	return 0
+}
+
 type UtilsForTestWithOldEvent struct {
 }
 
@@ -36,13 +40,13 @@ func (utilsForTest UtilsForTestWithOldEvent) ParseEventXML(eventXML string) util
 	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: timeTwoDaysAgo, EventRecordID: 6}
 }
 
-func (utilsForTest UtilsForTest) GetEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string) int {
+func (utilsForTest UtilsForTestWithOldEvent) GetEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string) int {
 	return 0
 }
 
 func TestSetupWorkflowsBasic(t *testing.T) {
 	// Assume
-	config := configs.Config{}
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -81,7 +85,8 @@ func TestAddWinEventBasedSchedule_Basic(t *testing.T) {
 	// Case 1: Call the addWinEventBasedSchedule method with a schedule containing a query that does not contain a condition.
 
 	// Assume
-	workflowScheduler := newWorkflowScheduler()
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	workflowScheduler := newWorkflowScheduler(config)
 	workflow := workflows.NewSimpleWorkflow()
 	cpuSpeedMonitoringQuery := WinEventSubscribeQuery{channel: "System", query: `*[System[Provider[@Name='CpuSpeedMonitoring']]]`}
 	var eventQueries []WinEventSubscribeQuery = []WinEventSubscribeQuery{cpuSpeedMonitoringQuery}
@@ -107,7 +112,8 @@ func TestAddWinEventBasedSchedule_QueryWithCondition(t *testing.T) {
 	// Case 2: Call the addWinEventBasedSchedule method with a schedule containing a query that contains a condition.
 
 	// Assume
-	workflowScheduler := newWorkflowScheduler()
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	workflowScheduler := newWorkflowScheduler(config)
 	workflow := workflows.NewSimpleWorkflow()
 	diskQuery := WinEventSubscribeQuery{channel: "System", query: `["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"]`}
 	var eventQueries []WinEventSubscribeQuery = []WinEventSubscribeQuery{diskQuery}
@@ -164,8 +170,9 @@ func TestSubscriptionCallback_QueryWithCondition_1(t *testing.T) {
 	defer ctrl.Finish()
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config:config, logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
 	var queryWithCondition string = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
 	workflow := workflows.NewSimpleWorkflow()
 
@@ -195,7 +202,8 @@ func TestSubscriptionCallback_QueryWithCondition_2(t *testing.T) {
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
 	mockUtils := utils.NewMockUtilsInterface(ctrl)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: mockUtils}
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: mockUtils}
 	var queryWithCondition string = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
 	workflow := workflows.NewSimpleWorkflow()
 
@@ -216,6 +224,8 @@ func TestSubscriptionCallback_QueryWithCondition_2(t *testing.T) {
 
 func TestSubscriptionCallback_OldEvent(t *testing.T) {
 	// Case 4: Call the SubscriptionCallback method with an event older than MaxAgeToProcessWinEvtsInDays in the config.
+	// Requires MaxAgeToProcessWinEvtsInDays in the test config is 1.
+
 	// Assume
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -223,7 +233,7 @@ func TestSubscriptionCallback_OldEvent(t *testing.T) {
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 
 	// 'ParseEventXML' from UtilsForTestWithOldEvent returns an event from two days ago.
-	config := configs.Config{MaxAgeToProcessWinEvtsInDays: 1}
+	config := test_configs.TestConfigFactory{}.GetTestConfig() 
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, utils: UtilsForTestWithOldEvent{}}
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
 	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow}
