@@ -97,7 +97,7 @@ func TestSubscriptionCallback(t *testing.T) {
 }
 
 func TestSubscriptionCallback_OldEvent(t *testing.T) {
-	// Case 3: Call the SubscriptionCallback method with an event older than MaxAgeToProcessWinEvtsInDays in the config.
+	// Case 10: Call the SubscriptionCallback method with an event older than MaxAgeToProcessWinEvtsInDays in the config.
 	// Assume
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
