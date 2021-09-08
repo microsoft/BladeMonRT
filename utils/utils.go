@@ -69,7 +69,7 @@ func (utils *Utils) ParseEventXML(eventXML string) EtwEvent {
 func (utils *Utils) GetEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string) int {
 	stringEventRecordId, err := bookmarkStore.GetValue(query)
 	if (err != nil) {
-		utils.logger.Println("Unable to get event record ID bookmark for query:", query)
+		utils.logger.Println("Error in executing SQL statements to get event record ID bookmark for query:", query)
 		return 0
 	}
 	if stringEventRecordId == "" {
