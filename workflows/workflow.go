@@ -4,7 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/microsoft/BladeMonRT/nodes"
+	"github.com/microsoft/BladeMonRT/store"
+	"github.com/microsoft/BladeMonRT/utils"
+	"github.com/microsoft/BladeMonRT/configs"
 	"log"
+	"strconv"
 )
 
 /** Interface for defining execution sequence of nodes. */
@@ -17,7 +21,8 @@ type InterfaceWorkflow interface {
 
 /** Concrete type for defining execution sequence of nodes. */
 type Workflow struct {
-	Logger          *log.Logger
+	Logger *log.Logger
+	utils *utils.Utils
 }
 
 func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowContext *nodes.WorkflowContext) {
@@ -30,6 +35,11 @@ func (workflow *Workflow) Run(interfaceWorkflow InterfaceWorkflow, workflowConte
 	// Handle errors thrown when running the workflow.
 	if err != nil {
 		workflow.Logger.Println(fmt.Sprintf("Workflow error: %s", err))
+		return
+	}
+
+	if configs.ENABLE_BOOKMARK_FEATURE && workflowContext.QueryIncludesCondition {
+		workflow.updateEventRecordIdBookmark(workflowContext.BookmarkStore, workflowContext.Query, workflowContext.EtwEvent.EventRecordID)
 	}
 }
 
@@ -44,4 +54,16 @@ func (workflow *Workflow) processNode(node nodes.InterfaceNode, workflowContext 
 	// Return error returned by the processing of a node to the caller function.
 	err = node.Process(node, workflowContext)
 	return err
+}
+
+/** Updates the event record ID for the query in the bookmark store if the current event record ID for the query is less than the given event record ID. */
+func (workflow *Workflow) updateEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string, newEventRecordId int) {
+	var currEventRecordID int = workflow.utils.GetEventRecordIdBookmark(bookmarkStore, query)
+	if (newEventRecordId > currEventRecordID) {
+		workflow.Logger.Println(fmt.Sprintf("Updating bookmark store with query=%s and eventRecordID=%d.", query, newEventRecordId))
+		err := bookmarkStore.SetValue(query, strconv.Itoa(newEventRecordId))
+		if (err != nil) {
+			workflow.Logger.Println("Unable to update event record ID bookmark for query:", query)
+		}
+	}	
 }
