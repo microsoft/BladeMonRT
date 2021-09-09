@@ -16,7 +16,6 @@ func (factory ConfigFactory) GetConfig() Config {
 	var config Config = Config{}
 	config.WorkflowFile = WORKFLOW_FILE
 	config.ScheduleFile = SCHEDULE_FILE
-	config.LoggingFile = LOGGING_FILE
 	config.MaxAgeToProcessWinEvtsInDays = MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS
 	config.EnableBookmarkFeature = ENABLE_BOOKMARK_FEATURE
 	config.BookmarkDatabaseFile = BOOKMARK_DATABASE_FILE

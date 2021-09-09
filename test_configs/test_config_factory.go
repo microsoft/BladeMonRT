@@ -22,7 +22,6 @@ func (factory TestConfigFactory) GetTestConfig() configs.Config {
 	var config configs.Config = configs.Config{}
 	config.WorkflowFile = TEST_WORKFLOW_FILE
 	config.ScheduleFile = TEST_SCHEDULE_FILE
-	config.LoggingFile = TEST_LOGGING_FILE
 	config.MaxAgeToProcessWinEvtsInDays = TEST_MAX_AGE_TO_PROCESS_WIN_EVTS_IN_DAYS
 	config.EnableBookmarkFeature = TEST_ENABLE_BOOKMARK_FEATURE
 	config.BookmarkDatabaseFile = TEST_BOOKMARK_DATABASE_FILE

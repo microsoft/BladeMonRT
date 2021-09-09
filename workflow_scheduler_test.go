@@ -35,8 +35,8 @@ type UtilsForTestWithOldEvent struct {
 }
 
 func (utilsForTest UtilsForTestWithOldEvent) ParseEventXML(eventXML string) utils.EtwEvent {
-	timeTwoDaysAgo := time.Now().Add(time.Hour * -25)
-	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: timeTwoDaysAgo, EventRecordID: 6}
+	twentyFiveHoursAgo := time.Now().Add(time.Hour * -25)
+	return utils.EtwEvent{Provider: "disk", EventID: 7, TimeCreated: twentyFiveHoursAgo, EventRecordID: 6}
 }
 
 func (utilsForTest UtilsForTestWithOldEvent) GetEventRecordIdBookmark(bookmarkStore store.PersistentKeyValueStoreInterface, query string) int {
