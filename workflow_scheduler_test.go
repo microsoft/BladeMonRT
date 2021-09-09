@@ -4,7 +4,6 @@ import (
 	win32 "github.com/0xrawsec/golang-win32/win32"
 	wevtapi "github.com/0xrawsec/golang-win32/win32/wevtapi"
 	gomock "github.com/golang/mock/gomock"
-	configs "github.com/microsoft/BladeMonRT/configs"
 	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/nodes"
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_a"
@@ -143,7 +142,7 @@ func TestSubscriptionCallback_Basic(t *testing.T) {
 	defer ctrl.Finish()
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	config := configs.Config{MaxAgeToProcessWinEvtsInDays: 1}
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
@@ -253,7 +252,8 @@ func TestDecideSubscriptionType_QueryExistsInBookmarkStore(t *testing.T) {
 	context := &CallbackContext{}
 	context.query = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
 	context.queryIncludesCondition = true
-	workflowScheduler := newWorkflowScheduler()
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	workflowScheduler := newWorkflowScheduler(config)
 	workflowScheduler.bookmarkStore.Clear()
 	workflowScheduler.bookmarkStore.SetValue(context.query, "7")
 
@@ -270,7 +270,8 @@ func TestDecideSubscriptionType_QueryDoesNotExistInBookmarkStore(t *testing.T) {
 	context := &CallbackContext{}
 	context.query = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
 	context.queryIncludesCondition = true
-	workflowScheduler := newWorkflowScheduler()
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	workflowScheduler := newWorkflowScheduler(config)
 	workflowScheduler.bookmarkStore.Clear()
 
 	// Action

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/microsoft/BladeMonRT/configs"
 	"github.com/microsoft/BladeMonRT/test_configs"
 	"io/ioutil"
 	"log"
