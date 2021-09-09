@@ -171,7 +171,7 @@ func TestSubscriptionCallback_QueryWithCondition_1(t *testing.T) {
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 	config := test_configs.TestConfigFactory{}.GetTestConfig()
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config:config, logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
 	var queryWithCondition string = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
 	workflow := workflows.NewSimpleWorkflow()
 
@@ -232,7 +232,7 @@ func TestSubscriptionCallback_OldEvent(t *testing.T) {
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 
 	// 'ParseEventXML' from UtilsForTestWithOldEvent returns an event from two days ago.
-	config := test_configs.TestConfigFactory{}.GetTestConfig() 
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, utils: UtilsForTestWithOldEvent{}}
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
 	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow}

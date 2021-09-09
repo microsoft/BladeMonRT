@@ -14,10 +14,10 @@ import (
 	"github.com/microsoft/BladeMonRT/utils"
 	"github.com/microsoft/BladeMonRT/workflows"
 	"log"
-	"time"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 	"unsafe"
 )
 
@@ -82,11 +82,11 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		// Check if the event is too old to process.
 		var nowTime time.Time = time.Now()
 		var ageInHours float64 = nowTime.Sub(event.TimeCreated).Hours()
-		if ageInHours > float64(workflowScheduler.config.MaxAgeToProcessWinEvtsInDays * 24) {
+		if ageInHours > float64(workflowScheduler.config.MaxAgeToProcessWinEvtsInDays*24) {
 			workflowScheduler.logger.Println("Event flagged as too old. Age in hours:", ageInHours)
 			return uintptr(0)
 		}
-		
+
 		callbackContext.workflowContext = nodes.NewWorkflowContext()
 		callbackContext.workflowContext.Query = callbackContext.query
 		callbackContext.workflowContext.QueryIncludesCondition = callbackContext.queryIncludesCondition
