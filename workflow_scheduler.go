@@ -86,7 +86,7 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 			workflowScheduler.logger.Println("Event flagged as too old. Age in hours:", ageInHours)
 			return uintptr(0)
 		}
-
+		
 		callbackContext.workflowContext = nodes.NewWorkflowContext()
 		callbackContext.workflowContext.Query = callbackContext.query
 		callbackContext.workflowContext.QueryIncludesCondition = callbackContext.queryIncludesCondition
@@ -151,7 +151,7 @@ func newWorkflowScheduler(config configs.Config) *WorkflowScheduler {
 	var utils utils.UtilsInterface = utils.NewUtils()
 
 	var bookmarkStore *store.PersistentKeyValueStore
-	bookmarkStore, err := store.NewPersistentKeyValueStore(configs.BOOKMARK_DATABASE_FILE, configs.BOOKMARK_DATABASE_TABLE_NAME)
+	bookmarkStore, err := store.NewPersistentKeyValueStore(config.BookmarkDatabaseFile, config.BookmarkDatabaseTableName)
 	if err != nil {
 		panic("Unable to create bookmark store.")
 	}

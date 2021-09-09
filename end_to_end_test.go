@@ -21,17 +21,17 @@ func TestEndToEnd(t *testing.T) {
 
 	runtime.GOMAXPROCS(1)
 
-	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
+	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	workflowsJson, err := ioutil.ReadFile(config.WorkflowFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	schedulesJson, err := ioutil.ReadFile(test_configs.TEST_SCHEDULE_FILE)
+	schedulesJson, err := ioutil.ReadFile(config.ScheduleFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	config := configs.Config{MaxAgeToProcessWinEvtsInDays: 1}
 	var mainObj *Main = newMain(config)
 	var workflowFactory WorkflowFactory = newWorkflowFactory(workflowsJson, NodeFactory{})
 	mainObj.setupWorkflows(schedulesJson, workflowFactory)
