@@ -22,8 +22,7 @@ func main() {
 	// Set GOMAXPROCS such that all operations execute on a single thread.
 	runtime.GOMAXPROCS(1)
 
-	var configFactory configs.ConfigFactory = configs.ConfigFactory{}
-	var config configs.Config = configFactory.GetConfig()
+	var config configs.Config = configs.NewConfig()
 	workflowsJson, err := ioutil.ReadFile(config.WorkflowFile)
 	if err != nil {
 		log.Fatal(err)

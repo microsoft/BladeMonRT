@@ -45,7 +45,7 @@ func (utilsForTest UtilsForTestWithOldEvent) GetEventRecordIdBookmark(bookmarkSt
 
 func TestSetupWorkflowsBasic(t *testing.T) {
 	// Assume
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	config := test_configs.NewTestConfig()
 	workflowsJson, err := ioutil.ReadFile(test_configs.TEST_WORKFLOW_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -84,7 +84,7 @@ func TestAddWinEventBasedSchedule_Basic(t *testing.T) {
 	// Case 1: Call the addWinEventBasedSchedule method with a schedule containing a query that does not contain a condition.
 
 	// Assume
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	config := test_configs.NewTestConfig()
 	workflowScheduler := newWorkflowScheduler(config)
 	workflow := workflows.NewSimpleWorkflow()
 	cpuSpeedMonitoringQuery := WinEventSubscribeQuery{channel: "System", query: `*[System[Provider[@Name='CpuSpeedMonitoring']]]`}
@@ -111,7 +111,7 @@ func TestAddWinEventBasedSchedule_QueryWithCondition(t *testing.T) {
 	// Case 2: Call the addWinEventBasedSchedule method with a schedule containing a query that contains a condition.
 
 	// Assume
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	config := test_configs.NewTestConfig()
 	workflowScheduler := newWorkflowScheduler(config)
 	workflow := workflows.NewSimpleWorkflow()
 	diskQuery := WinEventSubscribeQuery{channel: "System", query: `["System", "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"]`}
@@ -142,7 +142,7 @@ func TestSubscriptionCallback_Basic(t *testing.T) {
 	defer ctrl.Finish()
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	config := test_configs.NewTestConfig()
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
@@ -169,7 +169,7 @@ func TestSubscriptionCallback_QueryWithCondition_1(t *testing.T) {
 	defer ctrl.Finish()
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	config := test_configs.NewTestConfig()
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: UtilsForTest{}}
 	var queryWithCondition string = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
@@ -201,7 +201,7 @@ func TestSubscriptionCallback_QueryWithCondition_2(t *testing.T) {
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 	mockBookmarkStore := store.NewMockPersistentKeyValueStoreInterface(ctrl)
 	mockUtils := utils.NewMockUtilsInterface(ctrl)
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	config := test_configs.NewTestConfig()
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, bookmarkStore: mockBookmarkStore, utils: mockUtils}
 	var queryWithCondition string = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
 	workflow := workflows.NewSimpleWorkflow()
@@ -231,15 +231,15 @@ func TestSubscriptionCallback_OldEvent(t *testing.T) {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 
-	// 'ParseEventXML' from UtilsForTestWithOldEvent returns an event from two days ago.
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	// 'ParseEventXML' from UtilsForTestWithOldEvent returns an event from 25 hours ago.
+	config := test_configs.NewTestConfig()
 	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, utils: UtilsForTestWithOldEvent{}}
 	mockWorkflow := workflows.NewMockInterfaceWorkflow(ctrl)
 	var callbackContext *CallbackContext = &CallbackContext{workflow: mockWorkflow}
 	workflowScheduler.guidToContext["50bd065e-f3e9-4887-8093-b171f1b01372"] = callbackContext
 
 	// Set up assertions
-	// Expect that mockWorkflow is not run because the event is 25 hours old.
+	// Expect that mockWorkflow is not run because the event is 25 hours old. If any function is called on the mock workflow, the test will throw an error.
 
 	// Action
 	workflowScheduler.SubscriptionCallback(wevtapi.EvtSubscribeActionDeliver, win32.PVOID(unsafe.Pointer(test_utils.ToCString("50bd065e-f3e9-4887-8093-b171f1b01372"))), wevtapi.EVT_HANDLE(uintptr(0)))
@@ -252,7 +252,7 @@ func TestDecideSubscriptionType_QueryExistsInBookmarkStore(t *testing.T) {
 	context := &CallbackContext{}
 	context.query = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
 	context.queryIncludesCondition = true
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	config := test_configs.NewTestConfig()
 	workflowScheduler := newWorkflowScheduler(config)
 	workflowScheduler.bookmarkStore.Clear()
 	workflowScheduler.bookmarkStore.SetValue(context.query, "7")
@@ -270,7 +270,7 @@ func TestDecideSubscriptionType_QueryDoesNotExistInBookmarkStore(t *testing.T) {
 	context := &CallbackContext{}
 	context.query = "*[System[Provider[@Name='disk'] and EventID=7 and EventRecordID > {condition}]]"
 	context.queryIncludesCondition = true
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	config := test_configs.NewTestConfig()
 	workflowScheduler := newWorkflowScheduler(config)
 	workflowScheduler.bookmarkStore.Clear()
 

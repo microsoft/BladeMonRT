@@ -20,7 +20,7 @@ func TestEndToEnd(t *testing.T) {
 
 	runtime.GOMAXPROCS(1)
 
-	config := test_configs.TestConfigFactory{}.GetTestConfig()
+	config := test_configs.NewTestConfig()
 	workflowsJson, err := ioutil.ReadFile(config.WorkflowFile)
 	if err != nil {
 		log.Fatal(err)

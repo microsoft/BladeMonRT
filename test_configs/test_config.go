@@ -16,9 +16,7 @@ const (
 	TEST_BOOKMARK_DATABASE_TABLE_NAME = "TestBookmarkTable"
 )
 
-type TestConfigFactory struct{}
-
-func (factory TestConfigFactory) GetTestConfig() configs.Config {
+func NewTestConfig() configs.Config {
 	var config configs.Config = configs.Config{}
 	config.WorkflowFile = TEST_WORKFLOW_FILE
 	config.ScheduleFile = TEST_SCHEDULE_FILE
