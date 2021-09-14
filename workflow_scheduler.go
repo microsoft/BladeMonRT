@@ -17,6 +17,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 	"unsafe"
 )
 
@@ -27,6 +28,7 @@ type WorkflowSchedulerInterface interface {
 
 /** Class for scheduling workflows. */
 type WorkflowScheduler struct {
+	config                   configs.Config
 	logger                   *log.Logger
 	eventSubscriptionHandles []wevtapi.EVT_HANDLE
 	guidToContext            map[string]*CallbackContext
@@ -76,6 +78,14 @@ func (workflowScheduler *WorkflowScheduler) SubscriptionCallback(Action wevtapi.
 		}
 		var eventXML string = win32.UTF16BytesToString(Utf16EventXml)
 		var event utils.EtwEvent = workflowScheduler.utils.ParseEventXML(eventXML)
+
+		// Check if the event is too old to process.
+		var nowTime time.Time = time.Now()
+		var ageInHours float64 = nowTime.Sub(event.TimeCreated).Hours()
+		if ageInHours > float64(workflowScheduler.config.MaxAgeToProcessWinEvtsInDays*24) {
+			workflowScheduler.logger.Println("Event flagged as too old. Age in hours:", ageInHours)
+			return uintptr(0)
+		}
 
 		callbackContext.workflowContext = nodes.NewWorkflowContext()
 		callbackContext.workflowContext.Query = callbackContext.query
@@ -135,18 +145,18 @@ func (workflowScheduler *WorkflowScheduler) addWinEventBasedSchedule(workflow wo
 	}
 }
 
-func newWorkflowScheduler() *WorkflowScheduler {
+func newWorkflowScheduler(config configs.Config) *WorkflowScheduler {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("WorkflowScheduler")
 	var guidToContext map[string]*CallbackContext = make(map[string]*CallbackContext)
 	var utils utils.UtilsInterface = utils.NewUtils()
 
 	var bookmarkStore *store.PersistentKeyValueStore
-	bookmarkStore, err := store.NewPersistentKeyValueStore(configs.BOOKMARK_DATABASE_FILE, configs.BOOKMARK_DATABASE_TABLE_NAME)
+	bookmarkStore, err := store.NewPersistentKeyValueStore(config.BookmarkDatabaseFile, config.BookmarkDatabaseTableName)
 	if err != nil {
 		panic("Unable to create bookmark store.")
 	}
 
-	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{logger: logger, guidToContext: guidToContext, bookmarkStore: bookmarkStore, utils: utils}
+	var workflowScheduler *WorkflowScheduler = &WorkflowScheduler{config: config, logger: logger, guidToContext: guidToContext, bookmarkStore: bookmarkStore, utils: utils}
 	return workflowScheduler
 }
 

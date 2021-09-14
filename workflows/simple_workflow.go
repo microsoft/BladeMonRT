@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/nodes"
+	"github.com/microsoft/BladeMonRT/utils"
 	"log"
 )
 
@@ -15,7 +16,7 @@ type SimpleWorkflow struct {
 
 func NewSimpleWorkflow() *SimpleWorkflow {
 	var logger *log.Logger = logging.LoggerFactory{}.ConstructLogger("SimpleWorkflow")
-	return &SimpleWorkflow{Workflow: Workflow{Logger: logger}}
+	return &SimpleWorkflow{Workflow: Workflow{Logger: logger, utils: utils.NewUtils()}}
 }
 
 func (simpleWorkflow *SimpleWorkflow) AddNode(node nodes.InterfaceNode) {
