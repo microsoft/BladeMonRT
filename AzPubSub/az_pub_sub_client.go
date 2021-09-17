@@ -1,10 +1,9 @@
-package main
+package azpubsub
 
 import "C"
 import (
 	"syscall"
 	"log"
-	"fmt"
 	"unsafe"
 	//"sysc"
 	"golang.org/x/sys/windows"
@@ -30,7 +29,7 @@ type (
 	LPCSTR        *int8
 	INT			  int32
 
-	// AzPubSub specific conversions.
+	// SimpleAzPubSubClient specific conversions.
 	ENUM 		  int
 	AZPUBSUB_SECURITY_TYPE int
 	HCLIENT       HANDLE
@@ -40,14 +39,19 @@ type (
 	LOG_LEVEL     int64
 	LPPSTR        *[]byte
 	PDWORD         *DWORD    
-	PINT          *INT   
+	PINT          *INT  
+	
+	// GlobalAzPubSubClient specific conversions
+	HPRODUCERTOPIC HANDLE
+	PBYTE *BYTE
 	
 )
 
 // TODO: Add use of GetLastError
 
 var (
-	wevtapi = syscall.NewLazyDLL("azpubsub.dll")
+	// C:\Users\t-nshanker\source\repos\BladeMonRT\azpubsub\azpubsub.dll full path does not work
+	wevtapi = syscall.NewLazyDLL(`azpubsub.dll`)
 	AzPubSubSendMessageEx              = wevtapi.NewProc("AzPubSubSendMessageEx")
 	AzPubSubOpenSimpleProducer              = wevtapi.NewProc("AzPubSubOpenSimpleProducer")
 	AzPubSubCreateConfiguration              = wevtapi.NewProc("AzPubSubCreateConfiguration")
@@ -55,6 +59,8 @@ var (
 	AzPubSubResponseGetMessage              = wevtapi.NewProc("AzPubSubResponseGetMessage")
 	AzPubSubResponseGetStatusCode              = wevtapi.NewProc("AzPubSubResponseGetStatusCode")
 	AzPubSubResponseGetSubStatusCode              = wevtapi.NewProc("AzPubSubResponseGetSubStatusCode")
+	AzPubSubOpenProducerTopic              = wevtapi.NewProc("AzPubSubOpenProducerTopic")
+	AzPubSubAddStringConfiguration = wevtapi.NewProc("AzPubSubAddStringConfiguration")
 	NULL = HANDLE(0)
 )
 
@@ -108,17 +114,18 @@ func NewAzPubSubClient(isTestInstance bool, endpoint string) AzPubSubClient {
 
 type AZPUBSUB_LOG_CALLBACK func(level LOG_LEVEL, message LPCSTR, context LPVOID) uintptr
 
+type AZPUBSUB_TOPIC_PARTITIONER func(arg1 DWORD, arg2 HPRODUCERTOPIC, arg3 PBYTE, arg4 DWORD, arg5 DWORD, arg6 LPVOID) 
+
 func pLoggerCallback(level LOG_LEVEL, message LPCSTR, context LPVOID) uintptr {
 	// TODO: convert LPCSTR correctly string to be able to read the message not just first character
-	// How do we get the size of the message to know how many bytes to rea
-	
-	fmt.Println(fmt.Sprintf("Log: msg=%s at level=%d", string(*message), level))
+	// How do we get the size of the message to know how many bytes to read?
+	// fmt.Println(fmt.Sprintf("Log: msg=%s at level=%d", string(*message), level))
 	return uintptr(0)
 }
 
 func (client *AzPubSubClient) InitConfig() {
 	var err error
-	client.hconfig, err = CallAzPubSubCreateConfiguration(client.hclient, AZPUBSUB_CONFIGURATION_TYPE_SIMPLE, AZPUBSUB_GLOBAL_CONFIGURATION_TEMPLATES_NONE)
+	client.hconfig, err = CallAzPubSubCreateConfiguration(client.hclient, ENUM(client.apsConfigType), AZPUBSUB_GLOBAL_CONFIGURATION_TEMPLATES_NONE)
 	
 	if (err.Error() != ERR_OK) {
 		log.Println("AzPubSubCreateConfiguration failed with err: ", err)
@@ -144,6 +151,40 @@ func (client *AzPubSubClient) InitClient() {
 	}
 }
 
+// ======================================= AzPubSubGlobalClient
+
+type AzPubSubGlobalClient struct {
+	AzPubSubClient
+	openedTopics map[string]HPRODUCERTOPIC
+}
+
+func NewAzPubSubGlobalClient(topics []string, isTestInstance bool, endpoint string) *AzPubSubGlobalClient {
+	var client AzPubSubGlobalClient = AzPubSubGlobalClient{AzPubSubClient: NewAzPubSubClient(isTestInstance, endpoint)}
+	client.apsConfigType = AZPUBSUB_CONFIGURATION_TYPE_GLOBAL
+	client.InitClient()
+	client.InitConfig()
+
+	for index := range topics {
+		client.OpenTopic(topics[index])
+	}
+
+	return &client
+}
+
+func (client *AzPubSubGlobalClient) OpenTopic(topic string) {
+	hproducerTopic, err := CallAzPubSubOpenProducerTopic(client.hproducer, topic)
+	if (err.Error() != ERR_OK) {
+		log.Println("AzPubSubOpenProducerTopic failed with err: ", err)
+	}
+	if (HPRODUCERTOPIC(hproducerTopic) == HPRODUCERTOPIC(0)) {
+		log.Println("AzPubSubOpenSimpleProducer failed with status.")
+	} else {
+		log.Println("AzPubSubOpenSimpleProducer init successfully")
+	}
+}
+
+// ======================================= AzPubSubSimpleClient
+
 type AzPubSubSimpleClient struct {
 	AzPubSubClient
 }
@@ -153,9 +194,20 @@ func NewAzPubSubSimpleClient(isTestInstance bool, endpoint string) *AzPubSubSimp
 	client.apsConfigType = AZPUBSUB_CONFIGURATION_TYPE_SIMPLE
 	client.InitClient()
 	client.InitConfig()
+	client.AddConfigKey("azpubsub.security.provider", "ApPki")
+
 	client.OpenSimpleProducer()
 
 	return &client
+}
+
+func (client *AzPubSubSimpleClient) AddConfigKey(key string, value string) {
+	log.Println("Adding configuration key", key)
+
+	err := CallAzPubSubAddStringConfiguration(client.hconfig, key, value)
+	if (err.Error() != ERR_OK) {
+		log.Println("AzPubSubAddStringConfiguration failed with err: ", err)
+	}
 }
 
 func (client *AzPubSubSimpleClient) OpenSimpleProducer() {
@@ -173,7 +225,7 @@ func (client *AzPubSubSimpleClient) OpenSimpleProducer() {
 }
 
 
-func (client *AzPubSubSimpleClient) sendMessage(topic string, msg string) (SimpleResponse, error) {
+func (client *AzPubSubSimpleClient) SendMessage(topic string, msg string) (SimpleResponse, error) {
 	response, status, err := CallAzPubSubSendMessageEx(client.hproducer, topic, msg)
 	if (err.Error() != ERR_OK) {
 		log.Println("CallAzPubSubSendMessageEx failed with err: ", err)
@@ -190,7 +242,7 @@ func (client *AzPubSubSimpleClient) sendMessage(topic string, msg string) (Simpl
 		return simpleResponse, errors.New("Send message failed.")
 	} 
 	
-	log.Println("Send message success to parse response with message, status code, and substatus code:", simpleResponse.message, simpleResponse.statusCode, simpleResponse.subStatusCode)
+	log.Println("Send message parsed response with message, status code, and substatus code:", simpleResponse.message, simpleResponse.statusCode, simpleResponse.subStatusCode)
 	return simpleResponse, nil
 }
 
@@ -227,6 +279,13 @@ func CallAzPubSubClientInitialize(callback AZPUBSUB_LOG_CALLBACK) (HCLIENT, erro
 func CallAzPubSubCreateConfiguration(client HCLIENT, configType ENUM, globalConfigTemplate UINT) (HCONFIG, error) {
 	hconfig, _, err := AzPubSubCreateConfiguration.Call(uintptr(client), uintptr(configType), uintptr(globalConfigTemplate))
 	return HCONFIG(hconfig), err
+}
+
+func CallAzPubSubAddStringConfiguration(config HCONFIG, key string, value string) error {
+	keyCString := C.CString(key)
+	valueCString := C.CString(value)
+	_, _, err := AzPubSubAddStringConfiguration.Call(uintptr(config), uintptr(unsafe.Pointer(keyCString)), uintptr(unsafe.Pointer(valueCString)))
+	return err
 }
 
 func CallAzPubSubOpenSimpleProducer(config HCONFIG, apsSecurityType AZPUBSUB_SECURITY_TYPE, endpoint string) (HPRODUCER, error) {
@@ -347,4 +406,15 @@ func CallAzPubSubResponseGetSubStatusCode(hresponse HRESPONSE, subStatusCode PIN
 	subStatus, _, err := AzPubSubResponseGetSubStatusCode.Call(uintptr(hresponse),
 	uintptr(unsafe.Pointer(subStatusCode)))
 	return DWORD(subStatus), err
+}
+
+// Global client wrapper
+func CallAzPubSubOpenProducerTopic(hproducer HPRODUCER, topic string) (HPRODUCERTOPIC, error) {
+	topicString, err := syscall.UTF16PtrFromString(topic)
+	if (err != nil) {
+		return HPRODUCERTOPIC(0), err
+	}
+	hproducerTopic, _, err := AzPubSubOpenProducerTopic.Call(uintptr(hproducer),
+	uintptr(unsafe.Pointer(topicString)), uintptr(HCONFIG(0)), uintptr(0)) // How to represent null value of AZPUBSUB_TOPIC_PARTITIONER?
+	return HPRODUCERTOPIC(hproducerTopic), err
 }

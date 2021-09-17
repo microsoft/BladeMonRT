@@ -2,13 +2,25 @@
 package main
 
 import (
-	"C"
+	"log"
 	"fmt"
 )
 
+const (
+	PfAzPubSubVipFile = "test_PF_Pub_Sub_VIP_file.txt" //`D:\data\NodeServiceSettings.ini.flattened.ini`
+)
 
 func main() {
-	client := NewAzPubSubSimpleClient(true, "10.0.0.155:9092")
+	vip, err := NewUtils().FetchAzPubSubPfVIP(PfAzPubSubVipFile)
+	if (err != nil) {
+		log.Fatal("Failed to get VIP", err)
+	}
+
+	client := NewAzPubSubSimpleClient(false, vip)
 	fmt.Println(client)
-	client.sendMessage("test","test_message_1")
+	client.SendMessage("test","test_message_1")
+
+	// globalClient := NewAzPubSubGlobalClient(true, "10.0.0.155:9092")
+	// fmt.Println(globalClient)
+	// client.sendMessage("test","test_message_1")
 }
