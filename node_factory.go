@@ -5,6 +5,7 @@ import (
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_a"
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_b"
 	"github.com/microsoft/BladeMonRT/nodes/dummy_node_c"
+	"github.com/microsoft/BladeMonRT/nodes/dummy_azpubsub_node"	
 )
 
 // InterfaceNodeFactory mock generation.
@@ -26,6 +27,8 @@ func (nodeFactory NodeFactory) constructNode(typeName string) nodes.InterfaceNod
 		return dummy_node_b.NewDummyNodeB()
 	case "DummyNodeC":
 		return dummy_node_c.NewDummyNodeC()
+	case "DummyAzPubSubNode":
+		return dummy_azpubsub_node.NewDummyAzPubSubNode()
 	default:
 		panic("Node for given name not found.")
 	}
