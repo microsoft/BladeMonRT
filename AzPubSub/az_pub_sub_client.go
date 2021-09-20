@@ -102,8 +102,6 @@ func NewAzPubSubClient(isTestInstance bool, endpoint string) AzPubSubClient {
 
 type AZPUBSUB_LOG_CALLBACK func(level LOG_LEVEL, message LPCSTR, context LPVOID) uintptr
 
-type AZPUBSUB_TOPIC_PARTITIONER func(arg1 DWORD, arg2 HPRODUCERTOPIC, arg3 PBYTE, arg4 DWORD, arg5 DWORD, arg6 LPVOID) 
-
 func pLoggerCallback(level LOG_LEVEL, message LPCSTR, context LPVOID) uintptr {
 	// TODO: convert LPCSTR correctly string to be able to read the message not just first character
 	// How do we get the size of the message to know how many bytes to read?
