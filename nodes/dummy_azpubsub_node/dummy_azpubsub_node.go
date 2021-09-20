@@ -5,7 +5,7 @@ import (
 
 	"github.com/microsoft/BladeMonRT/logging"
 	"github.com/microsoft/BladeMonRT/nodes"
-	"github.com/microsoft/BladeMonRT/azpubsub"
+	"github.com/microsoft/BladeMonRT/AzPubSub"
 	"github.com/microsoft/BladeMonRT/configs"
 )
 
