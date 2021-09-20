@@ -146,3 +146,13 @@ func (client *AzPubSubClient) InitClient() {
 		log.Println("AzPubSubClient init successfully.")
 	}
 }
+
+func CallAzPubSubClientInitialize(callback AZPUBSUB_LOG_CALLBACK) (HCLIENT, error) {
+	hclient, _, err := AzPubSubClientInitialize.Call(syscall.NewCallback(pLoggerCallback), uintptr(LPVOID(0)))
+	return HCLIENT(hclient), err
+}
+
+func CallAzPubSubCreateConfiguration(client HCLIENT, configType ENUM, globalConfigTemplate UINT) (HCONFIG, error) {
+	hconfig, _, err := AzPubSubCreateConfiguration.Call(uintptr(client), uintptr(configType), uintptr(globalConfigTemplate))
+	return HCONFIG(hconfig), err
+}

@@ -60,58 +60,6 @@ func (client *AzPubSubSimpleClient) SendMessage(topic string, msg string) (Simpl
 	return simpleResponse, nil
 }
 
-func CallAzPubSubSendMessageEx(hproducer HPRODUCER, topic string, msg string) (HRESPONSE, DWORD, error) {
-	msgPtr, err := windows.UTF16PtrFromString(msg)
-	if (err != nil) {
-		return HRESPONSE(0), DWORD(0), errors.New("Failed to convert message to correct format.")
-	}
-	topicPtr, err := windows.UTF16PtrFromString(topic)
-	if (err != nil) {
-		return HRESPONSE(0), DWORD(0), errors.New("Failed to convert topic to correct format.") 
-	}
-	var msgLength int = len(msg)
-	var hresponse HRESPONSE = HRESPONSE(0)
-
-	// Assume default hash based partitioning
-	// TODO: Add key parameter so that we can do other types of partitioning.
-	status, _, err := AzPubSubSendMessageEx.Call(uintptr(hproducer),
-	uintptr(unsafe.Pointer(topicPtr)),
-	0,
-	0,
-	uintptr(unsafe.Pointer(msgPtr)),
-	uintptr(msgLength),
-	uintptr(unsafe.Pointer(&hresponse)))
-
-	return hresponse, DWORD(status), err
-}
-
-func CallAzPubSubClientInitialize(callback AZPUBSUB_LOG_CALLBACK) (HCLIENT, error) {
-	hclient, _, err := AzPubSubClientInitialize.Call(syscall.NewCallback(pLoggerCallback), uintptr(LPVOID(0)))
-	return HCLIENT(hclient), err
-}
-
-func CallAzPubSubCreateConfiguration(client HCLIENT, configType ENUM, globalConfigTemplate UINT) (HCONFIG, error) {
-	hconfig, _, err := AzPubSubCreateConfiguration.Call(uintptr(client), uintptr(configType), uintptr(globalConfigTemplate))
-	return HCONFIG(hconfig), err
-}
-
-func CallAzPubSubAddStringConfiguration(config HCONFIG, key string, value string) error {
-	keyCString := C.CString(key)
-	valueCString := C.CString(value)
-	_, _, err := AzPubSubAddStringConfiguration.Call(uintptr(config), uintptr(unsafe.Pointer(keyCString)), uintptr(unsafe.Pointer(valueCString)))
-	return err
-}
-
-func CallAzPubSubOpenSimpleProducer(config HCONFIG, apsSecurityType AZPUBSUB_SECURITY_TYPE, endpoint string) (HPRODUCER, error) {
-	endpointPtr, err := syscall.UTF16PtrFromString(endpoint)
-	if (err != nil) {
-		return HPRODUCER(0), err
-	}
-
-	hproducer, _, err := AzPubSubOpenSimpleProducer.Call(uintptr(config), uintptr(apsSecurityType), 0, 0, uintptr(unsafe.Pointer(endpointPtr)))
-	return HPRODUCER(hproducer), err 
-}
-
 type SimpleResponse struct {
 	hResponse HRESPONSE
 	statusCode INT 
@@ -200,6 +148,41 @@ func getSubStatusCode(hresponse HRESPONSE) (INT, error) {
 	}
 
 	return statusCode, nil
+}
+
+func CallAzPubSubOpenSimpleProducer(config HCONFIG, apsSecurityType AZPUBSUB_SECURITY_TYPE, endpoint string) (HPRODUCER, error) {
+	endpointPtr, err := syscall.UTF16PtrFromString(endpoint)
+	if (err != nil) {
+		return HPRODUCER(0), err
+	}
+
+	hproducer, _, err := AzPubSubOpenSimpleProducer.Call(uintptr(config), uintptr(apsSecurityType), 0, 0, uintptr(unsafe.Pointer(endpointPtr)))
+	return HPRODUCER(hproducer), err 
+}
+
+func CallAzPubSubSendMessageEx(hproducer HPRODUCER, topic string, msg string) (HRESPONSE, DWORD, error) {
+	msgPtr, err := windows.UTF16PtrFromString(msg)
+	if (err != nil) {
+		return HRESPONSE(0), DWORD(0), errors.New("Failed to convert message to correct format.")
+	}
+	topicPtr, err := windows.UTF16PtrFromString(topic)
+	if (err != nil) {
+		return HRESPONSE(0), DWORD(0), errors.New("Failed to convert topic to correct format.") 
+	}
+	var msgLength int = len(msg)
+	var hresponse HRESPONSE = HRESPONSE(0)
+
+	// Assume default hash based partitioning
+	// TODO: Add key parameter so that we can do other types of partitioning.
+	status, _, err := AzPubSubSendMessageEx.Call(uintptr(hproducer),
+	uintptr(unsafe.Pointer(topicPtr)),
+	0,
+	0,
+	uintptr(unsafe.Pointer(msgPtr)),
+	uintptr(msgLength),
+	uintptr(unsafe.Pointer(&hresponse)))
+
+	return hresponse, DWORD(status), err
 }
 
 func CallAzPubSubResponseGetMessage(hresponse HRESPONSE, responseBuff LPPSTR, bufferLength DWORD, pointerToBufferLength PDWORD) (DWORD, error) {
