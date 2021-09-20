@@ -36,17 +36,9 @@ type (
 	LPPSTR        *[]byte
 	PDWORD         *DWORD    
 	PINT          *INT  
-	
-	// GlobalAzPubSubClient specific conversions
-	HPRODUCERTOPIC HANDLE
-	PBYTE *BYTE
-	
 )
 
-// TODO: Add use of GetLastError
-
 var (
-	// C:\Users\t-nshanker\source\repos\BladeMonRT\azpubsub\azpubsub.dll full path does not work
 	wevtapi = syscall.NewLazyDLL(`azpubsub.dll`)
 	AzPubSubSendMessageEx              = wevtapi.NewProc("AzPubSubSendMessageEx")
 	AzPubSubOpenSimpleProducer              = wevtapi.NewProc("AzPubSubOpenSimpleProducer")
