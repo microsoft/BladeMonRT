@@ -27,5 +27,5 @@ func TestSendMessage(t *testing.T) {
 
 	// Assert
 	assert.Equal(t, err, nil)
-	assert.Equal(t, strings.Contains(response.Message, "The operation timed out"), true)
+	assert.Equal(t, strings.Contains(response.Message, "The operation timed out") || strings.Contains(response.Message, "Send message parsed response with message, status code, and substatus code: The server name or address could not be resolved"), true)
 }
