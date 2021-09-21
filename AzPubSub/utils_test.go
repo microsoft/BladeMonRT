@@ -11,7 +11,7 @@ func TestFetchAzPubSubPfVIP(t *testing.T) {
 	utils := NewUtils()
 
 	// Action
-	vip, err := utils.FetchAzPubSubPfVIP("../" + test_configs.PF_AZ_PUB_SUB_VIP_FILE)
+	vip, err := utils.FetchAzPubSubPfVIP("../" + test_configs.TEST_PF_AZ_PUB_SUB_VIP_FILE)
 
 	// Assert
 	assert.Equal(t, err, nil)

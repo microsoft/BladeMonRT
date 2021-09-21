@@ -80,9 +80,9 @@ type AzPubSubClient struct {
 	apsSecurityType AZPUBSUB_SECURITY_TYPE
 	apsConnectionFlags int
 	apsConfigType int
-	hclient HCLIENT
-	hconfig HCONFIG
-	hproducer HPRODUCER
+	Hclient HCLIENT
+	Hconfig HCONFIG
+	Hproducer HPRODUCER
 	endpoint string
 }
 
@@ -111,12 +111,12 @@ func pLoggerCallback(level LOG_LEVEL, message LPCSTR, context LPVOID) uintptr {
 
 func (client *AzPubSubClient) InitConfig() {
 	var err error
-	client.hconfig, err = CallAzPubSubCreateConfiguration(client.hclient, ENUM(client.apsConfigType), AZPUBSUB_GLOBAL_CONFIGURATION_TEMPLATES_NONE)
+	client.Hconfig, err = CallAzPubSubCreateConfiguration(client.Hclient, ENUM(client.apsConfigType), AZPUBSUB_GLOBAL_CONFIGURATION_TEMPLATES_NONE)
 	
 	if (err.Error() != ERR_OK) {
 		log.Println("AzPubSubCreateConfiguration failed with err: ", err)
 	}
-	if (client.hconfig == HCONFIG(0)) {
+	if (client.Hconfig == HCONFIG(0)) {
 		log.Println("Failed to initialize AzPubSubClient config.")
 	} else {
 		log.Println("AzPubSubClient config init successfully.")
@@ -125,12 +125,12 @@ func (client *AzPubSubClient) InitConfig() {
 
 func (client *AzPubSubClient) InitClient() {
 	var err error
-	client.hclient, err = CallAzPubSubClientInitialize(pLoggerCallback)
+	client.Hclient, err = CallAzPubSubClientInitialize(pLoggerCallback)
 
 	if (err.Error() != ERR_OK) {
 		log.Println("AzPubSubClientInitialize failed with err: ", err)
 	}
-	if (client.hclient == HCLIENT(0)) {
+	if (client.Hclient == HCLIENT(0)) {
 		log.Println("Failed to initialize AzPubSubClient.")
 	} else {
 		log.Println("AzPubSubClient init successfully.")

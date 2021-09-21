@@ -26,12 +26,12 @@ func NewAzPubSubSimpleClient(isTestInstance bool, endpoint string) *AzPubSubSimp
 
 func (client *AzPubSubSimpleClient) OpenSimpleProducer() {
 	var err error
-	client.hproducer, err = CallAzPubSubOpenSimpleProducer(client.hconfig, client.apsSecurityType, client.endpoint)
+	client.Hproducer, err = CallAzPubSubOpenSimpleProducer(client.Hconfig, client.apsSecurityType, client.endpoint)
 	
 	if (err.Error() != ERR_OK) {
 		log.Println("AzPubSubOpenSimpleProducer failed with err: ", err)
 	}
-	if (client.hproducer == HPRODUCER(0)) {
+	if (client.Hproducer == HPRODUCER(0)) {
 		log.Println("AzPubSubOpenSimpleProducer failed with status.")
 	} else {
 		log.Println("AzPubSubOpenSimpleProducer init successfully")
@@ -40,7 +40,7 @@ func (client *AzPubSubSimpleClient) OpenSimpleProducer() {
 
 
 func (client *AzPubSubSimpleClient) SendMessage(topic string, msg string) (SimpleResponse, error) {
-	response, status, err := CallAzPubSubSendMessageEx(client.hproducer, topic, msg)
+	response, status, err := CallAzPubSubSendMessageEx(client.Hproducer, topic, msg)
 	if (err.Error() != ERR_OK) {
 		log.Println("CallAzPubSubSendMessageEx failed with err: ", err)
 		return SimpleResponse{}, errors.New("Send message failed.") 
@@ -56,14 +56,14 @@ func (client *AzPubSubSimpleClient) SendMessage(topic string, msg string) (Simpl
 		return simpleResponse, errors.New("Send message failed.")
 	} 
 	
-	log.Println("Send message parsed response with message, status code, and substatus code:", simpleResponse.message, simpleResponse.statusCode, simpleResponse.subStatusCode)
+	log.Println("Send message parsed response with message, status code, and substatus code:", simpleResponse.Message, simpleResponse.statusCode, simpleResponse.subStatusCode)
 	return simpleResponse, nil
 }
 
 type SimpleResponse struct {
 	hResponse HRESPONSE
 	statusCode INT 
-	message string 
+	Message string 
 	subStatusCode INT 
 }
 
@@ -83,7 +83,7 @@ func newSimpleResponse(hresponse HRESPONSE) (SimpleResponse, error) {
 		return SimpleResponse{}, nil
 	}
 
-	return SimpleResponse{message: message, statusCode: statusCode, subStatusCode: subStatusCode}, nil
+	return SimpleResponse{Message: message, statusCode: statusCode, subStatusCode: subStatusCode}, nil
 }
 
 func getResponseMessage(hresponse HRESPONSE) (string, error) {
@@ -156,11 +156,11 @@ func CallAzPubSubOpenSimpleProducer(config HCONFIG, apsSecurityType AZPUBSUB_SEC
 		return HPRODUCER(0), err
 	}
 
-	hproducer, _, err := AzPubSubOpenSimpleProducer.Call(uintptr(config), uintptr(apsSecurityType), 0, 0, uintptr(unsafe.Pointer(endpointPtr)))
-	return HPRODUCER(hproducer), err 
+	Hproducer, _, err := AzPubSubOpenSimpleProducer.Call(uintptr(config), uintptr(apsSecurityType), 0, 0, uintptr(unsafe.Pointer(endpointPtr)))
+	return HPRODUCER(Hproducer), err 
 }
 
-func CallAzPubSubSendMessageEx(hproducer HPRODUCER, topic string, msg string) (HRESPONSE, DWORD, error) {
+func CallAzPubSubSendMessageEx(Hproducer HPRODUCER, topic string, msg string) (HRESPONSE, DWORD, error) {
 	msgPtr, err := windows.UTF16PtrFromString(msg)
 	if (err != nil) {
 		return HRESPONSE(0), DWORD(0), errors.New("Failed to convert message to correct format.")
@@ -174,7 +174,7 @@ func CallAzPubSubSendMessageEx(hproducer HPRODUCER, topic string, msg string) (H
 
 	// Assume default hash based partitioning
 	// TODO: Add key parameter so that we can do other types of partitioning.
-	status, _, err := AzPubSubSendMessageEx.Call(uintptr(hproducer),
+	status, _, err := AzPubSubSendMessageEx.Call(uintptr(Hproducer),
 	uintptr(unsafe.Pointer(topicPtr)),
 	0,
 	0,
