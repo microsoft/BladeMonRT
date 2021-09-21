@@ -28,6 +28,7 @@ type (
 	// SimpleAzPubSubClient specific conversions.
 	ENUM 		  int
 	AZPUBSUB_SECURITY_TYPE int
+	AZPUBSUB_SECURITY_FLAGS int
 	HCLIENT       HANDLE
 	HCONFIG		  HANDLE
 	HPRODUCER	  HANDLE
@@ -36,6 +37,11 @@ type (
 	LPPSTR        *[]byte
 	PDWORD         *DWORD    
 	PINT          *INT  
+
+	 // GlobalAzPubSubClient specific conversions.
+	 HPRODUCERTOPIC HANDLE
+	 PBYTE *BYTE
+ 
 )
 
 var (
@@ -49,6 +55,7 @@ var (
 	AzPubSubResponseGetSubStatusCode              = wevtapi.NewProc("AzPubSubResponseGetSubStatusCode")
 	AzPubSubOpenProducerTopic              = wevtapi.NewProc("AzPubSubOpenProducerTopic")
 	AzPubSubAddStringConfiguration = wevtapi.NewProc("AzPubSubAddStringConfiguration")
+	AzPubSubSetConnection = wevtapi.NewProc("AzPubSubSetConnection")
 	NULL = HANDLE(0)
 )
 
@@ -78,7 +85,7 @@ const (
 type AzPubSubClient struct {
 	isTestInstance bool
 	apsSecurityType AZPUBSUB_SECURITY_TYPE
-	apsConnectionFlags int
+	apsConnectionFlags AZPUBSUB_SECURITY_FLAGS
 	apsConfigType int
 	Hclient HCLIENT
 	Hconfig HCONFIG
