@@ -14,6 +14,7 @@ const (
 	TEST_ENABLE_BOOKMARK_FEATURE      = true
 	TEST_BOOKMARK_DATABASE_FILE       = "./TestBookmarkStore.sqlite"
 	TEST_BOOKMARK_DATABASE_TABLE_NAME = "TestBookmarkTable"
+	TEST_PF_AZ_PUB_SUB_VIP_FILE = "test_PF_Pub_Sub_VIP_file.txt"
 )
 
 func NewTestConfig() configs.Config {

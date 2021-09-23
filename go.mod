@@ -11,5 +11,6 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	golang.org/x/sys v0.0.0-20210510120138-977fb7262007
 	gotest.tools v2.2.0+incompatible
 )
