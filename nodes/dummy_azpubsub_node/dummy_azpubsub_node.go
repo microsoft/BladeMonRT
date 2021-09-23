@@ -29,7 +29,7 @@ func (dummyNode *DummyAzPubSubNode) ProcessVirt(workflowContext *nodes.WorkflowC
 	}
 	client := azpubsub.NewAzPubSubSimpleClient(false, vip)
 
-	response, err := client.SendMessage("test","test_message_1")
+	response, err := client.SendMessage("AzureCompute.Anvil.Request","test_message_1")
 	dummyNode.Logger.Println("The response from AzPubSub is", response)
 	if (err != nil) {
 		return err

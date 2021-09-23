@@ -8,7 +8,7 @@ const (
 	ENABLE_BOOKMARK_FEATURE      = true
 	BOOKMARK_DATABASE_FILE       = "./BookmarkStore.sqlite"
 	BOOKMARK_DATABASE_TABLE_NAME = "BookmarkTable"
-	PF_AZ_PUB_SUB_VIP_FILE = "test_PF_Pub_Sub_VIP_file.txt"
+	PF_AZ_PUB_SUB_VIP_FILE = `D:\data\NodeServiceSettings\NodeServiceSettings.ini.flattened.ini`
 )
 
 type Config struct {
