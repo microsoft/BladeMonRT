@@ -40,22 +40,31 @@ trademarks or logos is subject to and must follow
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
 
+## One-Time Setup:
+
+1. Download GO version 1.6.x here https://golang.org/dl/
+1. Download GCC here https://sourceforge.net/projects/orwelldevcpp/
+
 ## Run and Test
 #### To run the main use:
 
+```
 cd BladeMonRT
-
 ./run.bat
+```
 
 #### To run all tests except the end-to-end test use:
 
+```
 cd BladeMonRT
-
 ./test.bat
+```
 
 #### To run the end-to-end test:
 
+```
 go test -run TestEndToEnd
+```
 
 * The end-to-end test runs BRT until a keyboard interrupt.
 * You will have to manually raise ETW events in a separate terminal.
@@ -65,14 +74,16 @@ To create a mock of a GO interface
 1. Use the mockgen command described here https://github.com/golang/mock
 
     Example: 
-
+```
     cd BladeMonRT
 
     mockgen -source="./nodes/node.go" -destination="./nodes/mock_node.go" -package="nodes"
+```
 
 2. Then in the GO file that contains the interface mocked, add a comment following this
 template after the imports:
 
+```
 // [MockedInterface] mock generation.
 
 //go:generate [mockgen command]
@@ -82,11 +93,14 @@ Example:
 // InterfaceNodeFactory mock generation.
 
 //go:generate mockgen -source=./node_factory.go -destination=./mock_node_factory.go -package=main
+```
 
 This will ensure when test.bat is run, the mock for the [MockedInterface] is regenerated.
 
 #### To format all GO files run:
 
+```
 cd BladeMonRT
 
 gofmt -l -s -w .
+```
